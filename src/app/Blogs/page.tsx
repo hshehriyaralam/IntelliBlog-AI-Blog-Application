@@ -2,8 +2,7 @@
 import { useFetchBlogQuery } from "../../Redux/Services/blogApi"; 
 import {liveRefetchOptions} from "../../hooks/rtkOptions"
 import { ContextTheme } from '../../Context/DarkTheme'
-import { useContext, useMemo, useState } from 'react';
-import BlogCard from "../../components/Common/BLogCard";
+import { useContext, useMemo, useState } from 'react'
 import type { DraftFilters } from "../../../types/Blog"
 
 // Components
@@ -13,6 +12,7 @@ import AuthorsFilter from "../../components/common/AuthorsFilter";
 import DateFilter from "../../components/common/DateFilter";
 import Tags from "../../components/common/TagsFilter";
 import FilterActions from "../../components/common/FilterActions";
+import BlogCard from "../../components/common/BLogCard";
 
 
 export default function AllBlogs() {

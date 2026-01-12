@@ -1,5 +1,5 @@
 'use client'
-import TopAuthors from '../Common/Authors';
+import TopAuthors from '../common/Authors';
 import HeroTopCard from '../HomeComponets/HeroTopCard';
 import Tags from '../HomeComponets/Tags';
 import {ContextTheme} from '../../Context/DarkTheme'
@@ -8,7 +8,6 @@ import { useAuthNavigate } from "@/hooks/useAuthNavigate";
 import { Button } from '../ui/button';
 import { ArrowRight } from 'lucide-react';
 import Blogs from "./HomeBlogs"
-import Stats from '../DashboardComponent/Stats';
 
 
 export default function Hero() {

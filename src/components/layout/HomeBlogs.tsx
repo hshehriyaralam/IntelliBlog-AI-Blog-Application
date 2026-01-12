@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { useFetchBlogQuery } from "../../Redux/Services/blogApi"; 
 import {liveRefetchOptions} from "../../hooks/rtkOptions"
 
-import BlogCard from "../Common/BLogCard"
+import BlogCard from "../common/BLogCard"
 
 export default function HomeBlogs() {
   const { data } = useFetchBlogQuery(undefined,liveRefetchOptions );
