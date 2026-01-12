@@ -2,7 +2,7 @@
 import { Trash2} from "lucide-react";
 import {useDeleteBlogAdminMutation} from "../../../../Redux/Services/adminApi"
 import { useAlert } from '../../../../Context/AlertContext'
-import SingleButtonLoader from '../../../../components/Common/SingleButtonLoader'
+import SingleButtonLoader from '../../../../components/common/SingleButtonLoader'
 
 export default function DeleteBlogButton({themeValue,blog}:any){
     const [deleteBlogAdmin, { isLoading }] = useDeleteBlogAdminMutation(undefined)

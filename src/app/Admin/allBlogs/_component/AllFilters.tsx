@@ -1,12 +1,12 @@
 'use client'
 import { ContextTheme } from "../../../../Context/DarkTheme"
 //Components
-import SearchInput from "../../../../components/Common/SearchINput"
-import FilterToogle from "../../../../components/Common/FilterToggle"
-import AuthorsFilter from "../../../../components/Common/AuthorsFilter"
-import DateFilter from "../../../../components/Common/DateFilter"
-import Tags from "../../../../components/Common/TagsFilter"
-import FilterActions from "../../../../components/Common/FilterActions"
+import SearchInput from "../../../../components/common/SearchINput"
+import FilterToogle from "../../../../components/common/FilterToggle"
+import AuthorsFilter from "../../../../components/common/AuthorsFilter"
+import DateFilter from "../../../../components/common/DateFilter"
+import Tags from "../../../../components/common/TagsFilter"
+import FilterActions from "../../../../components/common/FilterActions"
 import { useContext, useMemo,  } from "react";
 import type {DraftFilters} from "../../../../../types/Blog"
 

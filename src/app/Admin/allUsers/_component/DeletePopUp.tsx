@@ -1,8 +1,8 @@
 "use client"
 import {useDeleteUserAdminMutation} from "../../../../Redux/Services/adminApi"
 import { useAlert } from '../../../../Context/AlertContext'
-import ButtonLoader from "../../../../components/Common/Loader"
-import  SingleButtonLoader from "../../../../components/Common/SingleButtonLoader"
+import ButtonLoader from "../../../../components/common/Loader"
+import  SingleButtonLoader from "../../../../components/common/SingleButtonLoader"
 
 
 

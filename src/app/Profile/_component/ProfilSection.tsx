@@ -1,7 +1,7 @@
 'use client'
 import { User, Trash2,  Mail, Calendar, Eye, FileText, LogOut, ArrowRight } from "lucide-react";
 import { Button } from "../../../components/ui/button";
-import ButtonLoader from '../../../components/Common/BtnLoader'
+import ButtonLoader from '../../../components/common/BtnLoader'
 import { useRouter } from "next/navigation";
 
 export default function ProfileSection({

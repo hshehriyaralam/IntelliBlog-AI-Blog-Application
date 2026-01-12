@@ -10,9 +10,9 @@ import InputTags from "./_component/InputTags"
 import PreviewBlog from "./_component/PreviewBlog";
 import CenteredButtons from "./_component/CenteredButtons";
 import BlogFormFunctions  from '../../utilities/BlogFornFunc'
-import ButtonLoader from '../../components/Common/BtnLoader'
+import ButtonLoader from '../../components/common/BtnLoader'
 import useAIGenerate from '../../utilities/AI-Functions/AI-Generate'
-import AILoader from '../../components/Common/AILoader';
+import AILoader from '../../components/common/AILoader';
 
 
 export default function WriteBlogForm() {

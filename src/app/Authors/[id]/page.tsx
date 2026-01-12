@@ -7,7 +7,7 @@ import { ContextTheme } from "../../../Context/DarkTheme";
 import { useContext,useState } from "react";
 import {  BookOpen} from "lucide-react";
 import LoadingPage from "../../../components/layout/LoadingPage";
-import ErrorPage from '../../../components/Common/ErrorPage'
+import ErrorPage from '../../../components/common/ErrorPage'
 import AuthorsProfileSection from '../_component/ProfileSection'
 import AuthorsBlog from "../_component/AuthorsBlogs"
 
