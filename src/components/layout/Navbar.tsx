@@ -1,25 +1,25 @@
 'use client';
 import Link from 'next/link';
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, Moon, Sun, PenSquare, Home, Users, BookOpen, User, Bookmark } from 'lucide-react';
 import { ContextTheme } from '../../Context/DarkTheme';
 import { useGetProfileQuery } from "../../Redux/Services/userApi";
-import { liveRefetchOptions } from "../../hooks/rtkOptions";
 import { useDispatch } from "react-redux";
 import { googleLoginThunk } from "../../Redux/Slices/authSlice";
 import type { AppDispatch } from "../../Redux/store";
-import { Button } from '../ui/button';
+import SingleButtonLoader from '../common/SingleButtonLoader';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
+
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
   const { themeValue, changeTheme, light, dark } = useContext(ContextTheme);
-  const { data } = useGetProfileQuery(undefined, liveRefetchOptions);
+  const { data } = useGetProfileQuery(undefined);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -40,48 +40,56 @@ export default function Navbar() {
 
 
   /** 🔹 Navigation Logic */
-  const handleNavigate = async (link: string) => {
+  const handleNavigate = useCallback(async (link: string) => {
+
     if (isAuthenticated) {
       setMenuOpen(false);
       router.push(link);
       return;
     }
     handleAuthAndNavigate(link);
-  };
 
-  const handleAuthAndNavigate = async (link: string) => {
+  }, [isAuthenticated, router]);
+
+
+
+
+  const handleAuthAndNavigate = useCallback(async (link: string) => {
     if (isAuthenticating) return;
-    setIsAuthenticating(true);
+    setIsAuthenticating(true)
 
     try {
       await dispatch(googleLoginThunk()).unwrap();
       setMenuOpen(false);
       router.push(link);
+
     } catch (error) {
       console.error("Google login failed:", error);
     } finally {
       setIsAuthenticating(false);
     }
-  };
+  },[isAuthenticating, dispatch, router]);
 
-  /** 🔹 Close menu on route change */
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [router]);
+
 
 
   /** 🔹 Navbar Links */
-  const navLinks = [
+  const navLinks = useMemo(() => [
     { href: "/", label: "Home", icon: Home },
     { href: "/Create", label: "Create Blog", icon: PenSquare },
     { href: "/Blogs", label: "Blogs", icon: BookOpen },
     { href: "/Authors", label: "Authors", icon: Users },
     { href: "/Collection", label: "Collection", icon: Bookmark },
-  ];
+  ], []);
 
   const activeClasses = themeValue
     ? "bg-indigo-50 text-indigo-700"
     : "bg-indigo-900/30 text-indigo-300";
+
+  /** 🔹 Close menu on route change */
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [router]);
 
 
   return (
@@ -213,7 +221,7 @@ export default function Navbar() {
           ))}
 
           <div className="pt-3 border-t border-gray-200 mt-3">
-            <Button
+            <button
               onClick={() => handleNavigate('/Profile')}
               disabled={isAuthenticating}
               className={`flex items-center gap-2 px-2 py-1 rounded-lg w-full transition-all cursor-pointer disabled:opacity-50 ${
@@ -224,7 +232,7 @@ export default function Navbar() {
             >
               <User size={16} />
               <h2 className="text-[16px] font-semibold">Profile</h2>
-            </Button>
+            </button>
           </div>
         </div>
       </div>

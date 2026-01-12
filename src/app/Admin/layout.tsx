@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, FileText, Users, ThumbsUp, Bookmark } from "lucide-react";
 import { ContextTheme } from "../../Context/DarkTheme";

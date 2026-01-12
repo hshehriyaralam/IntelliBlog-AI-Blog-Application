@@ -1,15 +1,17 @@
 'use client'
-import { Bookmark, Users, Mail, FileText, Calendar, Eye, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Bookmark, Users,  FileText, Calendar, Eye, User } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function BookmarkList({
+const  BookmarkList = React.memo(({ 
   filteredBookmarks,
   searchQuery,
   themeValue,
   light,
   dark,
-}: any) {
+}: any) => {
   const router = useRouter();
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
@@ -54,6 +56,8 @@ export default function BookmarkList({
     router.push(`/Authors/${authorId}`);
   };
 
+
+  
   return (
     <div
       className={`rounded-xl shadow-lg overflow-hidden ${
@@ -128,7 +132,10 @@ export default function BookmarkList({
                           onClick={(e) => handleBlogClick(bookmark.blogId, e)}
                         >
                           {bookmark.blogImage && !imgErrors[`blog-${index}`] ? (
-                            <img
+                            <Image
+                            width={56}
+                            height={56}
+                            loading="lazy"
                               src={bookmark.blogImage}
                               alt={bookmark.blogTitle}
                               className="w-full h-full object-cover"
@@ -170,9 +177,12 @@ export default function BookmarkList({
                         {/* Author Info */}
                         <div className="flex items-center space-x-2">
                           {bookmark.authorProfile && !imgErrors[`author-${index}`] ? (
-                            <img
+                            <Image
+                            width={24}
+                            height={24}
                               src={bookmark.authorProfile}
                               alt={bookmark.authorName}
+                              loading="lazy"
                               className="w-6 h-6 rounded-full object-cover border cursor-pointer"
                               onClick={(e) => handleAuthorClick(bookmark.authorId, e)}
                               onError={() => handleImgError(`author-${index}`)}
@@ -208,9 +218,12 @@ export default function BookmarkList({
                         {/* User Info Left */}
                         <div className="flex items-center space-x-3">
                           {bookmark.userProfile && !imgErrors[`user-${index}`] ? (
-                            <img
+                            <Image
+                              width={24}
+                              height={24}
                               src={bookmark.userProfile}
                               alt={bookmark.userName}
+                              loading="lazy"
                               className="w-8 h-8 rounded-full object-cover border cursor-pointer"
                               onClick={(e) => handleUserClick(bookmark.userId, e)}
                               onError={() => handleImgError(`user-${index}`)}
@@ -265,7 +278,7 @@ export default function BookmarkList({
 
                       {/* Actions Centered Below */}
                       <div className="flex justify-center space-x-3 pt-2">
-                         <button
+                         <Button
                         onClick={(e) => handleBlogClick(bookmark.blogId, e)}
                         className={`flex items-center justify-center cursor-pointer space-x-1 px-6
                            py-1.5 rounded-lg text-sm font-medium transition-all duration-200  ${
@@ -276,9 +289,9 @@ export default function BookmarkList({
                       >
                         <Eye size={12} />
                         <span>View Blog</span>
-                      </button>
+                      </Button>
 
-                        <button
+                        <Button
                           onClick={(e) => handleUserClick(bookmark.userId, e)}
                           className={`flex items-center justify-center space-x-1 cursor-pointer px-6 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
                             themeValue
@@ -288,7 +301,7 @@ export default function BookmarkList({
                         >
                           <Users size={12} />
                           <span> View User</span>
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -306,9 +319,12 @@ export default function BookmarkList({
                           onClick={(e) => handleBlogClick(bookmark.blogId, e)}
                         >
                           {bookmark.blogImage && !imgErrors[`blog-${index}`] ? (
-                            <img
+                            <Image
+                            width={56}
+                            height={56}
                               src={bookmark.blogImage}
                               alt={bookmark.blogTitle}
+                              loading="lazy"
                               className="w-full h-full object-cover transition-transform duration-300 group-hover/blog-image:scale-110"
                               onError={() => handleImgError(`blog-${index}`)}
                             />
@@ -344,9 +360,12 @@ export default function BookmarkList({
                         {/* Author Info */}
                         <div className="flex items-center space-x-2">
                           {bookmark.authorProfile && !imgErrors[`author-${index}`] ? (
-                            <img
+                            <Image
+                            width={24}
+                            height={24}
                               src={bookmark.authorProfile}
                               alt={bookmark.authorName}
+                              loading="lazy"
                               className="w-6 h-6 rounded-full object-cover border cursor-pointer"
                               onClick={(e) => handleAuthorClick(bookmark.authorId, e)}
                               onError={() => handleImgError(`author-${index}`)}
@@ -380,9 +399,12 @@ export default function BookmarkList({
                   <div className="col-span-3">
                     <div className="flex items-center space-x-3">
                       {bookmark.userProfile && !imgErrors[`user-${index}`] ? (
-                        <img
+                        <Image
                           src={bookmark.userProfile}
                           alt={bookmark.userName}
+                          width={40}
+                          height={40}
+                          loading="lazy"
                           className="w-10 h-10 rounded-full object-cover border cursor-pointer"
                           onClick={(e) => handleUserClick(bookmark.userId, e)}
                           onError={() => handleImgError(`user-${index}`)}
@@ -511,3 +533,6 @@ export default function BookmarkList({
     </div>
   );
 }
+)
+
+export default BookmarkList;

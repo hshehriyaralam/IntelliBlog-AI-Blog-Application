@@ -1,9 +1,9 @@
 'use client'
 import { Share2  } from "lucide-react";
 import { useState } from "react";
+import React from "react";
 
-
-export default function ShareButton({ blogId }: any){
+const ShareButton = React.memo(({ blogId }: any) =>  {
 //   const router = useRouter();
   const [copied, setCopied] = useState(false);
 
@@ -31,6 +31,7 @@ export default function ShareButton({ blogId }: any){
 
 
 
+
     return(
          <button  onClick={handleShare}
          className="p-2 sm:p-2.5 rounded-full bg-emerald-100  
@@ -38,4 +39,7 @@ export default function ShareButton({ blogId }: any){
           <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 " />
         </button>
     )
-}
+})
+
+
+export default ShareButton;

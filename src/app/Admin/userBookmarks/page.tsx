@@ -1,17 +1,28 @@
 'use client'
-import { useContext, useMemo, useState } from "react";
+import { Suspense, useCallback, useContext, useMemo, useState } from "react";
 import { ContextTheme } from "../../../Context/DarkTheme";
-import BookmarkFilter from "./_component/bookmarkFilter";
 import BookmarkList from "./_component/bookmarkList";
 import LoadingPage from "../../../components/layout/LoadingPage";
 import {useAllbookmarksAdminQuery} from '../../../Redux/Services/adminApi';
-import {liveRefetchOptions}   from "../../../hooks/rtkOptions"
+import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+
+
+
+  const BookmarkFilter = dynamic  (() => import("./_component/bookmarkFilter"), {
+    ssr: false,
+  }); 
+
+  const PaginationItems = dynamic(() => import("../../../components/common/paginationItems"),{ ssr: false });
+  
 
 
 export default function UserBookmarks() {
-  const { data, isLoading, error } = useAllbookmarksAdminQuery(undefined,liveRefetchOptions);
+  const { data, isLoading, error } = useAllbookmarksAdminQuery(undefined);
   const { themeValue, light, dark } = useContext(ContextTheme);
   const [searchQuery, setSearchQuery] = useState("");
+    const [currentItems, setCurrentItems] = useState<any[]>([]);
+  
   
   // Transform API data to match the expected format
   const transformedBookmarks = useMemo(() => {
@@ -46,7 +57,11 @@ export default function UserBookmarks() {
     );
   }, [transformedBookmarks, searchQuery]);
 
-  if (isLoading) return <LoadingPage />;
+
+     const handlePageChange = useCallback((items:any[]) => {
+      setCurrentItems(items);
+    }, []);
+
 
   if (error) {
     return (
@@ -58,6 +73,10 @@ export default function UserBookmarks() {
       </div>
     );
   }
+
+  
+  if (isLoading) return <LoadingPage />;
+
 
   return (
     <div className={`min-h-screen ${themeValue ? light : dark} md:p-6 sm:p-2`}>
@@ -90,23 +109,24 @@ export default function UserBookmarks() {
             <span className="font-semibold">{transformedBookmarks.length}</span> bookmarks
           </p>
           {searchQuery && (
-            <button
+            <Button
               onClick={() => setSearchQuery("")}
               className="text-sm text-red-600 hover:text-red-700 font-medium  cursor-pointer"
             >
               Clear search
-            </button>
+            </Button>
           )}
         </div>
 
         {/* Bookmarks Table */}
+        <Suspense fallback={<LoadingPage />}>
         <BookmarkList
           themeValue={themeValue}
           light={light}
           dark={dark}
-          filteredBookmarks={filteredBookmarks}
-          searchQuery={searchQuery}
-        />
+          filteredBookmarks={currentItems}
+          searchQuery={searchQuery}/>
+        </Suspense>
 
         {/* Footer Info */}
         {filteredBookmarks.length > 0 && (
@@ -115,11 +135,17 @@ export default function UserBookmarks() {
               themeValue ? "text-gray-600" : "text-gray-300"
             }`}
           >
-            Showing {filteredBookmarks.length} of {transformedBookmarks.length} bookmarks
+            Showing {currentItems.length} of {transformedBookmarks.length} bookmarks
             {searchQuery && ` for "${searchQuery}"`}
           </div>
         )}
       </div>
+
+      <PaginationItems 
+        ItemsPerPage={10}
+        filteredItems={filteredBookmarks}
+        onPageChange={handlePageChange}
+        themeValue={themeValue}  />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 import { Heart } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useLikeBlogMutation } from "../../../Redux/Services/blogApi";
-import { useGetProfileQuery } from "../../../Redux/Services/userApi";
-import {liveRefetchOptions} from "../../../hooks/rtkOptions";
+import { useLikeBlogMutation, useSingleBlogQuery } from "../../../Redux/Services/blogApi";
+import {useLoggedInUser} from "@/hooks/LoggedInUser"
+import React from "react";
 
 
 export interface IUser {
@@ -13,44 +13,38 @@ export interface IUser {
   profilePic: string;
 }
 
-export default function LikeButton({
+const LikeButton = React.memo(({
   blogId,
-  likes,
-  likesCount,
 }: {
   blogId: string;
-  likes: IUser[];
-  likesCount: number;
-}) {
-  const { data } = useGetProfileQuery(undefined,liveRefetchOptions);
-  const currentUserId = data?.user?._id;
+})  =>  {
+  const {loggedInUserId} = useLoggedInUser()
+  const {data :   blogLikesData} = useSingleBlogQuery(blogId)
+  const likes = blogLikesData?.blog?.likes || [];
+  const likesCount = likes.length;
 
   const [likeBlog] = useLikeBlogMutation();
   const [liked, setLiked] = useState(false);
   const [count, setCount] = useState(likesCount);
 
-
-  
-
-
   // ✅ initialize like state
  useEffect(() => {
   if (
-    currentUserId &&
-    likes.some((like:any) => (like?.userId?._id)?.toString() === currentUserId.toString())
+    loggedInUserId &&
+    likes.some((like:any) => (like?.userId?._id)?.toString() === loggedInUserId.toString())
   ) {
     setLiked(true);
   } else {
     setLiked(false);
   }
-}, [likes, currentUserId]);
+}, [likes, loggedInUserId]);
 
   // ✅ toggle with backend response
 const handleLike = async () => {
   try {
     // ✅ Optimistic update
     setLiked((prev) => !prev);
-    setCount((prev) => (liked ? prev - 1 : prev + 1));
+    setCount((prev:any) => (liked ? prev - 1 : prev + 1));
 
     const res = await likeBlog(blogId).unwrap();
 
@@ -63,11 +57,9 @@ const handleLike = async () => {
 
     // ❌ Revert optimistic update if API fails
     setLiked((prev) => !prev);
-    setCount((prev) => (liked ? prev + 1 : prev - 1));
+    setCount((prev:any) => (liked ? prev + 1 : prev - 1));
   }
 };
-
-
   return (
     <div className="flex items-center gap-3">
       <button
@@ -90,3 +82,7 @@ const handleLike = async () => {
     </div>
   );
 }
+)
+
+
+export default LikeButton;  

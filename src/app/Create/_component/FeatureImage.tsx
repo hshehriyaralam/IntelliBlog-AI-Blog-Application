@@ -1,10 +1,9 @@
-'use client'
-import { ContextTheme } from '../../../Context/DarkTheme'
-import { useContext } from 'react';
+'use client';
 import { Upload, Image } from 'lucide-react';
+import React from 'react';
 
-export default function FeatureImage({onChange, imagePreview}: any){
-  const { themeValue } = useContext(ContextTheme);
+const FeatureImage = React.memo(function FeatureImage({onChange, imagePreview,themeValue}: any){
+;
   
   return(
     <div className="space-y-2">
@@ -29,7 +28,7 @@ export default function FeatureImage({onChange, imagePreview}: any){
           </div>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center p-4">
-            <Image className={`w-8 h-8 mb-2 ${themeValue ? 'text-gray-400' : 'text-gray-500'}`} />
+            <Image  className={`w-8 h-8 mb-2 ${themeValue ? 'text-gray-400' : 'text-gray-500'}`}  />
             <p className={`text-sm font-medium ${themeValue ? 'text-gray-600' : 'text-gray-400'}`}>
               Click to upload image
             </p>
@@ -48,4 +47,6 @@ export default function FeatureImage({onChange, imagePreview}: any){
       </label>
     </div>
   )
-}
+})
+
+export default FeatureImage;

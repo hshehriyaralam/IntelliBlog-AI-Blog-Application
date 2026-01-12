@@ -1,8 +1,9 @@
 'use client'
 import { Search } from "lucide-react";
+import React from "react";
 
 
-export default function NameFilter({themeValue,light,dark, searchQuery,setSearchQuery}:any){
+const  NameFilter = React.memo(({themeValue,light,dark, searchQuery,setSearchQuery}:any) => {
     return(
           <div className={`mb-6 rounded-2xl shadow-lg border ${
                   themeValue ? `${light} border-gray-200` : `${dark} border-gray-700`
@@ -27,4 +28,6 @@ export default function NameFilter({themeValue,light,dark, searchQuery,setSearch
                     </div>
                 </div>
     )
-}
+})
+
+export default NameFilter;

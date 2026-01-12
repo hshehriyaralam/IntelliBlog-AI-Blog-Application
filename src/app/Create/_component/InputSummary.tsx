@@ -1,9 +1,9 @@
 'use client'
-import { ContextTheme } from '../../../Context/DarkTheme'
-import { useContext } from 'react';
+import React from 'react';
 
-export default function InputSummary({value, onChange}: any){
-  const { themeValue } = useContext(ContextTheme);
+const InputSummary = React.memo(function InputSummary({value, onChange,themeValue}: any){
+
+
   
   return(
     <div className="space-y-2">
@@ -29,4 +29,6 @@ export default function InputSummary({value, onChange}: any){
       </p>
     </div>
   )
-}
+})
+
+export default InputSummary;

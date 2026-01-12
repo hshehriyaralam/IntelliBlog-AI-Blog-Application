@@ -2,10 +2,11 @@
 import { Eye} from "lucide-react";
 import DeleteBlogButton from "./DeleteBlogBtn";
 import Link from "next/link";
+import React from "react";
 
 
 
-export default function ActionsAdmin({themeValue,blog}:any){
+const  ActionsAdmin = React.memo(({themeValue,blog}:any) => {
     return(
     <div className="flex items-center space-x-2 md:justify-end">
       <Link  href={`/Blogs/${blog._id}`}>
@@ -23,4 +24,6 @@ export default function ActionsAdmin({themeValue,blog}:any){
    <DeleteBlogButton  themeValue={themeValue}  blog={blog} />
   </div>
     )
-}
+})
+
+export default ActionsAdmin

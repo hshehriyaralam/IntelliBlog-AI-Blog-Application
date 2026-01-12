@@ -28,8 +28,7 @@ export async function POST(req: Request) {
 
       Language: ${lang}
       Title: ${blogTitle}
-      Content:
-      ${blogContent}
+      Content: ${blogContent}
     `;
 
     const result = await model.generateContent(prompt);

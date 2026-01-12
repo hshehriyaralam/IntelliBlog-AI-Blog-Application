@@ -4,11 +4,11 @@ import {
   useGetBookmarksQuery,
   useToggleBookmarkMutation,
 } from "../../../Redux/Services/bookmarkApi";
-import {liveRefetchOptions} from "../../../hooks/rtkOptions";
 import { useState, useEffect } from "react";
+import React from "react";
 
-export default function BookmarkButton({ blogId }: { blogId: string }) {
-  const { data: bookmarks } = useGetBookmarksQuery(undefined, liveRefetchOptions);
+const  BookmarkButton  = React.memo(({ blogId }: { blogId: string }) => {
+  const { data: bookmarks } = useGetBookmarksQuery(undefined);
   const [toggleBookmark] = useToggleBookmarkMutation();
 
   // ✅ local state for instant UI updates
@@ -45,6 +45,7 @@ export default function BookmarkButton({ blogId }: { blogId: string }) {
     }
   };
 
+
   return (
     <button
       onClick={handleBookmark}
@@ -60,3 +61,6 @@ export default function BookmarkButton({ blogId }: { blogId: string }) {
     </button>
   );
 }
+)
+
+export default BookmarkButton;

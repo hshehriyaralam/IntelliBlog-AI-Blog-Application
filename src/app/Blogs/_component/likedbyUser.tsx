@@ -1,20 +1,22 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState,useMemo } from "react";
 import { Dialog } from "@headlessui/react";
-import { IUser } from "./LikeButton";
-import { ContextTheme } from "../../../Context/DarkTheme";
 import Link from "next/link";
 import { User } from "lucide-react";
-import { useGetProfileQuery } from "../../../Redux/Services/userApi"
-import {liveRefetchOptions} from "../../../hooks/rtkOptions"
+import { useLoggedInUser } from "@/hooks/LoggedInUser";
+import React from "react";
+import { useSingleBlogQuery } from "@/Redux/Services/blogApi";
 
-export default function LikedByUser({ likedUsers }: { likedUsers: IUser[] }) {
-  const { data : loggedInUser} = useGetProfileQuery(undefined,liveRefetchOptions )
-  const { themeValue } = useContext(ContextTheme);
+const LikedByUser = React.memo(({ blogId,themeValue }: { blogId: string, themeValue: boolean }) => {
+  const {loggedInUserId} = useLoggedInUser()
+  const { data: likedUsersData } = useSingleBlogQuery(blogId,{pollingInterval: 1000});
+  const likedUsers = likedUsersData?.blog?.likes || [];
   const [isOpen, setIsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-
+  
+  
+  
   const likedByUser = likedUsers.map((like: any) => like.userId).filter(Boolean);
 
   if (!likedByUser || likedByUser.length === 0) {
@@ -29,25 +31,17 @@ export default function LikedByUser({ likedUsers }: { likedUsers: IUser[] }) {
     );
   }
 
-
-
-const loggedInUserId = loggedInUser?.user?._id;
-
 // Check if logged-in user liked this post
-const isYou = likedByUser.some(u => u._id === loggedInUserId);
+const isYou = likedByUser.some((u:any) => u._id === loggedInUserId);
 
 // First user (excluding you if needed)
-const firstUser = isYou
-  ? likedByUser.find(u => u._id !== loggedInUserId)
-  : likedByUser[0];
+const firstUser = useMemo(() => isYou
+  ? likedByUser.find((u:any) => u._id !== loggedInUserId)
+  : likedByUser[0], [isYou, likedByUser, loggedInUserId]);
 
 // Calculate other users count
-const totalCount = likedByUser.length;
-const otherCount = isYou
-  ? totalCount - 2  
-  : totalCount - 1;  
-
-
+const totalCount = useMemo(() => likedByUser.length, [likedByUser]);
+const otherCount = useMemo(() => isYou ? totalCount - 1  : totalCount - (firstUser ? 1 : 0), [isYou, totalCount, firstUser]);
   
   return (
     <div
@@ -94,7 +88,7 @@ const otherCount = isYou
             </Dialog.Title>
 
             <div className="space-y-2 sm:space-y-3 max-h-48 sm:max-h-60 overflow-y-auto">
-              {likedByUser.map((user, index) => {
+              {likedByUser.map((user:any, index:number) => {
                 const hasImage =
                   user.profilePic && user.profilePic.trim() !== "" && !imgError;
                 return (
@@ -136,4 +130,6 @@ const otherCount = isYou
       </Dialog>
     </div>
   );
-}
+})
+
+export default LikedByUser;

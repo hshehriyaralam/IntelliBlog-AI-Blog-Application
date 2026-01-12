@@ -1,10 +1,35 @@
 'use client'
-import {  useContext } from "react";
+import { useContext } from "react";
 import { ContextTheme } from "../../Context/DarkTheme";
-import Stats from "../../components/DashboardComponent/Stats";
-import RecenetBlog from "../../components/DashboardComponent/RecentBlog";
-import QuickActions from "../../components/DashboardComponent/QuickActions";
-import TopAuthors from "@/components/Common/Authors";
+import dynamic from "next/dynamic";
+import LoadingPage from "@/components/layout/LoadingPage";
+
+
+const Stats = dynamic(() => import("../../components/DashboardComponent/Stats"), {
+  ssr: false,
+  loading : () => <LoadingPage />
+});
+
+
+const RecenetBlog = dynamic(() => import("../../components/DashboardComponent/RecentBlog"), {
+  ssr: false,
+  loading : () => <LoadingPage />
+});
+
+
+const TopAuthors = dynamic(() => import("@/components/common/Authors"), {
+  ssr: false,
+  loading : () => <LoadingPage />
+});
+
+
+const QuickActions = dynamic(() => import("../../components/DashboardComponent/QuickActions"), {
+  ssr: false,
+  loading : () => <LoadingPage />
+});
+
+
+
 
 
 
@@ -25,19 +50,19 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <Stats />
+        <Stats   themeValue={themeValue} light={light} dark={dark}  />
         {/* Content Section */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Recent Blogs */}
-        <RecenetBlog />
+        <RecenetBlog    themeValue={themeValue} light={light} dark={dark}/>
 
           {/* Top Authors & Quick Actions */}
           <div className="space-y-6">
             {/* Top Authors */}
-            <TopAuthors   navigate={"/Admin/allUsers"}/>
+            <TopAuthors   navigate={"/Admin/allUsers"}  themeValue={themeValue} />
 
             {/* Quick Actions */}
-            <QuickActions />
+            <QuickActions    themeValue={themeValue} light={light} dark={dark}/>
           </div>
         </div>
       </div>

@@ -1,14 +1,15 @@
 "use client";
 import { FileText, User, Calendar} from "lucide-react";
 import ActionsAdmin from "./Actions";
-import { useState } from "react";
 import type {AdminBlog as Blog} from "../../../../../types/Admin"
+import React from "react";
+import Image from "next/image";
 
 
 
 
 
-export default function AllBlogList({ filteredBlogs, themeValue,light,dark }: any) {
+const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) => {
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -64,7 +65,10 @@ export default function AllBlogList({ filteredBlogs, themeValue,light,dark }: an
     
     {blog?.blogImage ? (
       <div className="relative w-14 h-14 rounded-lg overflow-hidden shadow-sm">
-        <img
+        <Image
+        width={300}
+        height={300}
+        loading="lazy"
           src={blog?.blogImage}
           alt={blog?.blogTitle}
           className="w-full h-full object-cover"
@@ -112,11 +116,13 @@ export default function AllBlogList({ filteredBlogs, themeValue,light,dark }: an
   </div>
 
   {/* Author */}
-  {/* Author */}
 <div className="col-span-6 md:col-span-2 flex items-center space-x-2">
   {blog.userId?.profilePic ? (
     <div className="relative w-8 h-8">
-      <img
+      <Image
+        width={32}
+        height={32}
+        loading="lazy"
         src={blog.userId.profilePic}
         alt={blog?.userId?.name || "Author"}
         className="rounded-full object-cover w-full h-full"
@@ -176,15 +182,7 @@ export default function AllBlogList({ filteredBlogs, themeValue,light,dark }: an
 ))
         )}
       </div>
-
-      {/* Mobile View Enhancements */}
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .grid-cols-12 > div {
-            margin-bottom: 0.5rem;
-          }
-        }
-      `}</style>
     </div>
   );
-}
+})
+export default AllBlogList;

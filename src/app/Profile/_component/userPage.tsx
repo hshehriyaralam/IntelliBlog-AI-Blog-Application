@@ -1,8 +1,9 @@
 'use client'
 import { Button } from "../../../components/ui/button"
 import {User} from 'lucide-react'
+import React from "react"
 
-export default function UserNotFoundPage({themeValue, light,dark,handleGoogleLogin}:any){
+const  UserNotFoundPage  = React.memo(({themeValue, light,dark,handleGoogleLogin}:any) => {
     return(
     <div className={`${themeValue ? light : dark} min-h-screen flex items-center justify-center`}>
 <div className={`text-center p-8 rounded-2xl shadow-lg border ${themeValue ? "border-gray-300" : "border-gray-600" } `}>
@@ -15,4 +16,6 @@ export default function UserNotFoundPage({themeValue, light,dark,handleGoogleLog
 </div>
 </div>
     )
-}
+})
+
+export default UserNotFoundPage;

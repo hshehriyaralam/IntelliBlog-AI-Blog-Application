@@ -14,7 +14,8 @@ export const userApi = createApi({
         // Fetch all user
         allUser : builder.query({
             query : () => "allUsers",
-            providesTags : ["Blog", "User","Like","Bookmark"]
+            providesTags : ["Blog", "User","Like","Bookmark"],
+            keepUnusedDataFor: 500,
         }),
         // fetch Single Authors for Author dynamic page 
         singleUser : builder.query({
@@ -35,4 +36,6 @@ export const {
     useGetProfileQuery,
     useAllUserQuery,
     useSingleUserQuery,
-    useDeleteProfileMutation} = userApi
+    useDeleteProfileMutation,
+    useLazyGetProfileQuery
+} = userApi

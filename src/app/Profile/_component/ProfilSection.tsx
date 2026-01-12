@@ -1,28 +1,54 @@
 'use client'
 import { User, Trash2,  Mail, Calendar, Eye, FileText, LogOut, ArrowRight } from "lucide-react";
 import { Button } from "../../../components/ui/button";
-import ButtonLoader from '../../../components/Common/BtnLoader'
+import ButtonLoader from '../../../components/common/BtnLoader'
 import { useRouter } from "next/navigation";
+import React, { useMemo, useState } from 'react'
+import Image from "next/image";
 
-export default function ProfileSection({
+
+const  ProfileSection  = React.memo(({
  themeValue,
  light,
  dark,
  user,
- joinedDate,
- lastSeen,
  handleGoogleLogin,
  setShowDeleteConfirm,
  handleDeleteAccount,
  showDeleteConfirm,
  Googleloading,
  DeleteProfileLoader,
- totalLikes,
- hasImage,
- setImgError,
- LikedBlogs,
- bookmarks,
-}:any){
+}:any)  => {
+
+    const [imgError, setImgError] = useState(false);
+     const hasImage = user?.profilePic && user.profilePic.trim() !== "" && !imgError;
+        
+    // Date formatting
+    const joinedDate = useMemo(() => 
+      user.createdAt
+        ? new Date(user.createdAt).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "N/A"
+    , [user?.createdAt]);
+  
+    const lastSeen = useMemo(() => 
+      user.lastSeenAt 
+      ? new Date(user.lastSeenAt).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "Recently active"
+    , [user?.lastSeenAt]);
+  
+    const totalLikes = useMemo(() => user?.totalLikes, [user?.totalLikes]);
+    const LikedBlogs = useMemo(() => user?.likedBlogs?.length, [user?.likedBlogs]);
+    const bookmarks  = useMemo(() => user?.bookmarks?.length || 0, [user?.bookmarks]);
+ 
+
 
   const router = useRouter();
   const GoAdminPage = () => {
@@ -41,7 +67,10 @@ export default function ProfileSection({
                 <div className="w-32 h-32 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 p-1.5">
                     <div className="w-full h-full rounded-full bg-white  flex items-center justify-center overflow-hidden">
                     {hasImage ? (
-                        <img
+                        <Image
+                        width={128}
+                        height={128}
+                        loading="lazy"
                         src={user.profilePic}
                         alt={user.name}
                         className="w-full h-full object-cover rounded-full"
@@ -199,3 +228,7 @@ export default function ProfileSection({
                 </div>
     )
 }
+)
+
+
+export default ProfileSection;

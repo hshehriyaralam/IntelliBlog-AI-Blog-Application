@@ -1,32 +1,37 @@
-
-"use client";
 import { Heart, Calendar, Users, Mail, Clock, PenTool, User, Eye } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, {useMemo, useState } from "react";
 
-export default function LikedLists({
+
+
+
+
+const  LikedLists  = React.memo(({
   filteredLikes,
   searchQuery,
   themeValue,
   light,
   dark,
-}: any) {
+}: any) =>  {
   const router = useRouter();
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+  
+  
 
   const handleImgError = (key: string) => {
     setImgErrors((prev) => ({ ...prev, [key]: true }));
   };
 
-  const formatDate = (dateString: string): string => {
+  const formatDate =   useMemo(() =>  (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
-  const getTimeAgo = (dateString: string): string => {
+  const getTimeAgo = useMemo(() => (dateString: string): string => {
     const now = new Date();
     const likedDate = new Date(dateString);
     const diffMs = now.getTime() - likedDate.getTime();
@@ -38,7 +43,7 @@ export default function LikedLists({
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return formatDate(dateString);
-  };
+  }, []);
 
   const handleUserClick = (userId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,6 +54,10 @@ export default function LikedLists({
     e.stopPropagation();
     router.push(`/Blogs/${blogId}`);
   };
+
+
+  
+
 
   return (
     <div
@@ -71,7 +80,7 @@ export default function LikedLists({
 
       {/* Table Body */}
       <div className={`divide-y ${themeValue ? "divide-gray-200" : "divide-gray-700"}`}>
-        {filteredLikes.length === 0 ? (
+        {  filteredLikes?.length === 0 ? (
           <div className="p-8 sm:p-12 text-center">
             <Heart
               size={48}
@@ -86,7 +95,7 @@ export default function LikedLists({
             </p>
           </div>
         ) : (
-          filteredLikes.map((like: any, index: number) => (
+            filteredLikes?.map((like: any, index: number) => (
             <div
               key={index}
               className={`p-4 sm:p-6 transition-colors duration-200 group  rounded-xl  ${
@@ -99,9 +108,12 @@ export default function LikedLists({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     {like.userProfile && !imgErrors[`user-${index}`] ? (
-                      <img
+                      <Image
+                      width={40}
+                      height={40}
                         src={like.userProfile}
                         alt={like.userName}
+                        loading="lazy"
                         className="w-10 h-10 rounded-full object-cover shadow-sm border cursor-pointer"
                         onClick={(e) => handleUserClick(like.userId, e)}
                         onError={() => handleImgError(`user-${index}`)}
@@ -147,7 +159,10 @@ export default function LikedLists({
                   <div className="flex space-x-3">
                     <div className="flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border">
                       {like.blogImage && !imgErrors[`blog-${index}`] ? (
-                        <img
+                        <Image
+                        width={64}
+                        height={48}
+                        loading="lazy"
                           src={like.blogImage}
                           alt={like.blogTitle}
                           className="w-full h-full object-cover"
@@ -157,7 +172,7 @@ export default function LikedLists({
                         <div
                           className={`w-full h-full flex items-center justify-center ${
                             themeValue ? "bg-gray-200" : "bg-gray-600"
-                          }`}
+                          }`} 
                         >
                           <Heart
                             size={16}
@@ -200,7 +215,10 @@ export default function LikedLists({
                     </div>
                     <div className="flex items-center space-x-2">
                       {like.authorProfile && !imgErrors[`author-${index}`] ? (
-                        <img
+                        <Image
+                        width={24}
+                        height={24}
+                        loading="lazy"
                           src={like.authorProfile}
                           alt={like.authorName}
                           className="w-6 h-6 rounded-full cursor-pointer"
@@ -259,7 +277,10 @@ export default function LikedLists({
                 <div className="col-span-4">
                   <div className="flex items-center space-x-3">
                     {like.userProfile && !imgErrors[`user-${index}`] ? (
-                      <img
+                      <Image
+                      width={40}
+                      height={40}
+                      loading="lazy"
                         src={like.userProfile}
                         alt={like.userName}
                         className="w-10 h-10 rounded-full object-cover shadow-sm border cursor-pointer"
@@ -312,7 +333,10 @@ export default function LikedLists({
                 >
                   <div className="flex-shrink-0 w-20 h-14 rounded-lg overflow-hidden border">
                     {like.blogImage && !imgErrors[`blog-${index}`] ? (
-                      <img
+                      <Image
+                      width={80}
+                      height={56}
+                      loading="lazy"
                         src={like.blogImage}
                         alt={like.blogTitle}
                         className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
@@ -357,7 +381,10 @@ export default function LikedLists({
                 <div className="col-span-3">
                   <div className="flex items-center space-x-3">
                     {like.authorProfile && !imgErrors[`author-${index}`] ? (
-                      <img
+                      <Image
+                      width={24}
+                      height={24}
+                      loading="lazy"
                         src={like.authorProfile}
                         alt={like.authorName}
                         className="w-8 h-8 rounded-full object-cover shadow-sm border cursor-pointer"
@@ -411,7 +438,8 @@ export default function LikedLists({
       </div>
 
       {/* Footer */}
-      {filteredLikes.length > 0 && (
+  
+      {filteredLikes?.length > 0 && (
         <div
           className={`px-4 sm:px-6 py-4 border-t text-sm ${
             themeValue
@@ -442,5 +470,8 @@ export default function LikedLists({
         </div>
       )}
     </div>
+    
   );
-}
+})
+
+export default LikedLists;

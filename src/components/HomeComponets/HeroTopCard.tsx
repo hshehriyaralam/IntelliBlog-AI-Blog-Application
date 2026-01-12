@@ -1,21 +1,19 @@
-import { Button } from "../ui/button"
-import { useAuthNavigate } from "@/hooks/useAuthNavigate";
+import Image from "next/image";
+import React from "react";
+import HeroTopButtons from "./heroTopButtons";
 
-
-
-
-
-export default function HeroTopCard(){
-    const { authNavigate, isAuthenticating } = useAuthNavigate();;
-
+function HeroTopCard(){
     return(
       <div className="relative w-full lg:w-[74%] h-[500px] md:h-[600px] rounded-xl overflow-hidden  shadow-lg group">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
-          <img
+          <Image
             className="w-full h-full object-cover rounded-xl transform group-hover:scale-105 transition-transform duration-700"
             src={"/Blog_Banner.webp"}
             alt="IntelliBlog Background"
+            width={1200}  
+            height={600}
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent"></div>
         </div>
@@ -36,24 +34,11 @@ export default function HeroTopCard(){
           <p className="max-w-[220px]   lg:max-w-md mx-auto lg:text-lg md:text-sm text-gray-200 mb-8 leading-relaxed  ">
             Your intelligent platform for creating and discovering amazing AI-powered content
           </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 ">
-            <Button
-            onClick={() => authNavigate('/Blogs')}
-            disabled={isAuthenticating}
-            className="px-5.5 py-5.5 bg-gradient-to-r from-indigo-600 cursor-pointer to-purple-600 text-[16px] text-white rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-indigo-500/25 transform hover:-translate-y-0.5">
-              Start Reading
-            </Button>
-            <Button
-            onClick={() => authNavigate('/Create')}
-            disabled={isAuthenticating}
-            className="px-6 py-5 bg-white/10 backdrop-blur-sm cursor-pointer text-white border border-white/20 rounded-lg font-medium hover:bg-white/20 transition-all text-[16px]  ">
-              Create Post
-            </Button>
-          </div>
+          <HeroTopButtons />
         </div>
 
       </div>
     )
 }
+
+export default React.memo(HeroTopCard);

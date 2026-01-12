@@ -6,7 +6,7 @@ import {
   useAllLikesAdminQuery,
 } from "../../Redux/Services/adminApi";
 import Link from "next/link";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import {
   FileText,
   Users as UsersIcon,
@@ -14,19 +14,18 @@ import {
   Bookmark,
   Sparkles,
 } from "lucide-react";
-import { ContextTheme } from "../../Context/DarkTheme";
-import {liveRefetchOptions}   from "../../hooks/rtkOptions"
+// import {liveRefetchOptions}   from "../../hooks/rtkOptions"
+import React from "react";
 
 
 
-export default function Stats() {
-  const { data: AllBlogs } = useAllBlogAdminQuery(undefined, liveRefetchOptions);
-  const { data: Users } = useAllUserAdminQuery(undefined, liveRefetchOptions);
-  const { data: bookmarks } = useAllbookmarksAdminQuery(undefined, liveRefetchOptions);
-  const { data: likesData } = useAllLikesAdminQuery(undefined, liveRefetchOptions);
-  const { themeValue, light, dark } = useContext(ContextTheme);
+const  Stats = React.memo(({themeValue, light, dark }:any) => {
+  const { data: AllBlogs } = useAllBlogAdminQuery(undefined);
+  const { data: Users } = useAllUserAdminQuery(undefined);
+  const { data: bookmarks } = useAllbookmarksAdminQuery(undefined);
+  const { data: likesData } = useAllLikesAdminQuery(undefined);
 
-  const stats = [
+  const stats =   useMemo(() => [
     {
       label: "Total Blogs",
       value: AllBlogs?.data?.length || 0,
@@ -63,7 +62,9 @@ export default function Stats() {
       href: "/Admin/userLikes",
       trend: "+22%"
     },
-  ];
+  ], [AllBlogs?.data?.length, Users?.data?.length, bookmarks?.totalBookmarks, likesData?.totalLikes]);
+
+
 
   const formatNumber = (num: number): string => {
     if (num >= 1000) {
@@ -72,7 +73,7 @@ export default function Stats() {
     return num.toString();
   };
 
-  const getColorClasses = (color: string) => {
+  const getColorClasses =  (color: string) => {
     const colorMap: {
       [key: string]: { 
         bg: string; 
@@ -129,11 +130,11 @@ export default function Stats() {
     return colorMap[color] || colorMap.blue;
   };
 
-  const calculateProgress = (value: number, max: number = 1000) => {
+  const calculateProgress = useMemo(() => (value: number, max: number = 1000) => {
     return Math.min((value / max) * 100, 100);
-  };
+  }, []);
 
-  const themeClasses = {
+  const themeClasses =  useMemo(() => ({
     background: themeValue ? light : dark,
     card: themeValue 
       ? `bg-white border-gray-200` 
@@ -155,7 +156,8 @@ export default function Stats() {
     progress: {
       bg: themeValue ? "bg-gray-200/60" : "bg-gray-700/60"
     }
-  };
+  }), [themeValue, light, dark]);
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -264,4 +266,7 @@ export default function Stats() {
       })}
     </div>
   );
-}
+})
+
+
+export default Stats;

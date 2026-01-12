@@ -1,20 +1,25 @@
 'use client'
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { ContextTheme } from '../../Context/DarkTheme'
 import { useFetchBlogQuery } from '../../Redux/Services/blogApi';
-import {liveRefetchOptions} from "../../hooks/rtkOptions"
 import { Hash, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import React from 'react';
 
-export default function Tags() {
+
+
+function Tags() {
+  const router = useRouter()
   const { themeValue, lightText, DarkText } = useContext(ContextTheme)
-  const { data, isLoading, isError } = useFetchBlogQuery(undefined,liveRefetchOptions)
-  const router = useRouter();
-
-  const handleTagClick = (tag: string) => {
-    router.push(`/Blogs`);
-  };
-
+  const { data, isLoading, isError } = useFetchBlogQuery(undefined ,{
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: false,})  
+  const allTags = data?.blogs?.map((blogs: { blogTags: string[] }) => blogs.blogTags).flat() || [];
+  const uniqueTags = useMemo(() => {
+  return [...new Set(allTags)];}, [allTags]);
+  const handleTagClick = (tag: string) =>  router.push(`/Blogs`);
+  
   if (isLoading) {
     return (
       <div className={`
@@ -39,8 +44,6 @@ export default function Tags() {
       </div>
     )
   }
-
-  // Agar error aaya ho
   if (isError) {
     return (
       <div className={`
@@ -60,9 +63,6 @@ export default function Tags() {
       </div>
     )
   }
-
-  const allTags = data?.blogs?.map((blogs: { blogTags: string[] }) => blogs.blogTags).flat() || [];
-  const uniqueTags = [...new Set(allTags)]
 
   return (
     <div className={`
@@ -160,3 +160,6 @@ export default function Tags() {
     </div>
   )
 }
+
+
+export default Tags

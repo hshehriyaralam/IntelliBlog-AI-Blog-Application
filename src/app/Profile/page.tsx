@@ -6,16 +6,27 @@ import { useGetProfileQuery, useDeleteProfileMutation } from "../../Redux/Servic
 import { useDeleteBlogMutation } from "../../Redux/Services/blogApi";
 import { Button } from "../../components/ui/button";
 import { Plus, FileText } from "lucide-react";
-import { useState, useContext } from "react";
+import { useState, useContext, useCallback, useMemo } from "react";
 import { ContextTheme } from "../../Context/DarkTheme";
 import { useAlert } from '../../Context/AlertContext';
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/store";
 import Link from "next/link";
 import LoadingPage from "../../components/layout/LoadingPage";
-import UserNotFoundPage from './_component/userPage'
 import ProfileSection from './_component/ProfilSection'
-import ProfileBlogsSections from './_component/BlogsSection'
+import dynamic from "next/dynamic";
+
+
+
+const UserNotFoundPage = dynamic(() => import('./_component/userPage'), {
+  loading: () => <LoadingPage />,
+  ssr: false,
+});
+
+const ProfileBlogsSections = dynamic(() => import('./_component/BlogsSection'), {
+  loading: () => <LoadingPage />,
+  ssr: false
+});
 
 
 
@@ -39,14 +50,12 @@ export default function Profile() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const user = Profile?.user;
-  const blogs = Profile?.blogs || [];
-  const [imgError, setImgError] = useState(false);
-  const hasImage = user?.profilePic && user.profilePic.trim() !== "" && !imgError;
+  const user =  useMemo(() => Profile?.user, [Profile]);
+  const blogs = useMemo(() => Profile?.blogs || [], [Profile]);
 
 
 
-  const handleDeleteBlog = async (id: string) => {
+  const handleDeleteBlog =  useCallback(async (id: string) => {
     try {
       setDeletingId(id)
       await deleteBlog(id).unwrap();
@@ -57,9 +66,9 @@ export default function Profile() {
     }finally{
       setDeletingId(null)
     }
-  };
+  }, [])
   
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount =   useCallback(async () => {
     try {
       await deleteProfile().unwrap();
       showAlert('success', 'Goodbye! Your account is gone.');
@@ -67,12 +76,12 @@ export default function Profile() {
     } catch {
      showAlert('error', 'Account deletion failed ❌');
     }
-  };
+  }, [])
 
-const handleGoogleLogin = () => {
+const handleGoogleLogin =  useCallback(() => {
   dispatch(googleLoginThunk())
   
-};
+}, []);
 
   if (isLoading) return <LoadingPage />;
   if (!user) return (
@@ -81,29 +90,6 @@ const handleGoogleLogin = () => {
     light={light} 
     dark={dark} 
     handleGoogleLogin={handleGoogleLogin}/>)
-
-  // Date formatting
-  const joinedDate = user.createdAt
-    ? new Date(user.createdAt).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
-    : "N/A";
-
-  const lastSeen = user.lastSeenAt
-    ? new Date(user.lastSeenAt).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
-    : "Recently active";
-
-  // Calculate total views
-  const totalLikes = user?.totalLikes
-  const LikedBlogs = user?.likedBlogs?.length
-  const bookmarks  = user?.bookmarks?.length || 0;
- 
 
 
 
@@ -116,21 +102,15 @@ const handleGoogleLogin = () => {
         light={light}
         dark={dark}
         user={user}
-        joinedDate={joinedDate}
-        lastSeen={lastSeen}
         blogs={blogs}
         handleGoogleLogin={handleGoogleLogin}
         setShowDeleteConfirm={setShowDeleteConfirm}
         handleDeleteAccount={handleDeleteAccount}
         showDeleteConfirm={showDeleteConfirm}
         Googleloading={Googleloading}
-        DeleteProfileLoader={DeleteProfileLoader}
-        totalLikes={totalLikes}
-        hasImage={hasImage}
-        setImgError={setImgError}
-        LikedBlogs={LikedBlogs}
-        bookmarks={bookmarks}
-        />
+        DeleteProfileLoader={DeleteProfileLoader} />
+
+
         {/* Blogs Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -170,8 +150,7 @@ const handleGoogleLogin = () => {
                   blog={blog}
                   light={light}
                   handleDeleteBlog={handleDeleteBlog}
-                  deletingId={deletingId}
-                  />
+                  deletingId={deletingId} />
                 </Link>
               ))}
             </div>

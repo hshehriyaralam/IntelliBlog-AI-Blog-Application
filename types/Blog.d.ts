@@ -27,3 +27,12 @@ export type DraftFilters = {
   name: string;
   profilePic: string;
 }
+
+
+
+export type PaginationItemsProps = {
+  ItemsPerPage: number;
+  filteredItems: any[];
+  onPageChange: (items: any[]) => void;
+  themeValue?: boolean;
+};

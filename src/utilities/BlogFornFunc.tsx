@@ -1,146 +1,204 @@
-'use client'
-import { useState, ChangeEvent } from 'react';
+"use client"
+import { useState, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
 import { toBase64 } from '../utilities/file';
 import {useAddBlogMutation } from '../Redux/Services/blogApi'
-import   {useGetProfileQuery }  from '../Redux/Services/userApi'
-import {liveRefetchOptions} from "../hooks/rtkOptions"
 import { useAlert } from '../Context/AlertContext'
 import { useRouter } from "next/navigation";
-import  type  { BlogFormDataTypes } from "../../types/Blog"
+import {useLoggedInUser} from '../hooks/LoggedInUser';
 
 
 export default function  BlogFormFunctions(){
-    const router = useRouter();
+  const { loggedInUserId } = useLoggedInUser();
+  const router = useRouter();
   const { showAlert } = useAlert()
-  const { data } = useGetProfileQuery (undefined, liveRefetchOptions)
   const [addBlogMutation] = useAddBlogMutation();
   const [loading , setLoading] = useState(false)
-  const [formData, setFormData] = useState<BlogFormDataTypes>({
-        title: '',
-        content: '',
-        summary: '',
-        tags: [],
-        image: null,
-        imagePreview: '',
-        userId : ''
-      });
-  const [tagInput, setTagInput] = useState('');
-  const [file, setFile] = useState<File | null>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
 
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      setFormData(prev => ({
-        ...prev,
-        image: selectedFile,
-        imagePreview: URL.createObjectURL(selectedFile)
-      }));
-    }
-  };
+ /* =========================
+     🔹 STATES (SEPARATE)
+  ========================= */
 
-   const addTag = () => {
-    if (tagInput.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()]
-      }));
-      setTagInput('')
-    }
-  }
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [summary, setSummary] = useState('')
 
-    const removeTag = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter((_, i) => i !== index)
-    }));
-  }
+  const [tags, setTags] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
 
-     const CancellBlog = () => {
-    setFormData({
-    title: '',
-    content: '',
-    summary: '',
-    tags: [],
-    image: null,
-    imagePreview: '',
-    userId : ''
-    })
-  }
+  const [file, setFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState('')
 
-   const handleImageUpload = async () => {
-    if (!formData.image) return;
+  /* =========================
+     ✍️ TEXT HANDLERS
+  ========================= */
+
+  const handleTitleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value),
+    []
+  )
+
+  const handleContentChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value),
+    []
+  )
+
+  const handleSummaryChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => setSummary(e.target.value),
+    []
+  )
+
+
+   /* =========================
+     🏷 TAGS HANDLING
+  ========================= */
+
+  const addTag = useCallback(() => {
+    if (!tagInput.trim()) return
+
+    setTags(prev =>
+      prev.includes(tagInput.trim())
+        ? prev
+        : [...prev, tagInput.trim()]
+    )
+    setTagInput('')
+  }, [tagInput])
+
+   const removeTag = useCallback((index: number) => {
+    setTags(prev => prev.filter((_, i) => i !== index))
+  }, [])
+
+  const handleTagInput = useCallback(
+  (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInput(e.target.value)
+  },
+  [setTagInput]
+)
+
+const handleTagKeyDown = useCallback(
+  (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') addTag()
+  },
+  [addTag]
+)
+
+
+
+  
+  /* =========================
+     🖼 IMAGE HANDLING
+  ========================= */
+
+
+    const handleImageChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const selectedFile = e.target.files?.[0]
+      if (!selectedFile) return
+
+      setFile(selectedFile)
+      setImagePreview(URL.createObjectURL(selectedFile))
+    },
+    []
+  )
+
+    const handleImageUpload = async () => {
+    if (!file) return null
 
     try {
-      const base64File = await toBase64(formData.image);
-      const res = await axios.post('/api/upload', { file: base64File });
+      const base64File = await toBase64(file)
+      const res = await axios.post('/api/upload', { file: base64File })
 
       if (res.status === 200) {
-        const imageUrl = res.data.url;
-        setFormData(prev => ({
-          ...prev,
-          imagePreview: imageUrl,
-          image: null,
-        }));
-
-        return imageUrl;
-      } else {
-        throw new Error("Image Upload failed");
+        setFile(null)
+        return res.data.url
       }
+      throw new Error("Image upload failed")
     } catch (error) {
-      console.error("Image upload failed:", error);
-      throw error;
+      console.error("Image upload error:", error)
+      throw error
     }
-  };
- 
-
-const addBlogs = async (e: any) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const imageURL = await handleImageUpload();
-    const blogPayload = {
-      blogTitle: formData.title,
-      blogContent: formData.content,
-      blogSummary: formData.summary,
-      blogTags: formData.tags,
-      blogImage: imageURL,
-      userId: data?.user._id,
-    };
-    await addBlogMutation(blogPayload).unwrap();
-    
-    showAlert('success', 'Article Published Successfully');
-    router.push('/Blogs');
-    CancellBlog();
-  } catch (error) {
-    console.error("Failed to add blog:", error);
-    showAlert('error', 'Failed to publish');
-  } finally {
-    setLoading(false);
   }
-};
 
 
 
+  /* =========================
+     ❌ CANCEL BLOG
+  ========================= */
+
+  const CancellBlog = useCallback(() => {
+    setTitle('')
+    setContent('')
+    setSummary('')
+    setTags([])
+    setTagInput('')
+    setFile(null)
+    setImagePreview('')
+  }, [])
+
+
+  
  
 
-    return {
-      handleChange,
-      handleImageChange,
-       addTag,
-       removeTag,
-       addBlogs,
-       CancellBlog,
-       formData,
-       setFormData,
-       tagInput,
-       setTagInput,
-       loading
+ /* =========================
+     🚀 SUBMIT BLOG
+  ========================= */
+
+  const addBlogs = async (e: any) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const imageURL = await handleImageUpload()
+
+      const blogPayload = {
+        blogTitle: title,
+        blogContent: content,
+        blogSummary: summary,
+        blogTags: tags,
+        blogImage: imageURL,
+        userId: loggedInUserId,
       }
+
+      await addBlogMutation(blogPayload).unwrap()
+
+      showAlert('success', 'Article Published Successfully')
+      router.push('/Blogs')
+      CancellBlog()
+
+    } catch (error) {
+      console.error("Failed to add blog:", error)
+      showAlert('error', 'Failed to publish')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {
+    // values
+    title,
+    content,
+    summary,
+    tags,
+    tagInput,
+    imagePreview,
+    loading,
+    setTags,
+    setSummary,
+
+    // setters / handlers
+    setTagInput,
+    handleTitleChange,
+    handleContentChange,
+    handleSummaryChange,
+    handleImageChange,
+
+    // actions
+    addTag,
+    removeTag,
+    addBlogs,
+    CancellBlog,
+    handleTagInput,
+    handleTagKeyDown
+  }
 }

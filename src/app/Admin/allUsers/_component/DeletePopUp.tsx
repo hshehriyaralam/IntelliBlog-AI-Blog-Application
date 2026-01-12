@@ -1,12 +1,13 @@
 "use client"
 import {useDeleteUserAdminMutation} from "../../../../Redux/Services/adminApi"
 import { useAlert } from '../../../../Context/AlertContext'
-import ButtonLoader from "../../../../components/Common/Loader"
-import  SingleButtonLoader from "../../../../components/Common/SingleButtonLoader"
+import  SingleButtonLoader from "../../../../components/common/SingleButtonLoader"
+import React from "react";
+import { Button } from "@/components/ui/button";
 
 
 
-export default function DeletePopUp({user, themeValue, setShowDeleteModal, setSelectedUser,light,dark }: any) {
+const  DeletePopUp = React.memo(({user, themeValue, setShowDeleteModal, setSelectedUser,light,dark }: any) => {
   const [deleteUserAdmin, { isLoading }] = useDeleteUserAdminMutation(undefined);
   const { showAlert } = useAlert()
   
@@ -49,7 +50,7 @@ export default function DeletePopUp({user, themeValue, setShowDeleteModal, setSe
           ⚠️ This action cannot be undone.
         </p>
         <div className="flex space-x-3 justify-end">
-          <button
+          <Button
             onClick={() => setShowDeleteModal(false)}
             className={`px-3 py-1 cursor-pointer rounded-lg transition-colors ${
               themeValue
@@ -58,15 +59,18 @@ export default function DeletePopUp({user, themeValue, setShowDeleteModal, setSe
             }`}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleDelete}
             className="px-3 py-1 bg-red-600 text-white text-sm cursor-pointer rounded-lg hover:bg-red-700 transition-colors"
           >
             {isLoading ?  <SingleButtonLoader /> : "Delete Account" }
-          </button>
+          </Button>
         </div>
       </div>
     </div>
   )
 }
+)
+
+export default DeletePopUp;

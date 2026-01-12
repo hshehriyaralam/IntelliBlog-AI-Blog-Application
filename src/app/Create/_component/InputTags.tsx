@@ -1,11 +1,10 @@
 'use client'
-import { ContextTheme } from '../../../Context/DarkTheme'
-import { useContext } from 'react';
 import { Button } from '../../../components/ui/button';
 import { Plus, X } from 'lucide-react';
+import React from 'react';
 
-export default function InputTags({value, onChange, onKeyDown, addTag, removeTag, formData}: any){
-  const { themeValue } = useContext(ContextTheme);
+const InputTags = React.memo(function InputTags(
+  {value, onChange, onKeyDown, addTag, removeTag, tags, themeValue}: any){
 
   return(
     <div className="space-y-2">
@@ -38,7 +37,7 @@ export default function InputTags({value, onChange, onKeyDown, addTag, removeTag
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {formData.tags.map((tag: string, i: number) => (
+        {tags?.map((tag: string, i: number) => (
           <span 
             key={i} 
             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
@@ -59,4 +58,5 @@ export default function InputTags({value, onChange, onKeyDown, addTag, removeTag
       </div>
     </div>
   )
-}
+})
+export default InputTags;

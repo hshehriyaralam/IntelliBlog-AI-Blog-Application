@@ -1,30 +1,40 @@
 'use client'
 import { useFetchBlogQuery } from "../../Redux/Services/blogApi"; 
-import {liveRefetchOptions} from "../../hooks/rtkOptions"
 import { ContextTheme } from '../../Context/DarkTheme'
-import { useContext, useMemo, useState } from 'react';
-import BlogCard from "../../components/Common/BLogCard";
+import { useCallback, useContext, useMemo, useState, useDeferredValue } from 'react';
 import type { DraftFilters } from "../../../types/Blog"
+import dynamic from "next/dynamic";
+import SearchInput from "../../components/common/SearchINput";
+import FilterToogle from "../../components/common/FilterToggle";
 
-// Components
-import SearchInput from "../../components/Common/SearchINput";
-import FilterToogle from "../../components/Common/FilterToggle";
-import AuthorsFilter from "../../components/Common/AuthorsFilter";
-import DateFilter from "../../components/Common/DateFilter";
-import Tags from "../../components/Common/TagsFilter";
-import FilterActions from "../../components/Common/FilterActions";
+
+
+
+
+
+
+const AuthorsFilter = dynamic(() => import('../../components/common/AuthorsFilter'), { ssr: false });
+const DateFilter = dynamic(() => import('../../components/common/DateFilter'), { ssr: false });
+const Tags = dynamic(() => import('../../components/common/TagsFilter'), { ssr: false });
+const FilterActions = dynamic(() => import('../../components/common/FilterActions'), { ssr: false });
+const BlogCard = dynamic(() => import("../../components/common/BLogCard"));
+const PaginationItems = dynamic(() => import("../../components/common/paginationItems") , { ssr: false });
 
 
 export default function AllBlogs() {
-  const { data, isLoading } = useFetchBlogQuery(undefined, liveRefetchOptions);
-
-
-// console.log("Fetched blogs data:", data);
-
+  const { data, isLoading } = useFetchBlogQuery(undefined);
   const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme);
-
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredQuery = useDeferredValue(searchQuery);
+  const [currentItems, setCurrentItems] = useState<any[]>([]);
+
+
+
+  
+
+
+
 
   // 1) unique dates for dropdown
   const blogsCreateDates: string[] = useMemo(() => {
@@ -45,20 +55,44 @@ export default function AllBlogs() {
 
 
 
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     setAppliedFilters({ ...draftFilters });
-  };
+  }, [draftFilters]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     const empty: DraftFilters = { authorId: "", title: "", date: "", tag: "" };
     setDraftFilters(empty);
     setAppliedFilters(empty);
     setSearchQuery("");
-  };
+  }, []);
+
+  const searchInputOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const AuthorsFilterOnChange = useCallback((val: string) => {
+    setDraftFilters((s) => ({ ...s, authorId: val }));
+  } , []);
+
+
+  const DateFilterOnChange = useCallback((val: string) => {
+    setDraftFilters((s) => ({ ...s, date: val }));
+  } , []);  
+
+
+  const TagsFilterOnChange = useCallback((val: string) => {
+    setDraftFilters((s) => ({ ...s, tag: val }));
+  } , []);
+
+
+  const handlePageChange = useCallback((items:any[]) => {
+  setCurrentItems(items);
+}, []);
+
 
   // 3) filtering (search + applied filters)
   const filteredBlogs = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
 
     return (data?.blogs || []).filter((blog: any) => {
       let ok = true;
@@ -75,7 +109,6 @@ export default function AllBlogs() {
         const blogAuthorId = typeof blog?.userId === "object"
           ? blog?.userId?._id
           : blog?.userId;
-
         ok = ok && String(blogAuthorId || "") === String(appliedFilters.authorId);
       }
 
@@ -96,6 +129,15 @@ export default function AllBlogs() {
       return ok;
     });
   }, [data, searchQuery, appliedFilters]);
+
+
+
+
+
+
+
+
+
   return (
     <div className={`min-h-screen ${themeValue ? `${light}` : `${dark}`} py-8`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -123,9 +165,7 @@ export default function AllBlogs() {
               light={light}
               dark={dark}
               value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setSearchQuery(e.target.value)
-              }
+              onChange={searchInputOnChange}
             />
 
             <FilterToogle
@@ -142,9 +182,7 @@ export default function AllBlogs() {
       light={light}
       dark={dark}
       value={draftFilters.authorId}   
-      onChange={(val: string) =>
-        setDraftFilters((s) => ({ ...s, authorId: val }))
-      }
+      onChange={AuthorsFilterOnChange}
     />
     <DateFilter
       themeValue={themeValue}
@@ -152,18 +190,14 @@ export default function AllBlogs() {
       dark={dark}
       BlogsDate={blogsCreateDates}
       value={draftFilters.date}
-      onChange={(val: string) =>
-        setDraftFilters((s) => ({ ...s, date: val }))
-      }
+      onChange={DateFilterOnChange}
     />
     <Tags
       themeValue={themeValue}
       light={light}
       dark={dark}
       value={draftFilters.tag}
-      onChange={(val: string) =>
-        setDraftFilters((s) => ({ ...s, tag: val }))
-      }
+      onChange={TagsFilterOnChange}
     />
   </div>
 
@@ -190,12 +224,12 @@ export default function AllBlogs() {
                 }`}
               />
             ))
-          ) : filteredBlogs.length === 0 ? (
+          ) : currentItems.length === 0 ? (
             <div className={`col-span-3 text-center py-16 opacity-80  `}>
               <p className={`${themeValue ? "text-gray-900" : "text-gray-300"}`} >No matching articles found.</p>
             </div>
           ) : (
-            filteredBlogs.map((blog: any, index: number) => {
+            currentItems?.map((blog: any, index: number) => {
               const isFeatured = index % 6 === 0;
               return (
                 <div
@@ -219,6 +253,14 @@ export default function AllBlogs() {
             })
           )}
         </div>
+
+
+        <PaginationItems
+         ItemsPerPage={10}
+        filteredItems={filteredBlogs}
+        onPageChange={handlePageChange}
+        themeValue={themeValue}
+        />
       </div>
     </div>
   );

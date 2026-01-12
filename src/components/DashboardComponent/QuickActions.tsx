@@ -6,11 +6,11 @@ import {
   ThumbsUp,
   Bookmark,
 } from "lucide-react";
-import { ContextTheme } from "../../Context/DarkTheme";
-import { useContext } from "react";
+import { useMemo } from "react";
 
-export default function QuickActions() {
-  const { themeValue, light, dark } = useContext(ContextTheme);
+
+export default function QuickActions({themeValue, light, dark}:any) {
+
 
   const actions = [
     {
@@ -39,7 +39,7 @@ export default function QuickActions() {
     },
   ];
 
-  const getColorClasses = (color: string) => {
+  const getColorClasses = useMemo(() => (color: string) => {
     const colorMap = {
       blue: {
         bg: themeValue ? "bg-blue-50" : "bg-blue-900/20",
@@ -63,7 +63,7 @@ export default function QuickActions() {
       }
     };
     return colorMap[color as keyof typeof colorMap] || colorMap.blue;
-  };
+  }, [themeValue]);
 
   return (
     <div className={`rounded-xl shadow-sm border ${
@@ -93,8 +93,7 @@ export default function QuickActions() {
               }`}
             >
               <div
-                className={`p-2 rounded-lg ${colorClasses.bg} mr-3 group-hover:scale-110 transition-transform duration-200`}
-              >
+                className={`p-2 rounded-lg ${colorClasses.bg} mr-3 group-hover:scale-110 transition-transform duration-200`} >
                 <action.icon 
                   size={18} 
                   className={colorClasses.text} 
