@@ -1,17 +1,20 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { Trash2, Eye } from "lucide-react";
 import Link from "next/link";
+import React from "react";
 
-export default function DeleteButton({
+
+const  DeleteButton = React.memo(({ 
   themeValue,
   setShowDeleteModal,
   setSelectedUser,
   user,
-}: any) {
+}: any) => {
   return (
     <div className="flex items-center space-x-2">
       <Link href={`/Authors/${user.id}`}>
-        <button
+        <Button
           className={`rounded-lg  flex items-center gap-x-1  text-sm transition-all duration-200  px-2  py-1   cursor-pointer  ${
             themeValue
               ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md"
@@ -20,9 +23,9 @@ export default function DeleteButton({
         >
           <Eye size={14} /> 
           <span>Profile </span>
-        </button>
+        </Button>
       </Link>
-      <button
+      <Button
         onClick={(e) => {
           e.stopPropagation();
           setSelectedUser(user);
@@ -37,7 +40,11 @@ export default function DeleteButton({
       >
         <Trash2 size={12} />
         <span>Delete</span>
-      </button>
+      </Button>
     </div>
   );
 }
+)
+
+
+export default DeleteButton;

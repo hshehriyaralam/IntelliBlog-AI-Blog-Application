@@ -17,6 +17,14 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    // "moduleResolution": "bundler",
+    // "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    // "skipLibCheck": true
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
     "plugins": [
       {
         "name": "next"

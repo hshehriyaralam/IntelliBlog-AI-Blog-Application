@@ -1,10 +1,15 @@
 'use clinet'
 import { Filter,  ArrowDown } from "lucide-react";
+import React from "react";
+import { Button } from "../ui/button";
 
 
-export default function FilterToogle({showFilters,onClick}:any){
+
+const  FilterToogle = React.memo(({showFilters,onClick}:any) => {
+
     return(
-        <button
+        <>
+        <Button
         onClick={onClick}
         className={`flex items-center gap-2 px-4 py-3 rounded-lg  cursor-pointer
         bg-gradient-to-r from-indigo-500 to-purple-600 text-white
@@ -13,6 +18,9 @@ export default function FilterToogle({showFilters,onClick}:any){
         <Filter size={18} />
         Filters
         <ArrowDown size={16} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-    </button>
+    </Button>
+        </>
     )
-}
+})
+
+export default FilterToogle;

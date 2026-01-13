@@ -1,28 +1,39 @@
 'use client'
-import { User  } from "lucide-react";
+import { ImageDown, User  } from "lucide-react";
 import Loader from './Loader';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuthNavigate } from "@/hooks/useAuthNavigate";
+import Image from "next/image";
+import React from "react";
 
 
 
 
-
-export default function BlogCard({ blog, isFeatured, themeValue,isLoading }: any) {
-    const { authNavigate, isAuthenticating } = useAuthNavigate();
-    const [imgError, setImgError] = useState(false);
+const  BlogCard = React.memo(({ blog, isFeatured, themeValue,isLoading }: any) => {
+  const { authNavigate } = useAuthNavigate();
+  const [imgError, setImgError] = useState(false);
   const hasImage = blog.userId.profilePic && blog.userId.profilePic.trim() !== "" && !imgError;
+  const imageSrc = blog.blogImage && blog.blogImage.trim() !== "" ? blog.blogImage: "/HeroImage.jpg";
+
+     const handleNavigate = useCallback(() => {
+    authNavigate(`/Blogs/${blog._id}`);
+  }, [authNavigate, blog._id]);
   
-  if (isLoading) return <Loader />
+   if (isLoading) return <Loader />
   return (
-    <div onClick={() => authNavigate(`/Blogs/${blog._id}`)}>
-      {/* Image Container */}
+    <div onClick={handleNavigate}>
       <div className={`relative ${isFeatured ? 'h-64' : 'h-48'} overflow-hidden`}>
-        <img
-          src={blog.blogImage}
-          alt={blog.blogTitle}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-        />
+       
+          <Image
+            src={imageSrc || '/HeroImage.jpg'}
+            width={isFeatured ? 800 : 384}
+            height={isFeatured ? 256 : 192}
+            alt={blog.blogTitle}  
+            priority={isFeatured}    
+            loading={!isFeatured ? "lazy" : undefined}
+            className="w-full h-auto object-cover transition-transform duration-500 hover:scale-105"
+          />
+
         
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
@@ -61,11 +72,14 @@ export default function BlogCard({ blog, isFeatured, themeValue,isLoading }: any
               <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 p-0.5">
                 <div className="w-9 h-9 rounded-full bg-white  flex items-center justify-center overflow-hidden">
                   {hasImage ? (
-                    <img 
-                      src={blog.userId.profilePic}
+                    <Image 
+                     src={blog.userId.profilePic  || '/default-avatar.png'}
                      alt={`${blog.userId?.name || "Author"}-pic`}
+                     width={36}
+                     height={36}
                      className="w-9 h-9 rounded-full object-cover" 
                      onError={() => setImgError(true)}
+                     loading="lazy"
                       
                     />
                   ) : (
@@ -94,3 +108,7 @@ export default function BlogCard({ blog, isFeatured, themeValue,isLoading }: any
 
   );
 }
+)
+
+
+export default BlogCard;

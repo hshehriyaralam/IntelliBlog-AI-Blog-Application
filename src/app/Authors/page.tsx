@@ -1,20 +1,31 @@
 "use client";
 import { ContextTheme } from "../../Context/DarkTheme";
-import { useContext } from "react";
-import { useAllUserQuery,useGetProfileQuery } from "../../Redux/Services/userApi";
-import {liveRefetchOptions} from "../../hooks/rtkOptions";
-
+import { useCallback, useContext, useMemo, useState } from "react";
+import { useAllUserQuery} from "../../Redux/Services/userApi";
 import AuthorsCard from "./_component/AuthorsCard"
+import dynamic from "next/dynamic";
+import {useLoggedInUser} from "@/hooks/LoggedInUser"
+
+
+
+const PaginationItems  = dynamic(() => import("../../components/common/paginationItems"), { ssr: false });
 
 
 export default function Authors() {
-    const { data : loggedInUser} = useGetProfileQuery(undefined,liveRefetchOptions )
-    const { data:allUsers } = useAllUserQuery(undefined,liveRefetchOptions);
+    const {loggedInUserId} = useLoggedInUser()
+    const { data:allUsers } = useAllUserQuery(undefined);
     const { themeValue, light, dark } = useContext(ContextTheme);
+    const [currentItems, setCurrentItems] = useState<any[]>([]);
+    const users = useMemo(() => {
+  return allUsers?.data ? [...allUsers.data].reverse() : [];
+}, [allUsers]);
 
-    
-    const loggedInUserId =  loggedInUser?.user?._id;   
-    const users = allUsers?.data?.slice().reverse() || [];
+
+ const handlePageChange = useCallback((items:any[]) => {
+  setCurrentItems(items);
+}, []);
+
+
 
     
 
@@ -33,12 +44,12 @@ export default function Authors() {
       </div>
 
       {/* Authors Grid */}
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto  ">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {users.map((user: any, index: number) => {
-            const isYou = user.id === loggedInUserId;
+          {currentItems?.map((user: any, index: number) => {
+            // const isYou = user?.id === loggedInUserId;
 
-          const joinedDate = user.createdAt
+          const joinedDate = user?.createdAt
             ? new Date(user.createdAt).toLocaleDateString("en-US", {
                 month: "long", 
                 day: "numeric", 
@@ -47,7 +58,7 @@ export default function Authors() {
             : "N/A";
 
             // Last Seen → Full Date + Time
-            const lastSeen = user.lastSeenAt
+            const lastSeen = user?.lastSeenAt
               ? new Date(user.lastSeenAt).toLocaleString("en-US", {
                   day: "numeric",
                   month: "short",
@@ -58,18 +69,28 @@ export default function Authors() {
               : "N/A";
 
             return (
-              <div key={index}>
+              <div key={user.id || index}>
               <AuthorsCard
               user={user}
-              isYou={isYou}
+              isYou={user?.id === loggedInUserId}
               joinedDate={joinedDate}
               lastSeen={lastSeen}
+              themeValue={themeValue}
+              light={light}
+              dark={dark}
               />
               </div>
               );
           })}
         </div>
       </div>
+
+      <PaginationItems 
+      ItemsPerPage={9}
+      filteredItems={users || []}
+      themeValue={themeValue} 
+      onPageChange={handlePageChange}
+      />
     </div>
   );
 }

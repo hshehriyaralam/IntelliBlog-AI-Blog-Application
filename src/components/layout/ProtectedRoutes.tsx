@@ -1,14 +1,14 @@
 "use client";
 import { useGetProfileQuery } from "../../Redux/Services/userApi";
-import {liveRefetchOptions} from "../../hooks/rtkOptions";
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import LoadingPage from '../../components/layout/LoadingPage'
+import LoaderHOC from "../common/loaderHoc";
 
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { data, isLoading } = useGetProfileQuery(undefined, liveRefetchOptions);
+ function InnerProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { data, isLoading } = useGetProfileQuery(undefined);
   const router = useRouter();
 
   useEffect(() => {
@@ -21,3 +21,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   return <>{children}</>;
 }
+
+const ProtectedRoute = LoaderHOC(InnerProtectedRoute);
+
+export default ProtectedRoute;

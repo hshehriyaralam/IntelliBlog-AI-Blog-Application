@@ -1,35 +1,48 @@
-import { useSuggestSummaryTagsMutation } from '../../Redux/Services/blogApi';
-import { useAlert } from '../../Context/AlertContext';
+import { useCallback } from 'react'
+import { useSuggestSummaryTagsMutation } from '../../Redux/Services/blogApi'
+import { useAlert } from '../../Context/AlertContext'
 
-export default function useAIGenerate(
-  setFormData: React.Dispatch<React.SetStateAction<any>>,
-  formData: { title: string; content: string }
-) {
-  const [suggestAI, { isLoading: aiLoading, error: aiError }] = useSuggestSummaryTagsMutation();
-  const { showAlert } = useAlert();
+interface AIGenerateProps {
+  title: string
+  content: string
+  setSummary: (value: string) => void
+  setTags: (value: string[]) => void
+}
 
-  const handleSuggest = async () => {
-    if (!formData.title || !formData.content) {
-      showAlert('error', 'Please add title & content first');
-      return;
+export default function useAIGenerate({
+  title,
+  content,
+  setSummary,
+  setTags,
+}: AIGenerateProps) {
+
+  const [suggestAI, { isLoading: aiLoading, error: aiError }] =
+    useSuggestSummaryTagsMutation()
+
+  const { showAlert } = useAlert()
+
+  const handleSuggest = useCallback(async () => {
+    if (!title || !content) {
+      showAlert('error', 'Please add title & content first')
+      return
     }
+
     try {
       const res = await suggestAI({
-        blogTitle: formData.title,
-        blogContent: formData.content,
-      }).unwrap();
+        blogTitle: title,
+        blogContent: content,
+      }).unwrap()
 
-      setFormData((prev: any) => ({
-        ...prev,
-        summary: res.summary,
-        tags: res.tags,
-      }));
-      showAlert('success', 'Generated Successfully');
-    } catch (e) {
-      showAlert('error', 'Generate failed');
-      console.error(e);
+      // ✅ ONLY update what AI owns
+      setSummary(res.summary)
+      setTags(res.tags)
+
+      showAlert('success', 'Generated Successfully')
+    } catch (error) {
+      console.error(error)
+      showAlert('error', 'Generate failed')
     }
-  };
+  }, [title, content, setSummary, setTags, suggestAI, showAlert])
 
-  return { handleSuggest, aiLoading, aiError };
+  return { handleSuggest, aiLoading, aiError }
 }

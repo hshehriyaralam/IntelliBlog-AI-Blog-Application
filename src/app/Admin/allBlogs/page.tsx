@@ -1,17 +1,29 @@
 "use client";
-import { useState, useContext, useMemo } from "react";
+import { useState, useContext, useMemo, Suspense, useCallback } from "react";
 import { useAllBlogAdminQuery } from "../../../Redux/Services/adminApi";
-import {liveRefetchOptions}   from "../../../hooks/rtkOptions"
-import AllBlogList from  "./_component/BlogsList" 
 import LoadingPage from "../../../components/layout/LoadingPage";
 import { ContextTheme } from "../../../Context/DarkTheme";
-import AllFiltersBlogs from "./_component/AllFilters"
 import type {DraftFilters} from "../../../../types/Blog"
+import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+import AllBlogList from "./_component/BlogsList";
+
+
+
+
+
+const AllFiltersBlogs = dynamic(() => import("./_component/AllFilters"), {
+  ssr: false,
+});
+
+const PaginationItems = dynamic(() => import("../../../components/common/paginationItems"),{ ssr: false });
+
+
 
 export default function UserAllBlogs() {
-  const { data, isLoading } = useAllBlogAdminQuery(undefined, liveRefetchOptions);
+  const { data, isLoading } = useAllBlogAdminQuery(undefined);
   const { themeValue, light, dark } = useContext(ContextTheme);
-
+  const [currentItems, setCurrentItems] = useState<any[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [draftFilters, setDraftFilters] = useState<DraftFilters>({
@@ -21,6 +33,7 @@ export default function UserAllBlogs() {
     tag: "",
   });
   const [appliedFilters, setAppliedFilters] = useState<DraftFilters>(draftFilters);
+
 
 
   const handleClear = () => {
@@ -70,6 +83,13 @@ export default function UserAllBlogs() {
     });
   }, [data, searchQuery, appliedFilters]);
 
+
+
+    const handlePageChange = useCallback((items:any[]) => {
+    setCurrentItems(items);
+  }, []);
+
+
   if (isLoading) return <LoadingPage />;
 
   return (
@@ -98,6 +118,9 @@ export default function UserAllBlogs() {
         searchQuery={searchQuery}
         setShowFilters={setShowFilters}
         showFilters={showFilters}
+           themeValue={themeValue}
+          light={light}
+          dark={dark}
          />
         {/* Results Info */}
         <div className={`mb-4 flex items-center justify-between ${
@@ -108,17 +131,17 @@ export default function UserAllBlogs() {
             <span className="font-semibold">{data?.data?.length || 0}</span> blogs
           </p>
           {Object.values(appliedFilters).some(val => val) && (
-            <button
+            <Button
               onClick={handleClear}
               className="text-sm text-red-600 hover:text-red-700 font-medium"
             >
               Clear all filters
-            </button>
+            </Button>
           )}
         </div>
 
         {/* Blogs Table */}
-        <div className={`rounded-2xl shadow-xl overflow-hidden ${
+        <div className={`rounded-2xl shadow-xl overflow-hidden   ${
           themeValue ? 'bg-white' : 'bg-gray-800 '
         }`}>
           {/* Table Header */}
@@ -137,13 +160,21 @@ export default function UserAllBlogs() {
             </div>
 
           {/* Table Body */}
-          <AllBlogList 
-          filteredBlogs={filteredBlogs} 
+          <Suspense fallback={<LoadingPage />}>
+          <AllBlogList
+          filteredBlogs={currentItems} 
           themeValue={themeValue}
           light={light}
           dark={dark}
                />
+          </Suspense>
         </div>
+
+        <PaginationItems 
+        ItemsPerPage={10}
+        filteredItems={filteredBlogs}
+        onPageChange={handlePageChange}
+        themeValue={themeValue}/>
    
       </div>
     </div>

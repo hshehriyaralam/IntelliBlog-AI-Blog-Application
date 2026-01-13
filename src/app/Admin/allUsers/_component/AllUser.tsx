@@ -1,16 +1,18 @@
 'use client'
-import { useContext, useState } from "react";
-import { ContextTheme } from "../../../../Context/DarkTheme";
+import React, {  useState } from "react";
 import { Users, Mail, FileText, UserCheck, Crown, PenTool, Heart } from "lucide-react";
-import DeleteButton from "./DeleteButton";
 import type {AdminUser  as User} from "../../../../../types/Admin"
+import Image from "next/image";
+import dynamic from "next/dynamic";
 
 
 
+const DeleteButton = dynamic(() => import("./DeleteButton"), { ssr: false });
 
-export default function AllUserAdminPage({ filteredUsers, setShowDeleteModal, setSelectedUser }: any) {
-  const { themeValue, light, dark } = useContext(ContextTheme);
 
+
+const  AllUserAdminPage = React.memo(({ filteredUsers, setShowDeleteModal, setSelectedUser,themeValue, light, dark }: any) => {
+ 
   // Track per-user image errors
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
 
@@ -133,9 +135,12 @@ export default function AllUserAdminPage({ filteredUsers, setShowDeleteModal, se
               <div className="col-span-12 md:col-span-3 flex items-center space-x-3">
                 <div className="relative">
                   {user.profilePic && user.profilePic.trim() !== "" && !imgErrors[user.id] ? (
-                    <img
+                    <Image
+                      width={40}
+                      height={40}
                       src={user.profilePic}
                       alt={user.name}
+                      loading="lazy"
                       className="w-10 h-10 rounded-full object-cover shadow-sm"
                       onError={() => handleImgError(user.id)}
                     />
@@ -230,3 +235,7 @@ export default function AllUserAdminPage({ filteredUsers, setShowDeleteModal, se
     </div>
   );
 }
+)
+
+
+export default AllUserAdminPage;

@@ -2,10 +2,12 @@
 import { User } from "lucide-react";
 import { useAllUserQuery } from "../../Redux/Services/userApi"
 import {liveRefetchOptions} from "../../hooks/rtkOptions"
+import React, { useMemo } from "react";
 
-export default function AuthorsFilter({ themeValue, light, dark, value, onChange }: any) {
+
+const AuthorsFilter = React.memo(({ themeValue, light, dark, value, onChange }: any) => {
   const { data: allUsers, isLoading } = useAllUserQuery(undefined,liveRefetchOptions);
-  const users = allUsers?.data || [];
+  const users = useMemo(() => allUsers?.data || [], [allUsers]);
   return (
     <div>
       <label
@@ -38,4 +40,6 @@ export default function AuthorsFilter({ themeValue, light, dark, value, onChange
 </select>
     </div>
   );
-}
+})
+
+export default AuthorsFilter;

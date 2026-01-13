@@ -7,11 +7,11 @@ import AuthorsFilter from "../../../../components/common/AuthorsFilter"
 import DateFilter from "../../../../components/common/DateFilter"
 import Tags from "../../../../components/common/TagsFilter"
 import FilterActions from "../../../../components/common/FilterActions"
-import { useContext, useMemo,  } from "react";
+import React, {  useCallback, useMemo,  } from "react";
 import type {DraftFilters} from "../../../../../types/Blog"
 
 
-export default function AllFiltersBlogs({
+const  AllFiltersBlogs = React.memo(({
     data,
     setDraftFilters,
     setAppliedFilters,
@@ -20,12 +20,11 @@ export default function AllFiltersBlogs({
     searchQuery,
     setShowFilters,
     showFilters,
+    themeValue,
+     light,
+      dark
 
-
-}:any){
-      const { themeValue, light, dark } = useContext(ContextTheme);
-
-
+}:any) =>  {
     const blogsCreateDates: string[] = useMemo(() => {
         const list =
         data?.data
@@ -36,17 +35,46 @@ export default function AllFiltersBlogs({
         return Array.from(new Set(list));
     }, [data]);
 
-     const handleApply = () => {
+     const handleApply = useCallback(() => {
     setAppliedFilters({ ...draftFilters });
-  };
+  },[ draftFilters, setAppliedFilters]);
 
 
-    const handleClear = () => {
+    const handleClear = useCallback(() => {
     const empty: DraftFilters = { authorId: "", title: "", date: "", tag: "" };
     setDraftFilters(empty);
     setAppliedFilters(empty);
     setSearchQuery("");
-  };
+  }, []);
+
+const SeacrhInputOnChange = useCallback((e: React.ChangeEvent<HTMLInputElement>)=>{
+    setSearchQuery(e.target.value)
+}, [setSearchQuery]);
+
+
+const handleFilterToggle = useCallback(()=>{
+    setShowFilters((s:boolean)=>!s)
+}, [setShowFilters]);
+
+
+const AuthorsFilterOnChange = useCallback((val: string)=>{
+    setDraftFilters((s:any) => ({ ...s, authorId: val }))
+}, [setDraftFilters]);
+
+
+const DateFilterOnChange = useCallback((val: string)=>{
+    setDraftFilters((s:any) => ({ ...s, date: val }))
+}, [setDraftFilters]);
+
+
+const tagsFilterOnChange = useCallback((val: string)=>{   
+    setDraftFilters((s:any) => ({ ...s, tag: val }))
+}, [setDraftFilters]);
+
+
+
+  console.log("All Filters");
+
 
     return(
         <div className={`mb-6 rounded-2xl shadow-lg border ${
@@ -58,12 +86,10 @@ export default function AllFiltersBlogs({
                       light={light}
                       dark={dark}
                       value={searchQuery}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setSearchQuery(e.target.value)
-                      }
+                      onChange={SeacrhInputOnChange}
                     />
                     <FilterToogle
-                      onClick={() => setShowFilters(!showFilters)}
+                      onClick={handleFilterToggle}
                       showFilters={showFilters}
                     />
                   </div>
@@ -78,9 +104,7 @@ export default function AllFiltersBlogs({
                           light={light}
                           dark={dark}
                           value={draftFilters.authorId}
-                          onChange={(val: string) =>
-                            setDraftFilters((s:any) => ({ ...s, authorId: val }))
-                          }
+                          onChange={AuthorsFilterOnChange}
                         />
                         <DateFilter
                           themeValue={themeValue}
@@ -88,18 +112,14 @@ export default function AllFiltersBlogs({
                           dark={dark}
                           BlogsDate={blogsCreateDates}
                           value={draftFilters.date}
-                          onChange={(val: string) =>
-                            setDraftFilters((s:any) => ({ ...s, date: val }))
-                          }
+                          onChange={DateFilterOnChange}
                         />
                         <Tags
                           themeValue={themeValue}
                           light={light}
                           dark={dark}
                           value={draftFilters.tag}
-                          onChange={(val: string) =>
-                            setDraftFilters((s:any) => ({ ...s, tag: val }))
-                          }
+                          onChange={tagsFilterOnChange}
                         />
                       </div>
         
@@ -114,4 +134,7 @@ export default function AllFiltersBlogs({
                   )}
                 </div>
     )
-}
+})
+
+
+export default AllFiltersBlogs

@@ -1,13 +1,12 @@
 "use client";
 import { useGetProfileQuery } from "../../Redux/Services/userApi";
-import {liveRefetchOptions} from "../../hooks/rtkOptions";
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import LoadingPage from '../../components/layout/LoadingPage'
 
 export default function AdminProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { data, isLoading } = useGetProfileQuery(undefined,liveRefetchOptions);
+  const { data, isLoading } = useGetProfileQuery(undefined);
   const router = useRouter();
 
   useEffect(() => {

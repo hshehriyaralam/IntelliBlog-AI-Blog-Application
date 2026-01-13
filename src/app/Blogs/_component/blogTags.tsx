@@ -1,6 +1,6 @@
+import React from 'react';
 
-
-export default function BlogTags({blog}:any){
+const  BlogTags = React.memo(({blog}:any) => {
     return(
         <>
         {blog.blogTags?.length > 0 && (
@@ -17,4 +17,6 @@ export default function BlogTags({blog}:any){
         )}
         </>
     )
-}
+})
+
+export default BlogTags;

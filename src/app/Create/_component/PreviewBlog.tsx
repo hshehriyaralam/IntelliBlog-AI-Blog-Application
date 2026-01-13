@@ -1,9 +1,9 @@
 'use client'
-import { ContextTheme } from '../../../Context/DarkTheme'
-import { useContext } from 'react';
+import React from 'react';
 
-export default function PreviewBlog({formData}: any){
-  const { themeValue } = useContext(ContextTheme);
+const PreviewBlog = React.memo(function PreviewBlog(
+  {  themeValue, title,  summary ,  tags, imagePreview,}: any){
+  console.log("PreviewBlog");
   
   return(
     <div className={`p-4 rounded-xl border ${
@@ -18,25 +18,25 @@ export default function PreviewBlog({formData}: any){
       <div className={`p-4 rounded-lg ${
         themeValue ? 'bg-gray-50' : 'bg-gray-700/50'
       }`}>
-        {formData.imagePreview && (
+        {imagePreview && (
           <img 
-            src={formData.imagePreview} 
+            src={imagePreview} 
             alt="Preview" 
             className="w-full h-32 object-cover rounded-lg mb-3"
           />
         )}
         
         <h3 className={`font-semibold mb-2 text-sm ${themeValue ? 'text-gray-800' : 'text-white'}`}>
-          {formData.title || "Your blog title will appear here"}
+          {title || "Your blog title will appear here"}
         </h3>
         
         <p className={`text-sm mb-3 ${themeValue ? 'text-gray-600' : 'text-gray-300'} line-clamp-2`}>
-          {formData.summary || "Your summary will appear here"}
+          {summary || "Your summary will appear here"}
         </p>
         
-        {formData.tags.length > 0 && (
+        {tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
-            {formData.tags.map((tag: string, i: number) => (
+            {tags?.map((tag: string, i: number) => (
               <span 
                 key={i} 
                 className={`px-2 py-1 text-xs rounded-full ${
@@ -53,4 +53,6 @@ export default function PreviewBlog({formData}: any){
       </div>
     </div>
   )
-}
+})
+
+export default PreviewBlog;

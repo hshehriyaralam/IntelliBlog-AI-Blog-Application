@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const { file } = body;
 
     if (!file) {
-      return new Response(JSON.stringify({ error: "No file provided" }), {
+      return new Response(JSON.stringify({ error: "No file provided" }), {  
         status: 400,
       });
     }

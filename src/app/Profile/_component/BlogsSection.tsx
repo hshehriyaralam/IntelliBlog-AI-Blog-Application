@@ -2,20 +2,25 @@
 import { Trash2  } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import  SingleButtonLoader from '../../../components/common/SingleButtonLoader'
+import React from "react";
+import Image from "next/image";
 
 
 
-export default function ProfileBlogsSections({themeValue,dark,blog,light, handleDeleteBlog,deletingId}:any){
+const  ProfileBlogsSections = React.memo(({themeValue,dark,blog,light, handleDeleteBlog,deletingId}:any) => {
     return(
 <div className={`rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer ${
     themeValue ? `${light} border border-gray-200` : `${dark} border border-gray-700`
     }`}>
     {/* Blog Image */}
     <div className="relative h-48 overflow-hidden">
-        <img
+        <Image
+        width={400}
+        height={400}
+        loading="lazy"
         src={blog.blogImage}
         alt={blog.blogTitle}
-        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+        className="w-full h-auto object-cover transition-transform duration-500 hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
     </div>
@@ -60,4 +65,7 @@ export default function ProfileBlogsSections({themeValue,dark,blog,light, handle
     </div>
     </div>
     )
-}
+})
+
+
+export default ProfileBlogsSections;

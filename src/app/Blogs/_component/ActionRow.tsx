@@ -4,29 +4,26 @@ import LikeButton from "./LikeButton";
 import ShareButton from "./ShareButton";
 import BookmarkButton from './BookmarkButton'
 import LikedByUser from './likedbyUser';
-import type { User } from "../../../../types/Blog"
+import React from 'react';
 
 
 
-export default function ActionRow({
-  blogContent,
-  blogSummary,
+const  ActionRow = React.memo(({
   isPlaying,
   setIsPlaying,
   setCurrentIndex,
   blogId,
-  likes,
-  likesCount,
+  themeValue,
+
 }: {
-  blogContent: string;
-  blogSummary?: string;
   isPlaying: boolean;
   setIsPlaying: (v: boolean) => void;
   setCurrentIndex: (v: { section: string; index: number | null }) => void;
   blogId: string;
-  likes: User[]
-  likesCount: number;
-}) {
+  themeValue: boolean;
+}) =>  {
+
+
 
   return (
     <div className="mt-8">
@@ -37,8 +34,7 @@ export default function ActionRow({
         <div className="flex-1 min-w-0">
           <ListeBlogEng
             isPlaying={isPlaying}
-            blogContent={blogContent}
-            blogSummary={blogSummary}
+            blogId={blogId}
             setCurrentIndex={setCurrentIndex}
             setIsPlaying={setIsPlaying}
           />
@@ -46,7 +42,7 @@ export default function ActionRow({
 
         {/* ❤️ Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <LikeButton blogId={blogId} likes={likes} likesCount={likesCount} />
+          <LikeButton blogId={blogId}/>
           <ShareButton   blogId={blogId}  />
           <BookmarkButton blogId={blogId}  />
         </div>
@@ -54,8 +50,10 @@ export default function ActionRow({
 
       {/* ✅ LikedByUser - Always below both sections */}
       <div className="mt-3 w-full text-end">
-        <LikedByUser likedUsers={likes} />
+        <LikedByUser blogId={blogId}  themeValue={themeValue} />
       </div>
     </div>
   );
-}
+})
+
+export default ActionRow;

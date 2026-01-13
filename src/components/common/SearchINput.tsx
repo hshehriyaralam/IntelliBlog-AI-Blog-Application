@@ -1,7 +1,9 @@
 'use client'
 import { Search } from "lucide-react";
+import React from "react";
 
-export default function SearchInput({themeValue, light, dark,value,onChange}:any){
+
+const SearchInput  = React.memo(({themeValue, light, dark,value,onChange}:any)=>{
     return(
          <div className="flex-1 relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -18,4 +20,6 @@ export default function SearchInput({themeValue, light, dark,value,onChange}:any
         />
     </div>
     )
-}
+})
+
+export default SearchInput;

@@ -1,7 +1,9 @@
 'use client'
 import { Calendar } from "lucide-react"
+import React from "react";
 
-export default function DateFilter({ themeValue, light, dark, BlogsDate = [], value, onChange }: any) {
+
+const DateFilter = React.memo(({ themeValue, light, dark, BlogsDate = [], value, onChange }: any) => {
   return (
     <div>
       <label
@@ -31,4 +33,6 @@ export default function DateFilter({ themeValue, light, dark, BlogsDate = [], va
       </select>
     </div>
   )
-}
+})
+
+export default DateFilter;

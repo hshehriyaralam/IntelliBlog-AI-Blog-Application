@@ -3,8 +3,10 @@ import { Trash2} from "lucide-react";
 import {useDeleteBlogAdminMutation} from "../../../../Redux/Services/adminApi"
 import { useAlert } from '../../../../Context/AlertContext'
 import SingleButtonLoader from '../../../../components/common/SingleButtonLoader'
+import { Button } from "@/components/ui/button";
+import React from "react";
 
-export default function DeleteBlogButton({themeValue,blog}:any){
+const  DeleteBlogButton = React.memo(({themeValue,blog}:any) => {
     const [deleteBlogAdmin, { isLoading }] = useDeleteBlogAdminMutation(undefined)
     const { showAlert } = useAlert()
      const handleDelete = async () => {
@@ -16,10 +18,9 @@ export default function DeleteBlogButton({themeValue,blog}:any){
         showAlert('error', 'The admin failed to delete the blog.')
       }
   };
-
-
-    return(
-    <button
+    return (
+      <>
+    <Button
     onClick={handleDelete}
       className={`px-2 py-1 flex items-center gap-x-1 text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer 
     ${
@@ -35,6 +36,11 @@ export default function DeleteBlogButton({themeValue,blog}:any){
             
         </>
       )}  
-    </button>
+    </Button>
+      </>
+
     )
 }
+)
+
+export default DeleteBlogButton

@@ -1,26 +1,32 @@
 'use client'
-import { useState, useContext, useMemo } from "react";
+import { useState, useContext, useMemo, Suspense, useCallback } from "react";
 import { useAllUserAdminQuery } from '../../../Redux/Services/adminApi'
 import {liveRefetchOptions}  from '../../../hooks/rtkOptions'
 import { ContextTheme } from "../../../Context/DarkTheme";
 import LoadingPage from "../../../components/layout/LoadingPage";
-import NameFilter from "./_component/Filter";
 import AllUserAdminPage from "./_component/AllUser"
-import DeletePopUp from "./_component/DeletePopUp"
 import type {AdminUser  as User} from "../../../../types/Admin"
+import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+
+
+const NameFilter  = dynamic(() => import("./_component/Filter"), {ssr: false});
+const  DeletePopUp = dynamic(() => import("./_component/DeletePopUp"), { ssr: false});
+const PaginationItems = dynamic(() => import("../../../components/common/paginationItems"),{ ssr: false });
+
+
 
 
 
 export default function AllUsers() {
   const { themeValue, light, dark } = useContext(ContextTheme);
-  const { data, isLoading } = useAllUserAdminQuery(undefined,liveRefetchOptions)
-
-    
+  const { data, isLoading } = useAllUserAdminQuery(undefined)
+  const [currentItems, setCurrentItems] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const users: User[] = data?.data?.slice().reverse() || []
+  const users: User[] = useMemo(() => data?.data?.slice().reverse() || [], [data]);
 
   // Filter users based on search and filters
   const filteredUsers = useMemo(() => {
@@ -36,6 +42,10 @@ export default function AllUsers() {
     return result;
   }, [users, searchQuery]);
 
+
+  const handlePageChange = useCallback((items:any[]) => {
+      setCurrentItems(items);
+    }, []);
  
 
   if (isLoading) return <LoadingPage />;
@@ -43,7 +53,7 @@ export default function AllUsers() {
 
   return (
     <div className={`min-h-screen ${themeValue ? light : dark} p-2`}>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto  ">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -68,22 +78,33 @@ export default function AllUsers() {
 
         <div className="flex items-center justify-end mx-6 " >
          {searchQuery && (
-            <button
+            <Button
               onClick={() => setSearchQuery("")}
               className="text-sm text-red-600 hover:text-red-700 font-medium cursor-pointer"
             >
               Clear search
-            </button>
+            </Button>
           )}
           </div>
 
            {/* Users Table */}
+           <Suspense fallback={<LoadingPage />}>
         <AllUserAdminPage 
-        filteredUsers={filteredUsers}
+        filteredUsers={currentItems}
       setShowDeleteModal={setShowDeleteModal}
       setSelectedUser={setSelectedUser}
+      themeValue={themeValue}
+      light={light}
+      dark={dark}
         />
+        </Suspense>
       </div>
+
+      <PaginationItems
+      ItemsPerPage={10}
+      filteredItems={filteredUsers}
+      onPageChange={handlePageChange}
+      themeValue={themeValue}/>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedUser &&  <DeletePopUp  

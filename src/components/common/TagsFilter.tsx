@@ -2,12 +2,14 @@
 import { Tag } from 'lucide-react'
 import { useFetchBlogQuery } from '../../Redux/Services/blogApi';
 import {liveRefetchOptions} from "../../hooks/rtkOptions"
+import React, { useMemo } from "react";
 
 
-export default function TagsFilter({ themeValue, light, dark, value, onChange }: any) {
+const TagsFilter = React.memo(({ themeValue, light, dark, value, onChange }: any) => {
+
   const { data } = useFetchBlogQuery(undefined, liveRefetchOptions)
 
-const allTags = data?.blogs?.map((b: { blogTags: string[] }) => b.blogTags).flat() || [];
+const allTags =  useMemo(() => data?.blogs?.map((b: { blogTags: string[] }) => b.blogTags).flat() || [], [data])  ;
 
 // Count frequency of each tag
 const freqMap: Record<string, number> = {};
@@ -17,18 +19,15 @@ allTags.forEach((tag:any) => {
 });
 
 // Sort by frequency (desc) & keep top 15
-const sortedTags = Object.entries(freqMap)
+const sortedTags =  useMemo(() => Object.entries(freqMap)
   .sort((a, b) => b[1] - a[1])
   .slice(0, 15)   // 👈 yahan limit set karo (10–15)
-  .map(([tag]) => tag);
+  .map(([tag]) => tag), []);
 
 // Map back to original casing
-const finalTags = sortedTags.map(tag =>
+const finalTags =   useMemo(() => sortedTags.map(tag =>
   allTags.find((original: string) => original.toLowerCase().trim() === tag) || tag
-);
-
-
-
+), [sortedTags]);
 
   return (
     <div>
@@ -60,3 +59,6 @@ const finalTags = sortedTags.map(tag =>
     </div>
   )
 }
+)
+
+export default TagsFilter;

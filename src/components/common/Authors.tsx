@@ -1,16 +1,12 @@
 "use client";
 import { ContextTheme } from "../../Context/DarkTheme";
-import { useContext, useState } from "react";
-import {
-  User,
-  TrendingUp,
-  Loader2,
-  ExternalLink,
-} from "lucide-react";
+import { useContext, useMemo, useState } from "react";
+import { User, TrendingUp, Loader2 } from "lucide-react";
 import { useAllUserQuery } from "../../Redux/Services/userApi";
-import {liveRefetchOptions } from "../../hooks/rtkOptions"
+
 import Link from "next/link";
-import { useAuthNavigate } from "@/hooks/useAuthNavigate";
+import React from "react";
+import ViewAllAuthors from "../HomeComponets/viewAllAuthors";
 
 function AuthorItem({ user, themeValue }: any) {
   const [imgError, setImgError] = useState(false);
@@ -24,10 +20,12 @@ function AuthorItem({ user, themeValue }: any) {
         ${themeValue ? `hover:bg-gray-300 ` : `hover:bg-gray-800 `}`}
       >
         {/* Hover Border Effect */}
-        <div className={`
+        <div
+          className={`
           absolute inset-0 rounded-lg border border-transparent 
           group-hover/item:border-indigo-500/20 transition-all duration-300 pointer-events-none
-        `}></div>
+        `}
+        ></div>
 
         {/* Corner Accents */}
         <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-indigo-500/30 rounded-tl-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
@@ -61,7 +59,10 @@ function AuthorItem({ user, themeValue }: any) {
             {user.name}
           </p>
           <div className="flex items-center gap-1.5 mt-1">
-            <TrendingUp size={12} className="text-indigo-500 group-hover/item:scale-110 transition-transform duration-300" />
+            <TrendingUp
+              size={12}
+              className="text-indigo-500 group-hover/item:scale-110 transition-transform duration-300"
+            />
             <p className="text-xs text-indigo-600 font-medium">
               {user?.blogCount} Articles
             </p>
@@ -72,13 +73,24 @@ function AuthorItem({ user, themeValue }: any) {
   );
 }
 
-export default function TopAuthors({ navigate }: any) {
-    const { authNavigate, isAuthenticating } = useAuthNavigate();
+function TopAuthors({ navigate , themeValue }: any) {
 
-  const { data, isLoading, isError } = useAllUserQuery(undefined,liveRefetchOptions);
-  const { themeValue } = useContext(ContextTheme);
-  
-  // 🔹 Loading State
+  const { data, isLoading, isError } = useAllUserQuery(undefined, {
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+    refetchOnReconnect: false});
+  const Authors = data?.data?.map((user: any) => ({
+    name: user.name,
+    blogCount: user.blogCount,
+    profilePic: user.profilePic,
+    id: user.id}));
+
+  // Sort descending (most articles first)
+  const TopAuthors = useMemo(() => {
+    if (!Authors) return [];
+    return [...Authors].sort((a, b) => b.blogCount - a.blogCount).slice(0, 5);
+  }, [Authors])
+
   if (isLoading) {
     return (
       <div
@@ -91,7 +103,7 @@ export default function TopAuthors({ navigate }: any) {
         {/* Corner Shadow Effects */}
         <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-500/30 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-500/30 rounded-br-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
+
         <Loader2 className="animate-spin text-indigo-500" size={24} />
         <span
           className={`ml-2 text-sm ${
@@ -103,8 +115,6 @@ export default function TopAuthors({ navigate }: any) {
       </div>
     );
   }
-
-  // 🔹 Error State
   if (isError) {
     return (
       <div
@@ -117,7 +127,7 @@ export default function TopAuthors({ navigate }: any) {
         {/* Corner Shadow Effects */}
         <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-500/30 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-500/30 rounded-br-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
+
         <p
           className={`text-sm ${themeValue ? "text-red-600" : "text-red-400"}`}
         >
@@ -126,18 +136,6 @@ export default function TopAuthors({ navigate }: any) {
       </div>
     );
   }
-
-  const Authors = data?.data?.map((user: any) => ({
-    name: user.name,
-    blogCount: user.blogCount,
-    profilePic: user.profilePic,
-    id: user.id,
-  }));
-
-  // Sort descending (most articles first)
-  const TopAuthors = Authors.sort(
-    (a: any, b: any) => b.blogCount - a.blogCount
-  ).slice(0, 5);
 
   return (
     <div
@@ -184,26 +182,9 @@ export default function TopAuthors({ navigate }: any) {
       </ul>
 
       {/* View All Link */}
-      {Authors.length > 6 && (
-        <div className="mt-2 pt-2 border-t border-gray-700/50 mx-ato flex justify-center mt-4">
-          <button
-            onClick={() => authNavigate(navigate)}
-            disabled={isAuthenticating}
-            className={`rounded-lg flex items-center gap-x-1 text-sm transition-all duration-200 px-10 py-1.5 cursor-pointer group/btn relative overflow-hidden ${
-              themeValue
-                ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-indigo-500/30"
-                : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-md hover:shadow-indigo-500/30"
-            }`}
-          >
-            {/* Button Corner Effects */}
-            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/40 rounded-tl-lg opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/40 rounded-br-lg opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-
-            <ExternalLink size={16} className="group-hover/btn:scale-110 transition-transform duration-300" />
-            <span>View All</span>
-          </button>
-        </div>
-      )}
+      {Authors.length > 6 && <ViewAllAuthors navigate={navigate} />}
     </div>
   );
 }
+
+export default TopAuthors;

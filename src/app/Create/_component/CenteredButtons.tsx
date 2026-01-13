@@ -1,10 +1,10 @@
 'use client'
-import { ContextTheme } from "../../../Context/DarkTheme"
-import { useContext } from 'react';
 import { Button } from "../../../components/ui/button"
+import React from 'react';
 
-export default function CenteredButtons({CancellBlog, text}: any){
-  const { themeValue } = useContext(ContextTheme);
+
+const CenteredButtons = React.memo(function CenteredButtons({CancellBlog, text, themeValue}: any){
+
   
   return(
     <div className="mt-8 flex justify-center gap-4">
@@ -29,4 +29,6 @@ export default function CenteredButtons({CancellBlog, text}: any){
       </Button>
     </div>
   )
-}
+})
+
+export default CenteredButtons;

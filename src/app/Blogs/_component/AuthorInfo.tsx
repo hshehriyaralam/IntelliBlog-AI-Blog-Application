@@ -1,9 +1,11 @@
 'use client'
 import Link from "next/link";
 import { User } from "lucide-react";
-import { useState } from "react";
+// import { useState } from "react";
+import React, {useState} from "react";
+import Image from "next/image";
 
-export default function AuthorInfo({ blog, themeValue, lightText, DarkText }: any) {
+const  AuthorInfo = React.memo(({ blog, themeValue, lightText, DarkText }: any) =>   {
   const [imgError, setImgError] = useState(false);
 
   if (!blog) return null; 
@@ -36,12 +38,14 @@ export default function AuthorInfo({ blog, themeValue, lightText, DarkText }: an
     <div className={`flex items-center gap-3 mt-12 border-t ${themeValue ? "border-gray-400" : "border-gray-700"} pt-6`}>
       {hasImage ? (
         <Link href={href}>
-        <img
+        <Image
+          width={48}
+          height={48} 
           src={displayPic}
           alt={displayName}
+          loading="lazy"
           className="w-12 h-12 rounded-full object-cover border"
-          onError={() => setImgError(true)}
-          />
+          onError={() => setImgError(true)} />
           </Link>
       ) : (
         <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300">
@@ -69,4 +73,6 @@ export default function AuthorInfo({ blog, themeValue, lightText, DarkText }: an
       </div>
     </div>
   );
-}
+})
+
+export default AuthorInfo;

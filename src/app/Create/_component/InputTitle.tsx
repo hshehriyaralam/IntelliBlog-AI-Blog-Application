@@ -1,9 +1,9 @@
 'use client'
-import { ContextTheme } from '../../../Context/DarkTheme'
-import { useContext } from 'react';
+import React from 'react';
 
-export default function InputTitle({value, onChange}: any){
-  const { themeValue } = useContext(ContextTheme);
+const InputTitle = React.memo(function InputTitle({value, onChange,themeValue}: any){
+
+
   
   return(
     <div className="space-y-2">
@@ -25,4 +25,5 @@ export default function InputTitle({value, onChange}: any){
       />
     </div>
   )
-}
+})
+export default InputTitle;

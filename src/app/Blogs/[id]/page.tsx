@@ -1,20 +1,24 @@
 "use client";
 import { useParams } from "next/navigation";
 import { useSingleBlogQuery } from "../../../Redux/Services/blogApi"; 
-import {liveRefetchOptions} from "../../../hooks/rtkOptions"
-
 import { ContextTheme } from "../../../Context/DarkTheme";
 import { useContext, useState, useEffect } from "react";
-import BlogTags from "../_component/blogTags";
-import ActionRow from "../_component/ActionRow";
-import AuthorInfo from "../_component/AuthorInfo";
 import LoadingPage from  '../../../components/layout/LoadingPage';
+import ErrorPage from "../_component/error";
+import BlogNotFound from "../_component/notFound";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const BlogTags = dynamic(() => import("../_component/blogTags"), { ssr: false });
+const ActionRow = dynamic(() => import("../_component/ActionRow"), { ssr: false });
+const AuthorInfo = dynamic(() => import("../_component/AuthorInfo"), { ssr: false });
+
 
 export default function BlogDetail() {
   const params = useParams();
   const id = params?.id as string;
 
-  const { data, isLoading, error } = useSingleBlogQuery(id,liveRefetchOptions);
+  const { data, isLoading, error } = useSingleBlogQuery(id);
   const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -22,6 +26,10 @@ export default function BlogDetail() {
     section: "",
     index: null,
   });
+  const blog = data?.blog
+
+
+
 
   useEffect(() => {
     return () => {
@@ -30,44 +38,21 @@ export default function BlogDetail() {
   }, []);
 
   
-  if (isLoading) {
-    return <LoadingPage />;
-  }
+  if (isLoading) return <LoadingPage  />
+  if (error) return <ErrorPage  className={`${themeValue ? light : dark}`} />
+  if (!blog) return <BlogNotFound className={`${themeValue ? light : `text-gray-300 ${dark}`}`} />;
 
-
-
-
-  if (error) {
-    return (
-      <div className={`w-full h-screen flex justify-center
-        text-red-500 font-bold text-2xl items-center 
-        ${themeValue ? light : dark}`}>
-        Error fetching blog details.
-      </div>
-    );
-  }
-
-  const blog = data?.blog
-  if (!blog) {
-    return (
-      <div className={`w-full h-screen flex justify-center items-center text-2xl font-bold ${themeValue ? light : `text-gray-300 ${dark}`}`}>
-        Blog not found!
-      </div>
-    );
-  }
-
-  const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
 
   const shortId = blog.userId?._id ? blog.userId._id.slice(-4) : null;
   const words = blog.blogTitle?.split(" ") || [];
   const shortTitle = words.slice(0, 4).join(" ");
-
   const contentWords = blog.blogContent?.split(" ") || [];
   const summaryWords = blog.blogSummary?.split(" ") || [];
+  
+  const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",});
 
   return (
     <div className={`w-full min-h-screen px-4 sm:px-6 py-10 ${themeValue ? light : dark}`}>
@@ -75,9 +60,12 @@ export default function BlogDetail() {
 
         {/* Blog Image */}
         <div className="w-full flex justify-center mb-6">
-          <img
+          <Image
             src={blog.blogImage}
             alt={blog.blogTitle}
+            width={800}
+            height={400}
+            loading="lazy"
             className="w-[85%] sm:w-[80%] md:w-[95%] h-[280px] sm:h-[320px] md:h-[380px] rounded-lg shadow-lg object-cover hover:scale-[1.01] transition-transform duration-300"
           />
         </div>
@@ -140,14 +128,12 @@ export default function BlogDetail() {
 
         {/* Actions Row */}
           <ActionRow 
-          blogId={blog._id} 
-          likes={blog.likes} 
-          likesCount={blog.likesCount}
-          blogContent={blog.blogContent} 
-          blogSummary={blog.blogSummary}
+          blogId={blog._id}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
-          setCurrentIndex={setCurrentIndex}/>
+          setCurrentIndex={setCurrentIndex}
+          themeValue={themeValue}
+          />
 
         {/* Author Info Bottom */}
         <AuthorInfo 

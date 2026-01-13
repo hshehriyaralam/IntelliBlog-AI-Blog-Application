@@ -1,20 +1,30 @@
 'use client';
-import { useContext, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { ContextTheme } from "../../../Context/DarkTheme";
-import LikedFilter from  "./_component/likedFilter"
 import LoadingPage from "../../../components/layout/LoadingPage";
 import LikedLists from "./_component/LikedList"
 import { useAllLikesAdminQuery } from "../../../Redux/Services/adminApi";
-import {liveRefetchOptions}   from "../../../hooks/rtkOptions"
-
 import type { LikeData } from "../../../../types/Admin"
+import dynamic from "next/dynamic";
+
+
+
+const LikedFilter = dynamic(() => import("./_component/likedFilter"), { ssr: false });
+const PaginationItems = dynamic(() => import('@/components/common/paginationItems'), {
+  ssr: false,
+});
 
 
 export default function UserLikes() {
-  const { data: likesData, isLoading } = useAllLikesAdminQuery(undefined,liveRefetchOptions);
+  const { data: likesData, isLoading } = useAllLikesAdminQuery(undefined);
   const { themeValue, light, dark } = useContext(ContextTheme);
   const [likes, setLikes] = useState<LikeData[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentItems, setCurrentItems] = useState<any[]>([]);
+
+  const handlePageChange = useCallback((items:any[]) => {
+          setCurrentItems(items);
+        }, []);
 
  
 
@@ -91,25 +101,38 @@ useEffect(() => {
           </div>
 
         {/* Likes Table */}
+        <Suspense fallback={<LoadingPage />}>
         <LikedLists
           themeValue={themeValue}
           light={light}
           dark={dark}
-          filteredLikes={filteredLikes}
+          filteredLikes={currentItems}
           searchQuery={searchQuery}
         />
+        </Suspense>
+
+
+
+        
 
         {/* Footer Info */}
-        {filteredLikes.length > 0 && (
+        {currentItems?.length > 0 && (
           <div
             className={`mt-4 text-sm ${
               themeValue ? "text-gray-600" : "text-gray-300"
             }`}
           >
-            Showing {filteredLikes.length} of {likes.length} likes
+            Showing {currentItems.length} of {likes.length} likes
             {searchQuery && ` for "${searchQuery}"`}
           </div>
         )}
+
+        <PaginationItems
+        ItemsPerPage={10}
+        filteredItems={filteredLikes}
+        onPageChange={handlePageChange}
+        themeValue={themeValue}
+        />
       </div>
     </div>
   );

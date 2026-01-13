@@ -1,20 +1,19 @@
 "use client";
 import { FileText, User, Calendar, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useState,  useContext, useMemo } from "react";
-import { ContextTheme } from "../../Context/DarkTheme";
+import React, {  useMemo } from "react";
 import { useAllBlogAdminQuery } from "../../Redux/Services/adminApi";
-import {liveRefetchOptions}   from "../../hooks/rtkOptions"
+// import {liveRefetchOptions}   from "../../hooks/rtkOptions"
 
 import { useRouter } from "next/navigation";
 import LoadingPage from "@/components/layout/LoadingPage";
+import Image from "next/image";
 
 
-export default function RecentBlog() {
-  const { data: AllBlogs, isLoading } = useAllBlogAdminQuery(undefined,liveRefetchOptions );
-  const { themeValue, light, dark } = useContext(ContextTheme);
+const  RecentBlog  = React.memo(({themeValue, light, dark}:any) => {
+  const { data: AllBlogs, isLoading } = useAllBlogAdminQuery(undefined );
+ 
   const router = useRouter();
-  const [imgError, setImgError] = useState(false);
 
   // Exact same sequence as All Blogs - latest blogs first
   const recentBlogs = useMemo(() => {
@@ -32,15 +31,15 @@ export default function RecentBlog() {
       .slice(0, 6); // Take only first 6
   }, [AllBlogs?.data]);
 
-  const formatDate = (dateString: string): string => {
+  const formatDate =  useMemo(() =>   (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
+  }, []);
 
-  const getStatusStyles = (status: string) => {
+  const getStatusStyles = useMemo(() => (status: string) => {
     if (themeValue) {
       // Light theme
       return status === "published"
@@ -52,7 +51,7 @@ export default function RecentBlog() {
         ? "bg-green-900/30 text-green-400 border-green-700"
         : "bg-yellow-900/30 text-yellow-400 border-yellow-700";
     }
-  };
+  }, [themeValue]);
 
   const handleBlogClick = (blogId: string) => {
     router.push(`/Blogs/${blogId}`);
@@ -99,6 +98,8 @@ export default function RecentBlog() {
       </div>
     );
   }
+
+
 
   return (
     <div
@@ -174,7 +175,10 @@ export default function RecentBlog() {
               <div className="col-span-12 md:col-span-1 flex justify-center md:justify-start">
                 {blog?.blogImage ? (
                   <div className="relative w-14 h-14 rounded-lg overflow-hidden shadow-sm">
-                    <img
+                    <Image
+                    width={56}
+                    height={56}
+                    loading="lazy"
                       src={blog?.blogImage}
                       alt={blog?.blogTitle}
                       className="w-full h-full object-cover"
@@ -226,7 +230,10 @@ export default function RecentBlog() {
               <div className="col-span-6 md:col-span-3 flex items-center space-x-2">
                 {blog.userId?.profilePic ? (
                   <div className="relative w-8 h-8">
-                    <img
+                    <Image
+                    width={32}
+                    height={32}
+                    loading="lazy"
                       src={blog.userId.profilePic}
                       alt={blog?.userId?.name || "Author"}
                       className="rounded-full object-cover w-full h-full"
@@ -305,4 +312,7 @@ export default function RecentBlog() {
       )}
     </div>
   );
-}
+})
+
+
+export default RecentBlog;

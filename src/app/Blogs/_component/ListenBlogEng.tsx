@@ -1,18 +1,20 @@
 'use client';
+import { useSingleBlogQuery } from "@/Redux/Services/blogApi";
 import { Volume2 } from "lucide-react";
-import { useRef } from "react";
+import React, { useRef } from "react";
 
-export default function ListeBlogEng({
+const ListeBlogEng = React.memo(  ({
   isPlaying,
-  blogContent,
-  blogSummary,
+  blogId,
   setCurrentIndex,
   setIsPlaying,
-}: any) {
+}: any)  => {
   const fallbackInterval = useRef<any>(null);
-
+  const { data } = useSingleBlogQuery(blogId);
+  const  blogContent = data?.blog.blogContent;
+  const blogSummary = data?.blog.blogSummary;
   const handleListenEng = () => {
-    if (!isPlaying) {
+    if (!isPlaying) { 
       if (!("speechSynthesis" in window)) {
         alert("Your browser does not support speech synthesis.");
         return;
@@ -31,14 +33,18 @@ export default function ListeBlogEng({
           allWords.push({ section: sec.section, word: w, localIndex: idx })
         )
       );
+      // ek variable ko initialize kiya and secton jisme content and summary dono store hain isme loop chalaya ... sec ke all text ko get kiya and split laga kr isko array me convert kiya  Regex se extra space line break ye sab ko eliminate kiya ab array ke form me  with element all text aa gaye then  us text me bh loop chalaya and iske secton name, word and local index ko allwords variable me push kar diya 
 
-      const fullText = sections.map(s => s.text).join(" ");
-      const utter = new SpeechSynthesisUtterance(fullText);
-      utter.lang = "en-US";
-      utter.rate = 1;
-      utter.pitch = 1;
+        const fullText = sections.map(s => s.text).join(" ");
+        const utter = new SpeechSynthesisUtterance(fullText);
+        utter.lang = "en-US";
+        utter.rate = 1;
+        utter.pitch = 1;
+
+        // pehle all text me map chala kr just text ko extract kiya and fir us text ko join method se ek hi array me convert kar diya ... phir SpeechSynthesisUtterance se speech object banaya jisme full text ko pass kar diya hai language and accent select kiya speed 1 rakhin normal and voice tone picth karne ke lye bh pitch 1 rakhin normal
 
       const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+      // isme user ki device detect kar rahe hain wo mobile hai ya destop .userAgent me Mobi ya Android hai to mobile hoga 
 
       /** ------------------------------
        *   DESKTOP HIGHLIGHT — PERFECT
@@ -122,3 +128,7 @@ export default function ListeBlogEng({
     </button>
   );
 }
+)
+
+
+export default ListeBlogEng;  
