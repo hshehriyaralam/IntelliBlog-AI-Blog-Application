@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
-import type { PaginationItemsProps } from "types/Blog";
+import type { PaginationItemsProps } from "../../../types/Blog";
 import {
   Pagination,
   PaginationContent,
