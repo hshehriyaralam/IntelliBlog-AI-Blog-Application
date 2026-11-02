@@ -49,14 +49,13 @@ const  BookmarkButton  = React.memo(({ blogId }: { blogId: string }) => {
   return (
     <button
       onClick={handleBookmark}
-      className={`p-2 sm:p-2.5 rounded-full transition-all shadow-md hover:scale-110 cursor-pointer ${
-        bookmarked ? "bg-amber-500" : "bg-amber-100"
+      aria-label={bookmarked ? "Remove bookmark" : "Bookmark blog"}
+      className={`flex size-11 items-center justify-center rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] transition-transform shadow-[3px_3px_0_var(--ink)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none ${
+        bookmarked ? "bg-[var(--yellow)]" : "bg-[var(--paper)]"
       }`}
     >
       <Bookmark
-        className={`w-4 h-4 sm:w-5 sm:h-5 transition-colors ${
-          bookmarked ? "text-gray-200" : "text-amber-500"
-        }`}
+        className="size-5 text-[var(--ink)]"
       />
     </button>
   );

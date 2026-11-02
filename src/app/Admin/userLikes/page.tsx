@@ -6,6 +6,8 @@ import LikedLists from "./_component/LikedList"
 import { useAllLikesAdminQuery } from "../../../Redux/Services/adminApi";
 import type { LikeData } from "../../../../types/Admin"
 import dynamic from "next/dynamic";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 
 
@@ -67,14 +69,12 @@ useEffect(() => {
   if (isLoading) return <LoadingPage />;
 
   return (
-    <div className={`min-h-screen ${themeValue ? light : dark} md:p-6 sm:p-2`}>
-      <div className="max-w-7xl mx-auto">
+    <PageFrame className="min-h-0 p-4 md:p-8 lg:p-10">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-            <h1 className={`text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent  lg:text-left text-center lg:mt-0 mt-4`}>
-            User Likes
-          </h1>
-           <p className={`mt-2 ${themeValue ? 'text-gray-600' : 'text-gray-300'}  mt-2  text-[16px] lg:max-w-[600px]  lg:text-left   text-center`}>
+            <SectionHeading eyebrow="Admin Control">User Likes</SectionHeading>
+           <p className="mt-3 max-w-xl text-[var(--muted)]">
             See which users liked which blogs
           </p>
         </div>
@@ -134,6 +134,6 @@ useEffect(() => {
         themeValue={themeValue}
         />
       </div>
-    </div>
+    </PageFrame>
   );
 }

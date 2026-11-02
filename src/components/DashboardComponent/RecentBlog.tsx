@@ -73,15 +73,12 @@ const  RecentBlog  = React.memo(({themeValue, light, dark}:any) => {
             }`}>
               Recent Blogs
             </h2>
-            {/* <div className="text-indigo-600 dark:text-indigo-400 text-sm font-medium flex items-center">
-              View all <ExternalLink size={16} className="ml-1" />
-            </div> */}
              <Link href={`/Admin/allBlogs`}>
                     <button
                       className={`rounded-lg  flex items-center gap-x-1  text-sm transition-all duration-200  px-2  py-1   cursor-pointer  ${
                         themeValue
-                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md"
-                          : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-md"
+                          ? "border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]"
+                          : "border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]"
                       } group/tooltip relative`}
                     >
                       <ExternalLink size={16} /> 
@@ -121,18 +118,12 @@ const  RecentBlog  = React.memo(({themeValue, light, dark}:any) => {
           >
             Recent Blogs
           </h2>
-          {/* <Link
-            href="/Admin/allBlogs"
-            className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium flex items-center transition-colors"
-          >
-            View all <ExternalLink size={16} className="ml-1" />
-          </Link> */}
               <Link href={`/Admin/allBlogs`}>
                     <button
                       className={`rounded-lg  flex items-center gap-x-1  text-sm transition-all duration-200  px-2.5  py-1.5   cursor-pointer  ${
                         themeValue
-                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md"
-                          : "bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-md"
+                          ? "border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]"
+                          : "border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]"
                       } group/tooltip relative`}
                     >
                       <span>View All </span>
@@ -188,8 +179,8 @@ const  RecentBlog  = React.memo(({themeValue, light, dark}:any) => {
                   <div
                     className={`w-14 h-14 rounded-lg flex items-center justify-center shadow-sm ${
                       themeValue
-                        ? "bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-400"
-                        : "bg-gradient-to-br from-blue-900/20 to-indigo-900/20 text-blue-400"
+                        ? "bg-[var(--blue)] text-[var(--ink)]"
+                        : "bg-[var(--blue)] text-[var(--ink)]"
                     }`}
                   >
                     <FileText size={20} />
@@ -243,8 +234,8 @@ const  RecentBlog  = React.memo(({themeValue, light, dark}:any) => {
                           <div class="w-8 h-8 rounded-full flex items-center justify-center
                             ${
                               themeValue
-                                ? "bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600"
-                                : "bg-gradient-to-br from-purple-900/30 to-pink-900/30 text-purple-400"
+                                ? "bg-[var(--rose)] text-[var(--ink)]"
+                                : "bg-[var(--rose)] text-[var(--ink)]"
                             }">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.485 0 4.78.635 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -258,8 +249,8 @@ const  RecentBlog  = React.memo(({themeValue, light, dark}:any) => {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       themeValue
-                        ? "bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600"
-                        : "bg-gradient-to-br from-purple-900/30 to-pink-900/30 text-purple-400"
+                        ? "bg-[var(--rose)] text-[var(--ink)]"
+                        : "bg-[var(--rose)] text-[var(--ink)]"
                     }`}
                   >
                     <User size={14} />

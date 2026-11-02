@@ -1,17 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  --ink: #2a2a2a;
+  --bg: #fdebdf;
+  --paper: #faf6f1;
+  --white: #ffffff;
+  --blue: #8fa4ec;
+  --teal: #1f9d8f;
+  --pink: #ee4b8b;
+  --rose: #f58de8;
+  --yellow: #f6c944;
+  --purple: #a54df2;
+  --mint: #7ae6b8;
+  --muted: #555555;
+  --bw: 3px;
+  --bw-frame: 4px;
+  --r-card: 22px;
+  --r-btn: 14px;
+  --r-chip: 999px;
+  --sh-card: 7px 7px 0 var(--ink);
+  --sh-btn: 5px 5px 0 var(--ink);
+  --sh-chip: 3px 3px 0 var(--ink);
+  color-scheme: light;
+}
+
 body {
-  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-inter), sans-serif;
+  min-width: 320px;
+  overflow-x: hidden;
 }
 
-body.light {
-  background-color: white;
-  color: black;
+html {
+  overflow-x: hidden;
 }
 
-body.dark {
-  background-color: #1a202c;
-  color: white;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

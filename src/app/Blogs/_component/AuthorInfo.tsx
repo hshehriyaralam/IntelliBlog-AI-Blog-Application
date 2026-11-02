@@ -35,7 +35,7 @@ const  AuthorInfo = React.memo(({ blog, themeValue, lightText, DarkText }: any) 
   const href = authorId ? `/Authors/${encodeURIComponent(authorId)}` : `/Authors`;
 
   return (
-    <div className={`flex items-center gap-3 mt-12 border-t ${themeValue ? "border-gray-400" : "border-gray-700"} pt-6`}>
+    <div className="mt-12 flex items-center gap-3 border-t-[3px] border-[var(--ink)] pt-6">
       {hasImage ? (
         <Link href={href}>
         <Image
@@ -44,22 +44,22 @@ const  AuthorInfo = React.memo(({ blog, themeValue, lightText, DarkText }: any) 
           src={displayPic}
           alt={displayName}
           loading="lazy"
-          className="w-12 h-12 rounded-full object-cover border"
+          className="size-12 rounded-full border-[3px] border-[var(--ink)] object-cover"
           onError={() => setImgError(true)} />
           </Link>
       ) : (
-        <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-300">
-          <User className="w-6 h-6 text-gray-600" />
+        <div className="flex size-12 items-center justify-center rounded-full border-[3px] border-[var(--ink)] bg-[var(--blue)]">
+          <User className="size-6 text-[var(--ink)]" />
         </div>
       )}
       <div>
         <Link href={href}>
-          <p className={`font-semibold cursor-pointer ${themeValue ? lightText : DarkText}`}>
+          <p className="cursor-pointer font-extrabold text-[var(--ink)]">
             {displayName}
           </p>
         </Link>
 
-        <p className="text-xs text-gray-400 dark:text-gray-500">
+        <p className="text-xs text-[var(--muted)]">
           {blog.createdAt
             ? new Date(blog.createdAt).toLocaleString("en-US", {
                 year: "numeric",

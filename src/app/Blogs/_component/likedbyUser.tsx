@@ -22,9 +22,7 @@ const LikedByUser = React.memo(({ blogId,themeValue }: { blogId: string, themeVa
   if (!likedByUser || likedByUser.length === 0) {
     return (
       <div
-        className={`text-[10x] md:text-[13px] ${
-          themeValue ? "text-gray-500" : "text-gray-400"
-        }`}
+        className="text-[10px] text-[var(--muted)] md:text-[13px]"
       >
         No likes yet
       </div>
@@ -45,9 +43,7 @@ const otherCount = useMemo(() => isYou ? totalCount - 1  : totalCount - (firstUs
   
   return (
     <div
-      className={`text-[10px] md:text-[13px] ${
-        themeValue ? "text-gray-700" : "text-gray-300"
-      }`}
+      className="text-[10px] text-[var(--muted)] md:text-[13px]"
     >
       <span>
   Liked by{" "}
@@ -74,14 +70,10 @@ const otherCount = useMemo(() => isYou ? totalCount - 1  : totalCount - (firstUs
 
       {/* Modal */}
       <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
+        <div className="fixed inset-0 bg-[rgba(42,42,42,0.55)]" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel
-            className={`w-full max-w-xs sm:max-w-sm rounded-xl shadow-lg p-4 border transition ${
-              themeValue
-                ? "bg-white text-gray-900 border-gray-300"
-                : "bg-black text-gray-100 border-gray-800"
-            }`}
+            className="w-full max-w-xs rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] p-4 text-[var(--ink)] shadow-[var(--sh-card)] sm:max-w-sm"
           >
             <Dialog.Title className="text-base sm:text-lg font-bold mb-3">
               Liked by
@@ -95,9 +87,7 @@ const otherCount = useMemo(() => isYou ? totalCount - 1  : totalCount - (firstUs
                   <Link
                     key={user.id || index}
                     href={`/Authors/${user._id}`}
-                    className={`flex items-center gap-3 p-2 rounded-md transition ${
-                      themeValue ? "hover:bg-gray-100" : "hover:bg-gray-900"
-                    }`}
+                    className="flex items-center gap-3 rounded-md p-2 transition hover:bg-[var(--white)]"
                   >
                     {hasImage ? (
                       <img
@@ -121,7 +111,7 @@ const otherCount = useMemo(() => isYou ? totalCount - 1  : totalCount - (firstUs
 
             <button
               onClick={() => setIsOpen(false)}
-              className="mt-4 w-full bg-gradient-to-r from-indigo-600 to-purple-600 cursor-pointer text-white py-1.5 sm:py-2 rounded-lg text-sm sm:text-base"
+              className="mt-4 min-h-11 w-full cursor-pointer rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--purple)] py-1.5 text-sm font-extrabold text-white shadow-[var(--sh-btn)] sm:py-2 sm:text-base"
             >
               Close
             </button>

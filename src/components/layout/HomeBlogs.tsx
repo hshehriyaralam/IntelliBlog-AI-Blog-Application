@@ -1,45 +1,21 @@
 "use client";
-import { ContextTheme } from '../../Context/DarkTheme'
-import { useContext } from 'react';
-import { useFetchBlogQuery } from "../../Redux/Services/blogApi"; 
-import BlogCard from "../common/BLogCard"
+import { useFetchBlogQuery } from "../../Redux/Services/blogApi";
+import BlogCard from "../common/BLogCard";
 
 export default function HomeBlogs() {
-  const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme)
-  const { data } = useFetchBlogQuery(undefined ,{
-  refetchOnMountOrArgChange: false,
-  refetchOnFocus: false,
-  refetchOnReconnect: false,
-});
+  const { data } = useFetchBlogQuery(undefined, {
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
+  });
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* Blogs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.blogs?.slice(0, 7).map((blog: any, index: number) => {
-          const isFeatured = index % 6 === 0;
-          return (
-            <div
-              key={blog._id}
-              className={`
-                border
-                ${isFeatured ? 'lg:col-span-2' : ''}
-                ${themeValue ? `${light} border-gray-200` : `${dark} border-gray-700`} 
-                rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300
-                hover:scale-[1.02] cursor-pointer
-              `}
-            >
-              <BlogCard 
-                blog={blog}
-                isFeatured={isFeatured}
-                themeValue={themeValue}
-                lightText={lightText}
-                DarkText={DarkText}
-              />
-            </div>    
-          );
-        })}
-      </div>
+    <div className="contents">
+      {data?.blogs?.slice(0, 2).map((blog: any) => (
+        <div key={blog._id} className="min-w-0">
+          <BlogCard blog={blog} isFeatured={false} themeValue />
+        </div>
+      ))}
     </div>
   );
 }

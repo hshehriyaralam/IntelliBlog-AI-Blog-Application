@@ -25,8 +25,8 @@ const  DeleteBlogButton = React.memo(({themeValue,blog}:any) => {
       className={`px-2 py-1 flex items-center gap-x-1 text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer 
     ${
       themeValue
-        ? 'bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-700 hover:to-red-600 shadow-md hover:shadow-lg'
-        : 'bg-gradient-to-r from-rose-500 to-red-400 text-white hover:from-rose-600 hover:to-red-500 shadow-md hover:shadow-lg'
+        ? 'border-[3px] border-[var(--ink)] bg-[var(--pink)] text-white shadow-[var(--sh-btn)]'
+        : 'border-[3px] border-[var(--ink)] bg-[var(--pink)] text-white shadow-[var(--sh-btn)]'
     }`}
     >
       {isLoading ?  <SingleButtonLoader  />     :  (

@@ -34,9 +34,9 @@ const ShareButton = React.memo(({ blogId }: any) =>  {
 
     return(
          <button  onClick={handleShare}
-         className="p-2 sm:p-2.5 rounded-full bg-emerald-100  
-          hover:bg-emerald-200  transition-all shadow-md hover:scale-110 cursor-pointer ">
-          <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 " />
+         aria-label="Share blog"
+         className="flex size-11 items-center justify-center rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--mint)] transition-transform shadow-[3px_3px_0_var(--ink)] hover:-translate-y-0.5 active:translate-y-1 active:shadow-none">
+          <Share2 className="size-5 text-[var(--ink)]" />
         </button>
     )
 })

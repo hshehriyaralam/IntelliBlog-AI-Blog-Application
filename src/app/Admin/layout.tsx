@@ -29,48 +29,36 @@ export default function DashboardLayout({ children }: any) {
   };
 
   return (
-    <section className={`min-h-screen flex ${themeValue ? light : dark}`}>
+    <section className="min-h-screen flex bg-[var(--bg)] text-[var(--ink)]">
       {/* Sidebar - Desktop */}
       <div
-        className={`hidden md:flex w-56 flex-col border-r ${
-          themeValue
-            ? `${light} border-gray-200 text-black`
-            : `${dark} border-gray-700 text-gray-200`
-        } shadow-lg sticky top-0 h-screen`}
+        className="sticky top-0 hidden h-screen w-64 flex-col border-r-[3px] border-[var(--ink)] bg-[var(--paper)] shadow-[7px_0_0_var(--ink)] md:flex"
       >
         {/* Sidebar Header */}
         <div
-          className={`p-6 border-b ${
-            themeValue ? "border-gray-300" : "border-gray-800"
-          }`}
+          className="border-b-[3px] border-[var(--ink)] p-6"
         >
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-black tracking-[-0.04em] text-[var(--ink)]">
             Admin Control
           </h1>
           <p
-            className={`text-sm ${
-              themeValue ? "text-gray-600" : "text-gray-300"
-            }`}
+            className="text-sm text-[var(--muted)]"
           >
             Manage your platform
           </p>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto ">
+        <nav className="flex-1 space-y-2 overflow-y-auto p-4">
           {menuItems.map((item) => (
             <button
               key={item.href}
               onClick={() => handleNavigation(item.href)}
               disabled={isPending || isActive(item.href)}
-              className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 w-full text-left disabled:opacity-70 cursor-pointer ${
+              className={`flex w-full cursor-pointer items-center gap-3 rounded-[var(--r-btn)] border-[3px] border-transparent p-3 text-left transition-all disabled:opacity-70 ${
                 isActive(item.href)
-                  ? "text-indigo-700 shadow-sm"
-                  : `hover:bg-blue-200 ${
-                      themeValue
-                        ? "text-black hover:text-gray-900"
-                        : "hover:text-black text-gray-200"
-                    }`
+                  ? "border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)] shadow-[var(--sh-btn)]"
+                  : "text-[var(--muted)] hover:border-[var(--ink)] hover:bg-[var(--paper)]"
               }`}
             >
               <item.icon size={20} />
@@ -82,31 +70,21 @@ export default function DashboardLayout({ children }: any) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen lg:mb-4 mb-20">
-        <main className="flex-1 p-4 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-7">{children}</main>
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div
-        className={`md:hidden fixed bottom-0 left-0 right-0 border-t py-2 ${
-          themeValue
-            ? "bg-white border-gray-200 text-black"
-            : "bg-black border-gray-700 text-gray-100"
-        } z-50`}
-      >
-        <nav className="flex justify-around items-center py-2">
+      <div className="fixed left-0 right-0 top-[76px] z-50 overflow-x-auto border-y-[3px] border-[var(--ink)] bg-[var(--paper)] px-3 py-2 md:hidden">
+        <nav className="flex min-w-max items-center gap-2">
           {menuItems.map((item) => (
             <button
               key={item.href}
               onClick={() => handleNavigation(item.href)}
               disabled={isPending || isActive(item.href)}
-              className={`flex flex-col items-center text-[12px] disabled:opacity-70 ${
+              className={`flex min-h-11 flex-row items-center gap-2 rounded-full border-[2.5px] px-3 text-[12px] font-extrabold disabled:opacity-70 ${
                 isActive(item.href)
-                  ? "text-indigo-500"
-                  : `${
-                      themeValue
-                        ? "text-gray-600 hover:text-indigo-600"
-                        : "text-gray-300 hover:text-indigo-400"
-                    }`
+                  ? "border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)] shadow-[3px_3px_0_var(--ink)]"
+                  : "border-[var(--ink)] bg-[var(--white)] text-[var(--muted)]"
               }`}
             >
               <item.icon size={22} />

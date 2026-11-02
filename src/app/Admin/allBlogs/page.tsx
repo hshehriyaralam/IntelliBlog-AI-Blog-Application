@@ -7,6 +7,8 @@ import type {DraftFilters} from "../../../../types/Blog"
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import AllBlogList from "./_component/BlogsList";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 
 
@@ -93,16 +95,14 @@ export default function UserAllBlogs() {
   if (isLoading) return <LoadingPage />;
 
   return (
-    <div className={`min-h-screen ${themeValue ? light : dark} p-2`}>
-      <div className="max-w-7xl mx-auto">
+    <PageFrame className="min-h-0 p-4 md:p-8 lg:p-10">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className={`text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent  lg:text-left text-center lg:mt-0 mt-4 `}>
-                All Blogs
-              </h1>
-              <p className={`mt-2 ${themeValue ? 'text-gray-600' : 'text-gray-300'}  mt-2  text-[16px] lg:max-w-[600px] max-w-[250px]  lg:text-left text-center   mx-auto `}>
+              <SectionHeading eyebrow="Admin Control">All Blogs</SectionHeading>
+              <p className="mt-3 max-w-xl text-[var(--muted)]">
                 Monitor, filter and manage all blogs from a single dashboard
               </p>
             </div>
@@ -141,15 +141,13 @@ export default function UserAllBlogs() {
         </div>
 
         {/* Blogs Table */}
-        <div className={`rounded-2xl shadow-xl overflow-hidden   ${
-          themeValue ? 'bg-white' : 'bg-gray-800 '
-        }`}>
+        <div className="overflow-hidden rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] shadow-[var(--sh-card)]">
           {/* Table Header */}
           <div
                 className={`hidden md:grid grid-cols-12 gap-4 p-6 border-b ${
                   themeValue
-                    ? `border-gray-200 ${light} text-gray-900`
-                    : `border-gray-700 ${dark} text-white`
+                    ? `border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)]`
+                    : `border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)]`
                 } font-semibold text-sm`}
               >
               <div className="col-span-1" /> 
@@ -177,6 +175,6 @@ export default function UserAllBlogs() {
         themeValue={themeValue}/>
    
       </div>
-    </div>
+    </PageFrame>
   );
 }

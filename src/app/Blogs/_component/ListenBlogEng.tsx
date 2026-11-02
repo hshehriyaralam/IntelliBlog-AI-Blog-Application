@@ -120,8 +120,8 @@ const ListeBlogEng = React.memo(  ({
     <button
       onClick={handleListenEng}
       className="flex items-center gap-2 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full 
-        bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium 
-        hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:scale-105 cursor-pointer"
+        border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white text-sm font-medium
+         transition-all transform hover:scale-105 cursor-pointer"
     >
       <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
       {isPlaying ? "Stop" : "Listen"}

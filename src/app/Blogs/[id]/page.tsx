@@ -55,44 +55,45 @@ export default function BlogDetail() {
   day: "numeric",});
 
   return (
-    <div className={`w-full min-h-screen px-4 sm:px-6 py-10 ${themeValue ? light : dark}`}>
-      <div className="max-w-full sm:max-w-4xl md:max-w-5xl mx-auto">
+    <div className="w-full px-4 py-10 sm:px-6 md:py-16">
+      <article className="mx-auto w-full max-w-[760px]">
 
         {/* Blog Image */}
-        <div className="w-full flex justify-center mb-6">
+        <div className="mb-8 w-full">
           <Image
             src={blog.blogImage}
             alt={blog.blogTitle}
             width={800}
             height={400}
-            loading="lazy"
-            className="w-[85%] sm:w-[80%] md:w-[95%] h-[280px] sm:h-[320px] md:h-[380px] rounded-lg shadow-lg object-cover hover:scale-[1.01] transition-transform duration-300"
+            priority
+            sizes="(max-width: 760px) 100vw, 760px"
+            className="h-[240px] w-full rounded-[var(--r-card)] border-[3px] border-[var(--ink)] object-cover shadow-[var(--sh-card)] sm:h-[360px]"
           />
         </div>
 
         {/* Blog Title */}
-        <h2 className={`text-3xl sm:text-4xl md:text-4xl font-bold mb-4 text-center tracking-wide ${themeValue ? lightText : DarkText}`}>
+        <h1 className="mb-5 text-4xl font-black uppercase leading-[0.95] tracking-[-0.045em] text-[var(--ink)] sm:text-6xl">
           {blog.blogTitle}
-        </h2>
+        </h1>
 
         {/* Author Line */}
-        <p className={`text-center mb-10 italic font-medium ${themeValue ?"text-indigo-600":"text-indigo-400"}`}>
-          By <span className="font-semibold">{blog.userId?.name || "Unknown Author"}</span> 
-          {" "} · {formattedDate} · <span className="font-semibold">{shortTitle}{shortId}</span>
+        <p className="mb-8 border-b-[3px] border-[var(--ink)] pb-6 text-sm font-medium text-[var(--muted)] sm:text-base">
+          By <span className="font-extrabold text-[var(--ink)]">{blog.userId?.name || "Unknown Author"}</span>
+          {" "} · {formattedDate} · <span className="font-extrabold text-[var(--ink)]">{shortTitle}{shortId}</span>
         </p>
 
         {/* Blog Content */}
-        <div className="mb-12 px-2 sm:px-6">
-          <h3 className={`text-2xl font-semibold mb-4 ${themeValue ? lightText : DarkText} ${currentIndex.section === "content-heading" ? "bg-yellow-300 px-2 rounded text-gray-700" : ""}`}>
+        <div className="mb-12">
+          <h2 className={`mb-4 text-3xl font-black tracking-[-0.04em] text-[var(--ink)] ${currentIndex.section === "content-heading" ? "rounded bg-[var(--yellow)] px-2" : ""}`}>
             Content
-          </h3>
-          <p className={`leading-8 text-justify text-lg flex flex-wrap gap-1 ${ themeValue ? lightText : "text-gray-300"}`}>
+          </h2>
+          <p className="flex flex-wrap gap-1 text-justify text-lg leading-[1.7] text-[var(--muted)]">
             {contentWords.map((word:string, i:number) => (
               <span
                 key={i}
                 className={
                   currentIndex.section === "content" && i === currentIndex.index
-                    ? "bg-yellow-300 px-1 rounded text-gray-700"
+                    ? "rounded bg-[var(--yellow)] px-1 text-[var(--ink)]"
                     : ""
                 }
               >
@@ -104,17 +105,17 @@ export default function BlogDetail() {
 
         {/* Blog Summary */}
         {blog.blogSummary && (
-          <div className="mb-12 px-2 sm:px-6">
-            <h3 className={`text-2xl font-semibold mb-4 ${themeValue ? lightText : DarkText} ${currentIndex.section === "summary-heading" ? "bg-yellow-300 px-2 rounded text-gray-700" : ""}`}>
+          <div className="mb-12 rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--yellow)] p-5 shadow-[var(--sh-card)]">
+            <h2 className={`mb-4 text-3xl font-black tracking-[-0.04em] text-[var(--ink)] ${currentIndex.section === "summary-heading" ? "rounded bg-[var(--paper)] px-2" : ""}`}>
               AI Summary
-            </h3>
-            <p className={`leading-8 text-justify text-lg flex flex-wrap gap-1 ${ themeValue ? lightText : "text-gray-300"}`}>
+            </h2>
+            <p className="flex flex-wrap gap-1 text-justify text-lg leading-[1.7] text-[var(--muted)]">
               {summaryWords.map((word:string, i:number) => (
                 <span
                   key={i}
                   className={
                     currentIndex.section === "summary" && i === currentIndex.index
-                      ? "bg-yellow-300 px-1 rounded text-gray-700"
+                      ? "rounded bg-[var(--paper)] px-1 text-[var(--ink)]"
                       : ""}>
                   {word}
                 </span>
@@ -142,7 +143,7 @@ export default function BlogDetail() {
           lightText={lightText}
           DarkText={DarkText}
         />
-      </div>
+      </article>
     </div>
   );
 }

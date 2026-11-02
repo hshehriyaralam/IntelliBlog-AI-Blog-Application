@@ -66,19 +66,13 @@ export default function QuickActions({themeValue, light, dark}:any) {
   }, [themeValue]);
 
   return (
-    <div className={`rounded-xl shadow-sm border ${
-      themeValue ? `${light} border-gray-200` : `${dark} border-gray-700`
-    }`}>
-      <div className={`p-6 border-b ${
-        themeValue ? "border-gray-200" : "border-gray-700"
-      }`}>
-        <h2 className={`text-xl font-semibold ${
-          themeValue ? "text-gray-900" : "text-white"
-        }`}>
+    <div className="overflow-hidden rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] shadow-[var(--sh-card)]">
+      <div className="border-b-[3px] border-[var(--ink)] bg-[var(--rose)] p-6">
+        <h2 className="text-xl font-black text-[var(--ink)]">
           Quick Actions
         </h2>
       </div>
-      <div className="p-6 space-y-3">
+      <div className="space-y-3 p-6">
         {actions.map((action, index) => {
           const colorClasses = getColorClasses(action.color);
           
@@ -86,11 +80,7 @@ export default function QuickActions({themeValue, light, dark}:any) {
             <Link
               key={index}
               href={action.href}
-              className={`flex items-center p-3 rounded-lg transition-colors duration-200 group ${
-                themeValue 
-                  ? "hover:bg-gray-50" 
-                  : "hover:bg-gray-700/50"
-              }`}
+              className="group flex items-center rounded-[var(--r-btn)] border-[2.5px] border-transparent p-3 transition-colors hover:border-[var(--ink)] hover:bg-[var(--paper)]"
             >
               <div
                 className={`p-2 rounded-lg ${colorClasses.bg} mr-3 group-hover:scale-110 transition-transform duration-200`} >

@@ -6,6 +6,8 @@ import LoadingPage from "../../../components/layout/LoadingPage";
 import {useAllbookmarksAdminQuery} from '../../../Redux/Services/adminApi';
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 
 
@@ -79,14 +81,12 @@ export default function UserBookmarks() {
 
 
   return (
-    <div className={`min-h-screen ${themeValue ? light : dark} md:p-6 sm:p-2`}>
-      <div className="max-w-7xl mx-auto">
+    <PageFrame className="min-h-0 p-4 md:p-8 lg:p-10">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent  lg:text-left text-center lg:mt-0 mt-4">
-            User Bookmarks
-          </h1>
-          <p className={`${themeValue ? "text-gray-600" : "text-gray-300"} mt-2  text-[15px] lg:max-w-[600px] max-w-[250px]  lg:text-left text-center  lg:mx-0 mx-auto`}>
+          <SectionHeading eyebrow="Admin Control">User Bookmarks</SectionHeading>
+          <p className="mt-3 max-w-xl text-[var(--muted)]">
             Track and manage all user saved content across the platform 
           </p>
         </div>
@@ -146,6 +146,6 @@ export default function UserBookmarks() {
         filteredItems={filteredBookmarks}
         onPageChange={handlePageChange}
         themeValue={themeValue}  />
-    </div>
+    </PageFrame>
   );
 }

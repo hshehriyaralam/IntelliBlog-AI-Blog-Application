@@ -10,7 +10,7 @@ const  UserNotFoundPage  = React.memo(({themeValue, light,dark,handleGoogleLogin
     <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
     <h2 className={`text-2xl font-bold mb-2   ${themeValue ? "" : "text-gray-300"}`}>No Profile Found</h2>
     <p className={`mb-6  text-gray-500 `}>Please sign in to view your profile</p>
-    <Button onClick={handleGoogleLogin} className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+    <Button onClick={handleGoogleLogin} className="border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]">
     Sign In with Google
     </Button>
 </div>

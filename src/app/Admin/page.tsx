@@ -3,6 +3,8 @@ import { useContext } from "react";
 import { ContextTheme } from "../../Context/DarkTheme";
 import dynamic from "next/dynamic";
 import LoadingPage from "@/components/layout/LoadingPage";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 
 const Stats = dynamic(() => import("../../components/DashboardComponent/Stats"), {
@@ -38,16 +40,16 @@ const QuickActions = dynamic(() => import("../../components/DashboardComponent/Q
 export default function AdminDashboard() {
     const { themeValue, light, dark } = useContext(ContextTheme);
   return (
-    <div className={`min-h-screen  lg:p-6 p-0   ${themeValue ? light : dark} `}>
-      <div className="max-w-7xl mx-auto">
+    <PageFrame className="min-h-0 gap-8 p-4 md:p-8 lg:p-10">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Header with Stats */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent  lg:text-left text-center lg:mt-0 mt-4">Dashboard Overview</h1>
-              <p className={`${themeValue ? "text-gray-600" : "text-gray-300"}  mt-2  text-md lg:max-w-[600px] max-w-[300px]  lg:text-left text-center   mx-auto `}>Welcome back! Here's your blog performance summary.</p>
+              <SectionHeading eyebrow="Admin Control">Manage your platform</SectionHeading>
+              <p className="mt-3 max-w-xl text-[var(--muted)]">Welcome back! Here's your blog performance summary.</p>
             </div>
-          </div>
+            </div>
         </div>
 
         <Stats   themeValue={themeValue} light={light} dark={dark}  />
@@ -66,6 +68,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </div>
+    </PageFrame>
   );
 }

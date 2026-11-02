@@ -58,16 +58,16 @@ export default function WriteBlogForm() {
 
 
   return (
-    <div className={`w-full min-h-screen ${themeValue ? light : dark}`}>
-      <form onSubmit={addBlogs} className="max-w-6xl mx-auto px-4 py-4">
-        <h1 className="text-4xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent text-center">
+    <div className="w-full px-4 py-10 md:py-16">
+      <form onSubmit={addBlogs} className="mx-auto max-w-7xl">
+        <h1 className="mb-10 text-center text-5xl font-black uppercase leading-none tracking-[-0.045em] text-[var(--ink)] md:text-7xl">
           Add Article
         </h1>
 
         {/* Main Editor Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
           {/* Left Column - Title and Content */}
-          <div className="space-y-3">
+          <div className="order-1 space-y-7">
             {/* Blog Titlle  */}
             <InputTitle 
             onChange={handleTitleChange} 
@@ -78,25 +78,15 @@ export default function WriteBlogForm() {
             onChange={handleContentChange} 
             value={content} 
             themeValue={themeValue} />
-            {/* Feature Image */}
-            <FeatureImage
-              onChange={handleImageChange}
-              imagePreview={imagePreview}
-              themeValue={themeValue}
-            />
           </div>
 
           {/* Middle Column - Summary and Tags */}
-          <div className="space-y-3">
+          <div className="order-2 space-y-7">
             <div
-              className={`p-4 rounded-2xl shadow-sm transition-all ${
-                themeValue ? "bg-gray-50" : "bg-gray-900 border border-gray-700"
-              }`}
+              className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--mint)] p-5 shadow-[var(--sh-card)]"
             >
               <h2
-                className={`text-sm font-semibold mb-3 tracking-wide ${
-                  themeValue ? "text-gray-700" : "text-gray-200"
-                }`}
+                className="mb-3 text-lg font-black tracking-[-0.03em] text-[var(--ink)]"
               >
                 🤖 AI Assistance
               </h2>
@@ -106,13 +96,7 @@ export default function WriteBlogForm() {
                   onClick={handleSuggest}
                   variant="outline"
                   disabled={aiLoading}
-                  className={`w-full flex justify-between items-center rounded-xl px-3 py-2 text-xs font-medium transition-all cursor-pointer
-              ${
-                themeValue
-                  ? "border-gray-300 text-gray-700 hover:bg-gray-100"
-                  : "border-gray-600 text-gray-200 hover:bg-gray-800"
-              }
-              disabled:opacity-60 disabled:cursor-not-allowed`}
+                  className="w-full cursor-pointer justify-between disabled:cursor-not-allowed"
                 >
                   {aiLoading ? (
                     <div className="flex items-center gap-2 w-full justify-center">
@@ -143,7 +127,13 @@ export default function WriteBlogForm() {
               tags={tags}
               themeValue={themeValue}
             />
+            <FeatureImage
+              onChange={handleImageChange}
+              imagePreview={imagePreview}
+              themeValue={themeValue}
+            />
           </div>
+          <div className="order-3 lg:row-span-2">
           <PreviewBlog
           themeValue={themeValue}
           title={title} 
@@ -151,6 +141,7 @@ export default function WriteBlogForm() {
            tags={tags} 
           imagePreview={imagePreview} 
           />
+          </div>
         </div>
 
         {/* Action Buttons - Centered */}

@@ -1,14 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { useContext, useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, Moon, Sun, PenSquare, Home, Users, BookOpen, User, Bookmark } from 'lucide-react';
-import { ContextTheme } from '../../Context/DarkTheme';
+import { Menu, X } from 'lucide-react';
 import { useGetProfileQuery } from "../../Redux/Services/userApi";
 import { useDispatch } from "react-redux";
 import { googleLoginThunk } from "../../Redux/Slices/authSlice";
 import type { AppDispatch } from "../../Redux/store";
-import SingleButtonLoader from '../common/SingleButtonLoader';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,7 +16,6 @@ export default function Navbar() {
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
   const dispatch = useDispatch<AppDispatch>();
-  const { themeValue, changeTheme, light, dark } = useContext(ContextTheme);
   const { data } = useGetProfileQuery(undefined);
 
   const router = useRouter();
@@ -75,16 +72,12 @@ export default function Navbar() {
 
   /** 🔹 Navbar Links */
   const navLinks = useMemo(() => [
-    { href: "/", label: "Home", icon: Home },
-    { href: "/Create", label: "Create Blog", icon: PenSquare },
-    { href: "/Blogs", label: "Blogs", icon: BookOpen },
-    { href: "/Authors", label: "Authors", icon: Users },
-    { href: "/Collection", label: "Collection", icon: Bookmark },
+    { href: "/", label: "Home" },
+    { href: "/Create", label: "Create Blog" },
+    { href: "/Blogs", label: "Blogs" },
+    { href: "/Authors", label: "Authors" },
+    { href: "/Collection", label: "Collection" },
   ], []);
-
-  const activeClasses = themeValue
-    ? "bg-indigo-50 text-indigo-700"
-    : "bg-indigo-900/30 text-indigo-300";
 
   /** 🔹 Close menu on route change */
   useEffect(() => {
@@ -93,49 +86,38 @@ export default function Navbar() {
 
 
   return (
-    <header
-      className={`sticky top-0 z-50 w-full backdrop-blur-md py-0.5 bg-opacity-90 ${
-        themeValue
-          ? `${light} border-b border-gray-200 shadow-sm`
-          : `${dark} border-b border-gray-800 shadow-lg`
-      }`}
-    >
-      <div className="container mx-auto flex justify-between items-center py-3 px-6">
+    <header className={`sticky top-0 z-50 w-full border-b-[3px] border-[var(--ink)] bg-[var(--paper)]`}>
+      <div className="mx-auto flex min-h-20 max-w-[1240px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
 
         {/* ================= LOGO ================= */}
         <Link
           href="/"
-          className="text-2xl font-bold flex items-center gap-1 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent cursor-pointer"
+          className="flex min-h-11 items-center gap-2 text-lg font-black tracking-[-0.04em] text-[var(--ink)]"
           onClick={() => setMenuOpen(false)}
         >
-          <div
-            className={`p-1.5 rounded-lg ${themeValue ? 'bg-indigo-100' : 'bg-indigo-900/30'}`}
-          >
-            <BookOpen size={18} className="text-indigo-600" />
+          <div aria-hidden="true" className="relative flex h-9 w-8 items-center justify-center">
+            <span className="absolute left-0 top-1 h-7 w-2.5 rounded-full border-2 border-[var(--ink)] bg-[var(--blue)]" />
+            <span className="absolute left-3 top-2 h-2.5 w-2.5 rounded-full border-2 border-[var(--ink)] bg-[var(--yellow)]" />
+            <span className="absolute bottom-1 right-0 h-6 w-2.5 rounded-full border-2 border-[var(--ink)] bg-[var(--pink)]" />
           </div>
-          Intelli<span className="text-indigo-500">Blog</span>
+          intelli.blog
         </Link>
 
         {/* =============== DESKTOP MENU =============== */}
-        <div className="hidden lg:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-5">
           <nav>
-            <ul
-              className={`flex space-x-3 font-medium items-center ${
-                themeValue ? 'text-gray-700' : 'text-gray-200'
-              }`}
-            >
-              {navLinks.map(({ href, label, icon: Icon }) => (
+            <ul className="flex items-center gap-1 font-bold text-[var(--ink)]">
+              {navLinks.map(({ href, label }) => (
                 <li key={href}>
                   <button
                     onClick={() => handleNavigate(href)}
                     disabled={isAuthenticating}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-all cursor-pointer disabled:opacity-50 ${
+                    className={`relative flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm transition-all cursor-pointer disabled:opacity-50 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--purple)] focus-visible:outline-offset-[3px] ${
                       pathname === href
-                        ? activeClasses
-                        : 'hover:bg-indigo-50 hover:text-indigo-700 '
+                        ? "after:absolute after:bottom-1 after:left-3 after:right-3 after:h-1 after:rounded-full after:border-2 after:border-[var(--ink)] after:bg-[var(--yellow)]"
+                        : "hover:bg-[var(--yellow)]"
                     }`}
                   >
-                    <Icon size={16} />
                     {label}
                   </button>
                 </li>
@@ -143,53 +125,25 @@ export default function Navbar() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-4 pl-4 border-l border-gray-200 ml-4">
+          <div className="border-l-[3px] border-[var(--ink)] pl-4">
             <button
               onClick={() => handleNavigate('/Profile')}
               disabled={isAuthenticating}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer disabled:opacity-50 ${
-                themeValue
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md'
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-md'
-              }`}
+              className="flex min-h-11 items-center gap-2 rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--purple)] px-4 font-extrabold text-white shadow-[var(--sh-btn)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0_var(--ink)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--purple)] focus-visible:outline-offset-[3px]"
             >
-              <User size={16} />
               Profile
             </button>
 
-            <button
-              onClick={changeTheme}
-              className={`p-2.5 rounded-full transition-all duration-500 cursor-pointer ${
-                themeValue
-                  ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
-                  : 'bg-indigo-900/30 text-indigo-300 hover:bg-indigo-900/50'
-              }`}
-            >
-              {themeValue ? <Moon size={18} /> : <Sun size={18} />}
-            </button>
           </div>
         </div>
 
         {/* =============== MOBILE MENU BUTTON =============== */}
-        <div className="lg:hidden flex items-center gap-3">
-          <button
-            onClick={changeTheme}
-            className={`p-2 rounded-full transition-all cursor-pointer ${
-              themeValue
-                ? 'bg-indigo-100 text-indigo-700'
-                : 'bg-indigo-900/30 text-indigo-300'
-            }`}
-          >
-            {themeValue ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
-
+        <div className="md:hidden flex items-center gap-3">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`p-2 rounded-lg transition-all cursor-pointer ${
-              themeValue
-                ? 'bg-indigo-100 text-indigo-700'
-                : 'bg-indigo-900/30 text-indigo-300'
-            }`}
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            className="flex size-11 items-center justify-center rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)] shadow-[var(--sh-btn)] transition-transform active:translate-x-1 active:translate-y-1 active:shadow-none focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--purple)] focus-visible:outline-offset-[3px]"
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -199,39 +153,33 @@ export default function Navbar() {
       {/* =============== MOBILE DROPDOWN =============== */}
       <div
         ref={mobileMenuRef}
-        className={`lg:hidden overflow-hidden transition-[max-height,opacity] duration-900 ease-in-out ${
-          menuOpen ? 'max-height-96 opacity-100' : 'max-h-0 opacity-0'
-        } ${themeValue ? `${light}` : `${dark} text-gray-200`}`}
+        className={`md:hidden overflow-hidden border-t-[3px] border-[var(--ink)] bg-[var(--paper)] transition-[max-height,opacity] duration-150 ease-out ${
+          menuOpen ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0'
+        }`}
       >
-        <div className="px-6 py-2 space-y-3">
-          {navLinks.map(({ href, label, icon: Icon }) => (
+        <div className="mx-4 my-4 space-y-2 rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] p-4 shadow-[var(--sh-card)]">
+          {navLinks.map(({ href, label }) => (
             <button
               key={href}
               onClick={() => handleNavigate(href)}
               disabled={isAuthenticating}
-              className={`flex items-center gap-2 px-2 py-1 rounded-lg font-medium w-full text-left transition-all cursor-pointer disabled:opacity-50 ${
+              className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-left font-bold transition-all cursor-pointer disabled:opacity-50 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--purple)] focus-visible:outline-offset-[3px] ${
                 pathname === href
-                  ? 'bg-indigo-200 text-gray-900'
-                  : 'hover:bg-indigo-200 hover:text-gray-900'
+                  ? 'bg-[var(--yellow)] text-[var(--ink)]'
+                  : 'hover:bg-[var(--paper)]'
               }`}
             >
-              <Icon size={16} />
-              <h2 className="text-[16px] font-semibold">{label}</h2>
+              <span>{label}</span>
             </button>
           ))}
 
-          <div className="pt-3 border-t border-gray-200 mt-3">
+          <div className="mt-3 border-t-[3px] border-[var(--ink)] pt-3">
             <button
               onClick={() => handleNavigate('/Profile')}
               disabled={isAuthenticating}
-              className={`flex items-center gap-2 px-2 py-1 rounded-lg w-full transition-all cursor-pointer disabled:opacity-50 ${
-                themeValue
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700'
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600'
-              }`}
+              className="flex min-h-11 w-full items-center gap-2 rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--purple)] px-3 font-extrabold text-white shadow-[var(--sh-btn)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--purple)] focus-visible:outline-offset-[3px]"
             >
-              <User size={16} />
-              <h2 className="text-[16px] font-semibold">Profile</h2>
+              <span>Profile</span>
             </button>
           </div>
         </div>

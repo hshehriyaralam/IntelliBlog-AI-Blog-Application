@@ -156,7 +156,7 @@ const  BookmarkList = React.memo(({
                       {/* Blog Content */}
                       <div className="flex-1 min-w-0">
                         <h4
-                          className={`font-semibold text-sm line-clamp-1 mb-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                          className={`font-semibold text-sm line-clamp-1 mb-1 cursor-pointer hover:text-[var(--blue)] transition-colors ${
                             themeValue ? "text-gray-900" : "text-white"
                           }`}
                           onClick={(e) => handleBlogClick(bookmark.blogId, e)}
@@ -191,8 +191,8 @@ const  BookmarkList = React.memo(({
                             <div
                               className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer ${
                                 themeValue
-                                  ? "bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600"
-                                  : "bg-gradient-to-br from-purple-900/30 to-pink-900/30 text-purple-400"
+                                  ? "bg-[var(--rose)] text-[var(--ink)]"
+                                  : "bg-[var(--rose)] text-[var(--ink)]"
                               }`}
                               onClick={(e) => handleAuthorClick(bookmark.authorId, e)}
                             >
@@ -200,7 +200,7 @@ const  BookmarkList = React.memo(({
                             </div>
                           )}
                           <span
-                            className={`text-xs cursor-pointer hover:text-purple-600 dark:hover:text-purple-400 transition-colors ${
+                            className={`text-xs cursor-pointer hover:text-[var(--purple)] transition-colors ${
                               themeValue ? "text-gray-500" : "text-gray-400"
                             }`}
                             onClick={(e) => handleAuthorClick(bookmark.authorId, e)}
@@ -232,8 +232,8 @@ const  BookmarkList = React.memo(({
                             <div
                               className={`w-8 h-8 rounded-full flex items-center justify-center cursor-pointer ${
                                 themeValue
-                                  ? "bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600"
-                                  : "bg-gradient-to-br from-blue-900/30 to-indigo-900/30 text-blue-400"
+                                  ? "bg-[var(--blue)] text-[var(--ink)]"
+                                  : "bg-[var(--blue)] text-[var(--ink)]"
                               }`}
                               onClick={(e) => handleUserClick(bookmark.userId, e)}
                             >
@@ -242,7 +242,7 @@ const  BookmarkList = React.memo(({
                           )}
                           <div className="min-w-0 flex-1">
                             <h3
-                              className={`font-semibold text-xs cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                              className={`font-semibold text-xs cursor-pointer hover:text-[var(--blue)] transition-colors ${
                                 themeValue ? "text-gray-900" : "text-white"
                               }`}
                               onClick={(e) => handleUserClick(bookmark.userId, e)}
@@ -283,8 +283,8 @@ const  BookmarkList = React.memo(({
                         className={`flex items-center justify-center cursor-pointer space-x-1 px-6
                            py-1.5 rounded-lg text-sm font-medium transition-all duration-200  ${
                 themeValue 
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md' 
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-md'
+                  ? 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
+                  : 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
               }`}
                       >
                         <Eye size={12} />
@@ -341,7 +341,7 @@ const  BookmarkList = React.memo(({
                       {/* Blog Content */}
                       <div className="flex-1 min-w-0">
                         <h4
-                          className={`font-semibold text-sm line-clamp-1 mb-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                          className={`font-semibold text-sm line-clamp-1 mb-1 cursor-pointer hover:text-[var(--blue)] transition-colors ${
                             themeValue ? "text-gray-900" : "text-white"
                           }`}
                           onClick={(e) => handleBlogClick(bookmark.blogId, e)}
@@ -374,8 +374,8 @@ const  BookmarkList = React.memo(({
                             <div
                               className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer ${
                                 themeValue
-                                  ? "bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600"
-                                  : "bg-gradient-to-br from-purple-900/30 to-pink-900/30 text-purple-400"
+                                  ? "bg-[var(--rose)] text-[var(--ink)]"
+                                  : "bg-[var(--rose)] text-[var(--ink)]"
                               }`}
                               onClick={(e) => handleAuthorClick(bookmark.authorId, e)}
                             >
@@ -383,7 +383,7 @@ const  BookmarkList = React.memo(({
                             </div>
                           )}
                           <span 
-                            className={`text-xs cursor-pointer hover:text-purple-600 dark:hover:text-purple-400 transition-colors ${
+                            className={`text-xs cursor-pointer hover:text-[var(--purple)] transition-colors ${
                               themeValue ? "text-gray-500" : "text-gray-400"
                             }`}
                             onClick={(e) => handleAuthorClick(bookmark.authorId, e)}
@@ -413,8 +413,8 @@ const  BookmarkList = React.memo(({
                         <div
                           className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
                             themeValue
-                              ? "bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600"
-                              : "bg-gradient-to-br from-blue-900/30 to-indigo-900/30 text-blue-400"
+                              ? "bg-[var(--blue)] text-[var(--ink)]"
+                              : "bg-[var(--blue)] text-[var(--ink)]"
                           }`}
                           onClick={(e) => handleUserClick(bookmark.userId, e)}
                         >
@@ -423,7 +423,7 @@ const  BookmarkList = React.memo(({
                       )}
                       <div className="min-w-0 flex-1">
                         <h3
-                          className={`font-semibold text-sm cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                          className={`font-semibold text-sm cursor-pointer hover:text-[var(--blue)] transition-colors ${
                             themeValue ? "text-gray-900" : "text-white"
                           }`}
                           onClick={(e) => handleUserClick(bookmark.userId, e)}
@@ -460,8 +460,8 @@ const  BookmarkList = React.memo(({
                         onClick={(e) => handleBlogClick(bookmark.blogId, e)}
                         className={`flex items-center justify-center cursor-pointer space-x-1 px-2.5 py-1 rounded-lg text-sm font-medium transition-all duration-200 w-full ${
                 themeValue 
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-md' 
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 shadow-md'
+                  ? 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
+                  : 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
               }`}
                       >
                         <Eye size={14} />

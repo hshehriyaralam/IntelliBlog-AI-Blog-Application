@@ -19,13 +19,7 @@ const AuthorsCard = React.memo(
       <div>
         <Link href={`/Authors/${user.id}`}>
           <div
-            className={`group rounded-2xl p-6 flex flex-col items-center text-center
-        
-       hover:border-indigo-400 hover:shadow-xl hover:scale-105 
-        
-        transition-all duration-300 border  min-w-[320px] ${
-          themeValue ? `${light} border-gray-300` : `${dark} border-gray-700`
-        }`}
+            className={`group rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] p-6 flex flex-col items-center text-center shadow-[var(--sh-card)] transition-transform hover:-translate-y-1 ${["bg-[var(--yellow)]","bg-[var(--mint)]","bg-[var(--rose)]","bg-[var(--blue)]"][user?.id ? String(user.id).length % 4 : 0]}`}
           >
             {/* Profile Image */}
             <div className="relative mb-4">
@@ -36,20 +30,18 @@ const AuthorsCard = React.memo(
                   src={user.profilePic}
                   alt={user.name}
                   loading="lazy"
-                  className="rounded-full object-cover border-2 border-indigo-400"
+                  className="rounded-full border-[3px] border-[var(--ink)] object-cover"
                   onError={() => setImgError(true)}
                 />
               ) : (
-                <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-300  border-2 border-indigo-400">
-                  <User className="w-8 h-8 text-gray-600" />
+                <div className="flex size-20 items-center justify-center rounded-full border-[3px] border-[var(--ink)] bg-[var(--blue)]">
+                  <span className="text-3xl font-black text-[var(--ink)]">{user?.name?.charAt(0) || "?"}</span>
                 </div>
               )}
             </div>
             {/* Author Info */}
             <h2
-              className={`text-lg font-semibold mb-1 ${
-                themeValue ? "text-gray-800" : "text-white"
-              }`}
+              className="mb-1 text-lg font-black text-[var(--ink)]"
             >
               {user.name}{" "}
               {isYou && (
@@ -61,8 +53,8 @@ const AuthorsCard = React.memo(
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
                   user.role === "admin"
-                    ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                    : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                    ? "bg-[var(--pink)] text-[var(--ink)]"
+                    : "bg-[var(--yellow)] text-[var(--ink)]"
                 }`}
               >
                 {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
@@ -74,52 +66,52 @@ const AuthorsCard = React.memo(
               <Mail className="w-4 h-4 mr-2 text-indigo-500" />
               <span
                 title={user.email}
-                className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[200px]"
+                className="max-w-[200px] truncate text-sm text-[var(--muted)]"
               >
                 {user.email}
               </span>
             </div>
 
             {/* Stats */}
-            <div className="w-full space-y-3 mb-4">
-              <div className="flex items-center justify-between text-sm">
+            <div className="mb-4 w-full divide-y-2 divide-dashed divide-[var(--ink)]">
+              <div className="flex items-center justify-between py-3 text-sm">
                 <div className="flex items-center">
                   <FileText className="w-4 h-4 mr-2 text-green-500" />
                   <span
-                    className={themeValue ? "text-gray-600" : "text-gray-400"}
+                    className="text-[var(--muted)]"
                   >
                     Blogs
                   </span>
                 </div>
-                <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                <span className="font-black text-[var(--ink)]">
                   {user.blogCount || 0}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between py-3 text-sm">
                 <div className="flex items-center">
                   <Calendar className="w-4 h-4 mr-2 text-blue-500" />
                   <span
-                    className={themeValue ? "text-gray-600" : "text-gray-400"}
+                    className="text-[var(--muted)]"
                   >
                     Joined
                   </span>
                 </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-right text-xs font-bold text-[var(--ink)]">
                   {joinedDate}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between py-3 text-sm">
                 <div className="flex items-center">
                   <Eye className="w-4 h-4 mr-2 text-purple-500" />
                   <span
-                    className={themeValue ? "text-gray-600" : "text-gray-400"}
+                    className="text-[var(--muted)]"
                   >
                     Last Seen
                   </span>
                 </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-right text-xs font-bold text-[var(--ink)]">
                   {lastSeen}
                 </span>
               </div>
@@ -127,9 +119,7 @@ const AuthorsCard = React.memo(
 
             {/* View Profile Button */}
             <button
-              className="w-full flex items-center cursor-pointer justify-center px-4 py-2
-         hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:scale-105
-                 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg text-sm font-medium "
+              className="flex min-h-11 w-full items-center justify-center rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--purple)] px-4 py-2 text-sm font-extrabold text-white shadow-[var(--sh-btn)] transition-transform hover:-translate-y-0.5"
             >
               View Profile & Blogs
               <ArrowRight className="w-4 h-4 ml-2" />

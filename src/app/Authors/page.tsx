@@ -5,6 +5,8 @@ import { useAllUserQuery} from "../../Redux/Services/userApi";
 import AuthorsCard from "./_component/AuthorsCard"
 import dynamic from "next/dynamic";
 import {useLoggedInUser} from "@/hooks/LoggedInUser"
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 
 
@@ -31,21 +33,18 @@ export default function Authors() {
 
 
   return (
-    <div className={`w-full min-h-screen px-4 py-8 ${themeValue ? light : dark}`}>
+    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
       {/* Header Section */}
-      <div className="max-w-6xl mx-auto text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent   lg:mb-4 mb-2">
-          Meet Our Creative Authors
-        </h1>
-        <p className={`lg:text-lg  text-md   ${themeValue ? "text-gray-600" : "text-gray-400"} 
-            lg:max-w-[450px]  max-w-[300px]   mx-auto `}>
+      <div className="mx-auto max-w-3xl text-center">
+        <SectionHeading eyebrow="People behind the posts">Meet Our Creative Authors</SectionHeading>
+        <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-[var(--muted)] sm:text-lg">
           Discover the talented writers and contributors who bring amazing content to our platform
         </p>
       </div>
 
       {/* Authors Grid */}
-      <div className="max-w-6xl mx-auto  ">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
           {currentItems?.map((user: any, index: number) => {
             // const isYou = user?.id === loggedInUserId;
 
@@ -91,6 +90,6 @@ export default function Authors() {
       themeValue={themeValue} 
       onPageChange={handlePageChange}
       />
-    </div>
+    </PageFrame>
   );
 }

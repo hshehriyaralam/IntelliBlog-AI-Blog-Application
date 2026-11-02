@@ -7,6 +7,9 @@ import { useCallback, useContext, useMemo, useState } from "react";
 import { Button } from "../../components/ui/button";
 import LoadingPage from "../../components/layout/LoadingPage"
 import dynamic from "next/dynamic";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const ErrorPage = dynamic(() => import('./_component/errorPage'), {
   ssr: false,
@@ -40,47 +43,36 @@ export default function Collection() {
 
   
   return (
-    <div className={`min-h-screen ${themeValue ? `${light}` :  `${dark}`} py-8`}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Header */}
-        <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent">
-              Discover Your Saved Collections
-            </h1>
-          <p className={`lg:text-lg  text-md   ${themeValue ? "text-gray-600" : "text-gray-400"} 
-            lg:max-w-[450px]  max-w-[300px]   mx-auto  my-2 `}>
+        <div className="mx-auto mb-8 max-w-3xl text-center">
+            <SectionHeading eyebrow="Saved for later">Discover Your Saved Collections</SectionHeading>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-[var(--muted)] sm:text-lg">
             A curated space where all your saved articles, ideas, and inspirations live together.
           </p>
         </div>
 
         {currentItems?.length === 0 ? (
-          <div className={`text-center py-16 rounded-2xl ${themeValue ? `${light} shadow-lg` :  `${dark}bg-gray-800 shadow-xl`}`}>
+          <EmptyState className="py-16" title="No collections yet" description="Start saving articles to see them here">
             <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className={`text-xl font-semibold mb-2 ${themeValue ? 'text-gray-800' : 'text-white'}`}>
-              No collections yet
-            </h2>
-            <p className={`mb-6 ${themeValue ? 'text-gray-600' : 'text-gray-400'}`}>
-              Start saving articles to see them here
-            </p>
             <Link   href={`/Blogs`}>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white  cursor-pointer"  >
+            <Button variant="secondary" className="cursor-pointer">
               Explore Articles
             </Button>
             </Link>
-          </div>
+          </EmptyState>
         ) : (
           <>
 
             {/* Bookmarks Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
               {currentItems?.map((bookmark: any) => {
 
                 return (
                   <div
                     key={bookmark.blogId._id}
-                    className={`rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer ${
-                      themeValue ? 'bg-white border border-gray-200' : 'bg-gray-800 border border-gray-700'
-                    }`}
+                    className="min-w-0"
                   >
                     <CollectionsBlogCard 
                     bookmark={bookmark}
@@ -103,6 +95,6 @@ export default function Collection() {
       themeValue={themeValue} 
       onPageChange={handlePageChange}
       />
-    </div>
+    </PageFrame>
   );
 }

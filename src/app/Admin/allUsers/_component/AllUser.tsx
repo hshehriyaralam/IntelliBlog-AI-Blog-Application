@@ -148,8 +148,8 @@ const  AllUserAdminPage = React.memo(({ filteredUsers, setShowDeleteModal, setSe
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         themeValue
-                          ? "bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600"
-                          : "bg-gradient-to-br from-blue-900/30 to-indigo-900/30 text-blue-400"
+                          ? "bg-[var(--blue)] text-[var(--ink)]"
+                          : "bg-[var(--blue)] text-[var(--ink)]"
                       }`}
                     >
                       <Users size={16} />

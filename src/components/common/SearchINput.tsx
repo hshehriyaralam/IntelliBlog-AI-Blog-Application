@@ -5,18 +5,14 @@ import React from "react";
 
 const SearchInput  = React.memo(({themeValue, light, dark,value,onChange}:any)=>{
     return(
-         <div className="flex-1 relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+         <div className="relative min-w-0 flex-1">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--ink)] w-5 h-5" />
         <input
         type="text"
         placeholder="Search blogs by title, content, or author..."
         value={value}
         onChange={onChange}
-        className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none ${
-            themeValue 
-            ? `${light} border-gray-300 text-gray-800 placeholder-gray-800` 
-            : `${dark} border-gray-600 text-gray-200 placeholder-gray-800`
-        } focus:ring-2 focus:ring-indigo-500 focus:border-transparent`}
+        className="min-h-12 w-full rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--white)] pl-12 pr-4 text-base text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:border-[var(--ink)] focus:shadow-[4px_4px_0_var(--purple)]"
         />
     </div>
     )

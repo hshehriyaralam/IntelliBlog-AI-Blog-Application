@@ -78,8 +78,8 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
       <div
         className={`w-14 h-14 rounded-lg flex items-center justify-center shadow-sm ${
           themeValue
-            ? "bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-400"
-            : "bg-gradient-to-br from-blue-900/20 to-indigo-900/20 text-blue-400"
+            ? "bg-[var(--blue)] text-[var(--ink)]"
+            : "bg-[var(--blue)] text-[var(--ink)]"
         }`}
       >
         <FileText size={20} />
@@ -131,8 +131,8 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
           e.currentTarget.parentElement!.innerHTML = `
             <div class="w-8 h-8 rounded-full flex items-center justify-center
               ${themeValue 
-                ? "bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600" 
-                : "bg-gradient-to-br from-purple-900/30 to-pink-900/30 text-purple-400"}">
+                ? "bg-[var(--rose)] text-[var(--ink)]"
+                : "bg-[var(--rose)] text-[var(--ink)]"}">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.485 0 4.78.635 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -145,8 +145,8 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
     <div
       className={`w-8 h-8 rounded-full flex items-center justify-center ${
         themeValue
-          ? "bg-gradient-to-br from-purple-100 to-pink-100 text-purple-600"
-          : "bg-gradient-to-br from-purple-900/30 to-pink-900/30 text-purple-400"
+          ? "bg-[var(--rose)] text-[var(--ink)]"
+          : "bg-[var(--rose)] text-[var(--ink)]"
       }`}
     >
       <User size={14} />

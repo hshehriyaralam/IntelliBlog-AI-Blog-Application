@@ -6,6 +6,11 @@ import type { DraftFilters } from "../../../types/Blog"
 import dynamic from "next/dynamic";
 import SearchInput from "../../components/common/SearchINput";
 import FilterToogle from "../../components/common/FilterToggle";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PlusCircle } from "@/components/ui/stickers";
 
 
 
@@ -139,17 +144,14 @@ export default function AllBlogs() {
 
 
   return (
-    <div className={`min-h-screen ${themeValue ? `${light}` : `${dark}`} py-8`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Header */}
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold  bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent  lg:mb-4 mb-2  ">
+        <div className="mx-auto max-w-3xl text-center">
+          <SectionHeading eyebrow="Fresh ideas, useful notes" className="mx-auto">
             Discover Amazing Content
-          </h1>
-          <p
-            className={`lg:text-lg  text-md   ${themeValue ? "text-gray-600" : "text-gray-400"} 
-            lg:max-w-[450px]  max-w-[300px]   mx-auto   `}
-          >
+          </SectionHeading>
+          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-[var(--muted)] sm:text-lg">
             Explore our collection of insightful articles, tutorials, and stories
             from talented writers around the world.
           </p>
@@ -157,7 +159,7 @@ export default function AllBlogs() {
 
         {/* Filters + Search */}
         <div
-          className={`mb-4 rounded-xl ${themeValue ? `${light} shadow-md` : `${dark} shadow-xl `} p-6`}
+          className="mb-8 rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] p-5 shadow-[var(--sh-card)]"
         >
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             <SearchInput
@@ -175,8 +177,8 @@ export default function AllBlogs() {
           </div>
 
           {showFilters && (
-           <div className="mt-4 pt-4 border-t border-gray-500">
-  <div className="flex  flex-wrap gap-6  md:flex-row sm:flex-col">
+           <div className="mt-5 border-t-2 border-dashed border-[var(--ink)] pt-5">
+  <div className="flex flex-wrap gap-5">
     <AuthorsFilter
       themeValue={themeValue}
       light={light}
@@ -214,19 +216,20 @@ export default function AllBlogs() {
         </div>
 
         {/* Blog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className={`h-64 rounded-xl animate-pulse ${
-                  themeValue ? "bg-gray-200" : "bg-gray-800"
-                }`}
-              />
+                className="h-[390px] rounded-[var(--r-card)]"
+              ><Skeleton className="h-full w-full" /></div>
             ))
           ) : currentItems.length === 0 ? (
-            <div className={`col-span-3 text-center py-16 opacity-80  `}>
-              <p className={`${themeValue ? "text-gray-900" : "text-gray-300"}`} >No matching articles found.</p>
+            <div className="col-span-full py-10">
+              <EmptyState title="No blogs found" description="Try a different search or clear your filters.">
+                <PlusCircle className="mx-auto mb-4 w-16" />
+                <button type="button" onClick={handleClear} className="mt-5 rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--yellow)] px-5 py-2 font-extrabold shadow-[var(--sh-btn)]">Clear filters</button>
+              </EmptyState>
             </div>
           ) : (
             currentItems?.map((blog: any, index: number) => {
@@ -234,11 +237,7 @@ export default function AllBlogs() {
               return (
                 <div
                   key={blog._id}
-                  className={`border ${isFeatured ? "lg:col-span-2" : ""} ${
-                    themeValue
-                      ? `${light}  border-gray-200 `
-                      : `${dark} border-gray-700 `
-                  } rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer `}
+                  className={`min-w-0 ${isFeatured ? "lg:col-span-2" : ""}`}
                 >
                   <BlogCard
                     blog={blog}
@@ -247,6 +246,7 @@ export default function AllBlogs() {
                     lightText={lightText}
                     DarkText={DarkText}
                     isLoading={isLoading}
+                    accentIndex={index}
                   />
                 </div>
               );
@@ -262,6 +262,6 @@ export default function AllBlogs() {
         themeValue={themeValue}
         />
       </div>
-    </div>
+    </PageFrame>
   );
 }

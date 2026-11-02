@@ -27,21 +27,17 @@ const  DeletePopUp = React.memo(({user, themeValue, setShowDeleteModal, setSelec
   };
 
   return (
-    <div className="fixed inset-0 bg-transparent backdrop-blur bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(42,42,42,0.55)] p-4">
       <div
-        className={`rounded-xl shadow-lg border w-11/12 sm:w-full max-w-xs sm:max-w-sm p-4 ${
-          themeValue ? `${light} border-gray-200` : `${dark} border-gray-900`
-        }`}
+        className="w-11/12 max-w-xs rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] p-5 shadow-[var(--sh-card)] sm:w-full sm:max-w-sm"
       >
         <h3
-          className={`text-lg font-semibold mb-2 ${
-            themeValue ? "text-gray-900" : "text-white"
-          }`}
+          className="mb-2 text-lg font-black text-[var(--ink)]"
         >
           Delete User Account
         </h3>
         <p
-          className={`mb-4 ${themeValue ? "text-gray-600" : "text-gray-300"}`}
+          className="mb-4 text-[var(--muted)]"
         >
           Are you sure you want to delete this user account? This action will
           permanently remove the user and all their data.
@@ -52,17 +48,15 @@ const  DeletePopUp = React.memo(({user, themeValue, setShowDeleteModal, setSelec
         <div className="flex space-x-3 justify-end">
           <Button
             onClick={() => setShowDeleteModal(false)}
-            className={`px-3 py-1 cursor-pointer rounded-lg transition-colors ${
-              themeValue
-                ? "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                : "border border-gray-600 text-gray-300 hover:bg-gray-700"
-            }`}
+            variant="outline"
+            className="cursor-pointer"
           >
             Cancel
           </Button>
           <Button
             onClick={handleDelete}
-            className="px-3 py-1 bg-red-600 text-white text-sm cursor-pointer rounded-lg hover:bg-red-700 transition-colors"
+            variant="destructive"
+            className="cursor-pointer text-sm"
           >
             {isLoading ?  <SingleButtonLoader /> : "Delete Account" }
           </Button>

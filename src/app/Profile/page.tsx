@@ -15,6 +15,9 @@ import Link from "next/link";
 import LoadingPage from "../../components/layout/LoadingPage";
 import ProfileSection from './_component/ProfilSection'
 import dynamic from "next/dynamic";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { EmptyState } from "@/components/ui/empty-state";
 
 
 
@@ -94,8 +97,8 @@ const handleGoogleLogin =  useCallback(() => {
 
 
   return (
-    <div className={`min-h-screen ${themeValue ? light : dark} py-8`}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Profile Section */}
         <ProfileSection
         themeValue={themeValue}
@@ -113,35 +116,25 @@ const handleGoogleLogin =  useCallback(() => {
 
         {/* Blogs Section */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className={`text-2xl font-bold ${themeValue ? 'text-gray-800' : 'text-white'}`}>
-              Your Articles
-            </h2>
-            <span className={`text-sm ${themeValue ? 'text-gray-600' : 'text-gray-400'}`}>
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <SectionHeading eyebrow="Your writing">Your Articles</SectionHeading>
+            <span className="text-sm text-[var(--muted)]">
               {blogs.length} articles published
             </span>
           </div>
 
           {blogs.length === 0 ? (
-            <div className={`text-center py-12 rounded-2xl ${
-              themeValue ? `${light} shadow-lg` : `${dark} shadow-xl`
-            }`}>
+            <EmptyState title="No articles yet" description="Start writing your first article to share with the world!">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className={`text-lg font-semibold mb-2 ${themeValue ? 'text-gray-800' : 'text-white'}`}>
-                No articles yet
-              </h3>
-              <p className={`text-gray-600 lg:max-w-[400px]   max-w-[280px]  text-center mx-auto     `}>
-                Start writing your first article to share with the world!
-              </p>
               <Link  href='/Create'>
-              <Button className="mt-4 bg-gradient-to-r from-indigo-600 to-purple-600   cursor-pointer"  >
+              <Button variant="secondary" className="mt-4 cursor-pointer">
                 <Plus className="w-4 h-4 mr-2" />
                 Create Article
               </Button>
               </Link>
-            </div>
+            </EmptyState>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
               {blogs.map((blog: any) => (
                 <Link key={blog._id} href={`/Blogs/${blog._id}`}>
                   <ProfileBlogsSections 
@@ -157,6 +150,6 @@ const handleGoogleLogin =  useCallback(() => {
           )}
         </div>
       </div>
-    </div>
+    </PageFrame>
   );
 }

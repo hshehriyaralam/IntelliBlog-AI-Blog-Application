@@ -7,7 +7,7 @@ export default function ErrorPage({themeValue,light,dark}:any){
       }`}>
         <div className="text-center">
           <div className="text-red-500 text-2xl font-bold mb-4">Error fetching author details</div>
-          <p className="text-gray-600 dark:text-gray-400">Please try again later</p>
+          <p className="text-[var(--muted)]">Please try again later</p>
         </div>
       </div>
     )

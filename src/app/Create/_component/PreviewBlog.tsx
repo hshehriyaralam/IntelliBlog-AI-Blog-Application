@@ -3,34 +3,27 @@ import React from 'react';
 
 const PreviewBlog = React.memo(function PreviewBlog(
   {  themeValue, title,  summary ,  tags, imagePreview,}: any){
-  console.log("PreviewBlog");
-  
   return(
-    <div className={`p-4 rounded-xl border ${
-      themeValue 
-        ? 'bg-white border-gray-200 shadow-sm' 
-        : 'bg-gray-800 border-gray-700 shadow-md'
-    }`}>
-      <h2 className={`text-lg font-semibold mb-3 ${themeValue ? 'text-gray-800' : 'text-white'}`}>
-        📝 Preview
+  <div className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] p-5 shadow-[var(--sh-card)]">
+    <h2 className="mb-4 text-xl font-black tracking-[-0.03em] text-[var(--ink)]">
+      Preview
       </h2>
       
-      <div className={`p-4 rounded-lg ${
-        themeValue ? 'bg-gray-50' : 'bg-gray-700/50'
-      }`}>
+      <div className="overflow-hidden rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--blue)]">
         {imagePreview && (
           <img 
             src={imagePreview} 
             alt="Preview" 
-            className="w-full h-32 object-cover rounded-lg mb-3"
+            className="mb-0 h-40 w-full border-b-[3px] border-[var(--ink)] object-cover"
           />
         )}
         
-        <h3 className={`font-semibold mb-2 text-sm ${themeValue ? 'text-gray-800' : 'text-white'}`}>
+        <div className="bg-[var(--white)] p-4">
+        <h3 className="mb-2 text-lg font-black leading-tight text-[var(--ink)]">
           {title || "Your blog title will appear here"}
         </h3>
         
-        <p className={`text-sm mb-3 ${themeValue ? 'text-gray-600' : 'text-gray-300'} line-clamp-2`}>
+        <p className="mb-3 line-clamp-3 text-sm leading-6 text-[var(--muted)]">
           {summary || "Your summary will appear here"}
         </p>
         
@@ -39,17 +32,14 @@ const PreviewBlog = React.memo(function PreviewBlog(
             {tags?.map((tag: string, i: number) => (
               <span 
                 key={i} 
-                className={`px-2 py-1 text-xs rounded-full ${
-                  themeValue 
-                    ? 'bg-indigo-100 text-indigo-800' 
-                    : 'bg-indigo-900/30 text-indigo-300'
-                }`}
+                className="rounded-full border-2 border-[var(--ink)] bg-[var(--mint)] px-2 py-1 text-xs font-extrabold text-[var(--ink)]"
               >
                 #{tag}
               </span>
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   )

@@ -7,9 +7,7 @@ const DateFilter = React.memo(({ themeValue, light, dark, BlogsDate = [], value,
   return (
     <div>
       <label
-        className={`flex items-center gap-2 text-sm font-medium mb-2 ${
-          themeValue ? "text-gray-700" : "text-gray-300"
-        }`}
+        className="mb-2 flex items-center gap-2 text-sm font-extrabold text-[var(--ink)]"
       >
         <Calendar size={16} />
         Date
@@ -17,12 +15,7 @@ const DateFilter = React.memo(({ themeValue, light, dark, BlogsDate = [], value,
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-[28%] min-w-[230px] px-3 py-2 rounded-lg border text-sm
-          ${
-            themeValue
-              ? `${light} border-gray-300 text-gray-800`
-              : `${dark} border-gray-600 text-white`
-          }`}
+        className="min-h-12 w-full min-w-[230px] rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--white)] px-3 py-2 text-base text-[var(--ink)] outline-none focus:shadow-[4px_4px_0_var(--purple)] sm:w-[28%]"
       >
         <option value="">All dates</option>
         {BlogsDate.map((date: string, index: number) => (

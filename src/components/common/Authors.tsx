@@ -1,190 +1,44 @@
 "use client";
-import { ContextTheme } from "../../Context/DarkTheme";
-import { useContext, useMemo, useState } from "react";
-import { User, TrendingUp, Loader2 } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useAllUserQuery } from "../../Redux/Services/userApi";
-
 import Link from "next/link";
-import React from "react";
 import ViewAllAuthors from "../HomeComponets/viewAllAuthors";
+import { Avatar } from "../ui/avatar";
+import { TrendingUp } from "lucide-react";
 
-function AuthorItem({ user, themeValue }: any) {
+function AuthorItem({ user }: any) {
   const [imgError, setImgError] = useState(false);
-  const hasImage =
-    user?.profilePic && user.profilePic.trim() !== "" && !imgError;
-
   return (
-    <Link href={`/Authors/${user.id}`}>
-      <li
-        className={`flex items-center gap-3 p-2.5 rounded-lg transition-all duration-200 group/item relative overflow-hidden
-        ${themeValue ? `hover:bg-gray-300 ` : `hover:bg-gray-800 `}`}
-      >
-        {/* Hover Border Effect */}
-        <div
-          className={`
-          absolute inset-0 rounded-lg border border-transparent 
-          group-hover/item:border-indigo-500/20 transition-all duration-300 pointer-events-none
-        `}
-        ></div>
-
-        {/* Corner Accents */}
-        <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-indigo-500/30 rounded-tl-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-indigo-500/30 rounded-br-lg opacity-0 group-hover/item:opacity-100 transition-opacity duration-300"></div>
-
-        {/* Author Avatar */}
-        <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 p-0.5 group-hover/item:scale-110 transition-transform duration-300">
-            <div className="w-full h-full rounded-full bg-white  flex items-center justify-center overflow-hidden">
-              {hasImage ? (
-                <img
-                  src={user.profilePic}
-                  alt={`${user.name || "Author"}-pic`}
-                  className="w-9 h-9 rounded-full object-cover"
-                  onError={() => setImgError(true)}
-                />
-              ) : (
-                <User className="w-5 h-5 text-indigo-600 dark:text-indigo-400 group-hover/item:scale-110 transition-transform duration-300" />
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Author Info */}
-        <div className="flex-1 min-w-0">
-          <p
-            className={`text-sm font-semibold truncate ${
-              themeValue ? "text-gray-800" : "text-white"
-            }`}
-          >
-            {user.name}
-          </p>
-          <div className="flex items-center gap-1.5 mt-1">
-            <TrendingUp
-              size={12}
-              className="text-indigo-500 group-hover/item:scale-110 transition-transform duration-300"
-            />
-            <p className="text-xs text-indigo-600 font-medium">
-              {user?.blogCount} Articles
-            </p>
-          </div>
-        </div>
-      </li>
+    <Link href={`/Authors/${user.id}`} className="flex items-center gap-3 border-b-2 border-dashed border-[var(--ink)] py-3 last:border-0 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[var(--purple)] focus-visible:outline-offset-[3px]">
+      <Avatar src={!imgError ? user.profilePic : null} alt={`${user.name || "Author"}-pic`} fallback={user.name} onError={() => setImgError(true)} />
+      <span className="min-w-0 flex-1">
+        <strong className="block truncate text-sm font-extrabold">{user.name}</strong>
+        <small className="flex items-center gap-1 text-xs font-medium text-[var(--muted)]"><TrendingUp className="size-3" />{user.blogCount} articles</small>
+      </span>
+      <strong className="text-2xl font-black">{user.blogCount}</strong>
     </Link>
   );
 }
 
-function TopAuthors({ navigate , themeValue }: any) {
-
+export default function TopAuthors({ navigate, themeValue }: any) {
   const { data, isLoading, isError } = useAllUserQuery(undefined, {
     refetchOnMountOrArgChange: false,
     refetchOnFocus: false,
-    refetchOnReconnect: false});
-  const Authors = data?.data?.map((user: any) => ({
-    name: user.name,
-    blogCount: user.blogCount,
-    profilePic: user.profilePic,
-    id: user.id}));
-
-  // Sort descending (most articles first)
-  const TopAuthors = useMemo(() => {
-    if (!Authors) return [];
-    return [...Authors].sort((a, b) => b.blogCount - a.blogCount).slice(0, 5);
-  }, [Authors])
-
-  if (isLoading) {
-    return (
-      <div
-        className={`p-4 rounded-xl flex items-center justify-center group relative overflow-hidden ${
-          themeValue
-            ? "bg-white shadow-md border border-gray-100 hover:shadow-indigo-500/30"
-            : "bg-gray-800/40 backdrop-blur-sm border border-gray-700/30 shadow-lg hover:shadow-indigo-500/30"
-        }`}
-      >
-        {/* Corner Shadow Effects */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-500/30 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-500/30 rounded-br-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-        <Loader2 className="animate-spin text-indigo-500" size={24} />
-        <span
-          className={`ml-2 text-sm ${
-            themeValue ? "text-gray-700" : "text-gray-200"
-          }`}
-        >
-          Loading...
-        </span>
-      </div>
-    );
-  }
-  if (isError) {
-    return (
-      <div
-        className={`p-4 rounded-xl text-center group relative overflow-hidden ${
-          themeValue
-            ? "bg-white shadow-md border border-gray-100 hover:shadow-indigo-500/30"
-            : "bg-gray-800/40 backdrop-blur-sm border border-gray-700/30 shadow-lg hover:shadow-indigo-500/30"
-        }`}
-      >
-        {/* Corner Shadow Effects */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-500/30 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-500/30 rounded-br-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-        <p
-          className={`text-sm ${themeValue ? "text-red-600" : "text-red-400"}`}
-        >
-          Failed to load authors 😢
-        </p>
-      </div>
-    );
-  }
+    refetchOnReconnect: false,
+  });
+  const authors = data?.data?.map((user: any) => ({ name: user.name, blogCount: user.blogCount, profilePic: user.profilePic, id: user.id }));
+  const topAuthors = useMemo(() => (authors ? [...authors].sort((a, b) => b.blogCount - a.blogCount).slice(0, 5) : []), [authors]);
 
   return (
-    <div
-      className={`p-4 rounded-xl group relative overflow-hidden ${
-        themeValue
-          ? "bg-white shadow-md border border-gray-100 hover:shadow-indigo-500/30"
-          : "bg-gray-800/40 backdrop-blur-sm border border-gray-700/30 shadow-lg hover:shadow-indigo-500/30"
-      }`}
-    >
-      {/* Corner Shadow Effects */}
-      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-500/30 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-      <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-500/30 rounded-br-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-3">
-        <div
-          className={`p-1.5 rounded-md group-hover:scale-110 transition-transform duration-300 ${
-            themeValue
-              ? "bg-indigo-100 text-indigo-600"
-              : "bg-indigo-900/30 text-indigo-300"
-          }`}
-        >
-          <TrendingUp size={16} />
-        </div>
-        <h3
-          className={`text-base font-semibold ${
-            themeValue ? "text-gray-800" : "text-white"
-          }`}
-        >
-          Top Authors
-        </h3>
+    <section className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--blue)] p-6 shadow-[var(--sh-card)]">
+      <div className="mb-3 flex items-center gap-3">
+        <span className="flex size-9 items-center justify-center rounded-lg border-[3px] border-[var(--ink)] bg-[var(--pink)]"><TrendingUp className="size-5" /></span>
+        <h3 className="text-xl font-black tracking-[-0.04em]">Top Authors</h3>
       </div>
-
-      {/* Authors List */}
-      <ul className="space-y-2">
-        {TopAuthors.map((user: any, index: number) => (
-          <AuthorItem
-            key={user.id || index}
-            user={user}
-            themeValue={themeValue}
-            index={index}
-          />
-        ))}
-      </ul>
-
-      {/* View All Link */}
-      {Authors.length > 6 && <ViewAllAuthors navigate={navigate} />}
-    </div>
+      {isLoading ? <p className="text-sm font-bold">Loading authors...</p> : null}
+      {isError ? <p className="text-sm font-bold">Failed to load authors.</p> : null}
+      {!isLoading && !isError ? <ul>{topAuthors.slice(0, 3).map((user: any, index: number) => <li key={user.id || index}><AuthorItem user={user} /></li>)}</ul> : null}
+      {authors?.length > 6 ? <ViewAllAuthors navigate={navigate} /> : null}
+    </section>
   );
 }
-
-export default TopAuthors;

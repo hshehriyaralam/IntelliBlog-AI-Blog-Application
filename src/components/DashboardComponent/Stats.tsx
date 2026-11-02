@@ -91,7 +91,7 @@ const  Stats = React.memo(({themeValue, light, dark }:any) => {
         text: themeValue ? "text-blue-600" : "text-blue-400",
         lightBg: themeValue ? "bg-blue-50" : "bg-blue-900/20",
         progressBg: themeValue ? "bg-blue-500" : "bg-blue-400",
-        progressGradient: "from-blue-400 via-blue-500 to-blue-600",
+        progressGradient: "bg-[var(--blue)]",
         glow: "shadow-blue-500/40",
         border: themeValue ? "border-blue-200" : "border-blue-700",
         pulse: "group-hover:shadow-blue-500/30"
@@ -101,7 +101,7 @@ const  Stats = React.memo(({themeValue, light, dark }:any) => {
         text: themeValue ? "text-green-600" : "text-green-400",
         lightBg: themeValue ? "bg-green-50" : "bg-green-900/20",
         progressBg: themeValue ? "bg-green-500" : "bg-green-400",
-        progressGradient: "from-green-400 via-green-500 to-green-600",
+        progressGradient: "bg-[var(--mint)]",
         glow: "shadow-green-500/40",
         border: themeValue ? "border-green-200" : "border-green-700",
         pulse: "group-hover:shadow-green-500/30"
@@ -111,7 +111,7 @@ const  Stats = React.memo(({themeValue, light, dark }:any) => {
         text: themeValue ? "text-purple-600" : "text-purple-400",
         lightBg: themeValue ? "bg-purple-50" : "bg-purple-900/20",
         progressBg: themeValue ? "bg-purple-500" : "bg-purple-400",
-        progressGradient: "from-purple-400 via-purple-500 to-purple-600",
+        progressGradient: "bg-[var(--purple)]",
         glow: "shadow-purple-500/40",
         border: themeValue ? "border-purple-200" : "border-purple-700",
         pulse: "group-hover:shadow-purple-500/30"
@@ -121,7 +121,7 @@ const  Stats = React.memo(({themeValue, light, dark }:any) => {
         text: themeValue ? "text-indigo-600" : "text-indigo-400",
         lightBg: themeValue ? "bg-indigo-50" : "bg-indigo-900/20",
         progressBg: themeValue ? "bg-indigo-500" : "bg-indigo-400",
-        progressGradient: "from-indigo-400 via-indigo-500 to-indigo-600",
+        progressGradient: "bg-[var(--blue)]",
         glow: "shadow-indigo-500/40",
         border: themeValue ? "border-indigo-200" : "border-indigo-700",
         pulse: "group-hover:shadow-indigo-500/30"
@@ -169,8 +169,8 @@ const  Stats = React.memo(({themeValue, light, dark }:any) => {
           <Link key={index} href={stat.href} className="block group">
             <div 
               className={`
-                rounded-3xl shadow-2xl border-2 p-6 
-                transition-all duration-500 group-hover:scale-105
+                rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] p-6
+                shadow-[var(--sh-card)] transition-transform duration-150 group-hover:-translate-y-1
                 relative overflow-hidden
                 ${themeClasses.card}
                 ${themeClasses.hover.card}
@@ -212,18 +212,12 @@ const  Stats = React.memo(({themeValue, light, dark }:any) => {
               {/* Premium Progress Bar */}
               <div className="mt-6 relative">
                 {/* Progress Background with Glow */}
-                <div className={`w-full rounded-2xl h-3 backdrop-blur-sm ${themeClasses.progress.bg} shadow-inner relative overflow-hidden`}>
+                <div className={`w-full overflow-hidden rounded-full border-[3px] border-[var(--ink)] h-4 ${themeClasses.progress.bg} relative`}>
                   {/* Main Progress Bar with Advanced Gradient */}
                   <div
-                    className={`h-3 rounded-2xl bg-gradient-to-r ${colorClasses.progressGradient} transition-all duration-1500 ease-out ${colorClasses.glow} relative overflow-hidden group-hover:shadow-lg`}
+                    className={`h-full rounded-full ${colorClasses.bg} transition-all duration-150 ease-out relative overflow-hidden`}
                     style={{ width: `${progress}%` }}
                   >
-                    {/* Animated Shimmer Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer-fast"></div>
-                    
-                    {/* Moving Light Reflection */}
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/20 to-transparent"></div>
-                    
                     {/* Progress End Cap with Sparkle */}
                     <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
                       <div className="relative">

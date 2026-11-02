@@ -122,8 +122,8 @@ const  LikedLists  = React.memo(({
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
                           themeValue
-                            ? "bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600"
-                            : "bg-gradient-to-br from-blue-900/30 to-indigo-900/30 text-blue-400"
+                            ? "bg-[var(--blue)] text-[var(--ink)]"
+                            : "bg-[var(--blue)] text-[var(--ink)]"
                         }`}
                         onClick={(e) => handleUserClick(like.userId, e)}
                       >
@@ -229,8 +229,8 @@ const  LikedLists  = React.memo(({
                         <div
                           className={`w-6 h-6 rounded-full flex items-center justify-center cursor-pointer ${
                             themeValue
-                              ? "bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600"
-                              : "bg-gradient-to-br from-blue-900/30 to-indigo-900/30 text-blue-400"
+                              ? "bg-[var(--blue)] text-[var(--ink)]"
+                              : "bg-[var(--blue)] text-[var(--ink)]"
                           }`}
                           onClick={(e) => handleUserClick(like.authorId, e)}
                         >
@@ -291,8 +291,8 @@ const  LikedLists  = React.memo(({
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center cursor-pointer ${
                           themeValue
-                            ? "bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600"
-                            : "bg-gradient-to-br from-blue-900/30 to-indigo-900/30 text-blue-400"
+                            ? "bg-[var(--blue)] text-[var(--ink)]"
+                            : "bg-[var(--blue)] text-[var(--ink)]"
                         }`}
                         onClick={(e) => handleUserClick(like.userId, e)}
                       >
@@ -395,8 +395,8 @@ const  LikedLists  = React.memo(({
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center cursor-pointer ${
                           themeValue
-                            ? "bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600"
-                            : "bg-gradient-to-br from-blue-900/30 to-indigo-900/30 text-blue-400"
+                            ? "bg-[var(--blue)] text-[var(--ink)]"
+                            : "bg-[var(--blue)] text-[var(--ink)]"
                         }`}
                         onClick={(e) => handleUserClick(like.authorId, e)}
                       >

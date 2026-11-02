@@ -11,9 +11,8 @@ const  FilterToogle = React.memo(({showFilters,onClick}:any) => {
         <>
         <Button
         onClick={onClick}
-        className={`flex items-center gap-2 px-4 py-3 rounded-lg  cursor-pointer
-        bg-gradient-to-r from-indigo-500 to-purple-600 text-white
-        rounded-lg text-sm font-medium hover:from-indigo-600 hover:to-purple-700 transition-all`}
+        variant="secondary"
+        className="w-full cursor-pointer sm:w-auto"
     >
         <Filter size={18} />
         Filters

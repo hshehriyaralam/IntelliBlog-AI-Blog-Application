@@ -9,6 +9,9 @@ import { BookOpen } from "lucide-react";
 import LoadingPage from "../../../components/layout/LoadingPage";
 import AuthorsProfileSection from "../_component/ProfileSection";
 import dynamic from "next/dynamic";
+import { PageFrame } from "@/components/ui/page-frame";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const ErrorPage = dynamic(
   () => import("../../../components/common/ErrorPage"),
@@ -41,25 +44,21 @@ export default function AuthorsDetail() {
 
   if (!user)
     return (
-      <div
-        className={`min-h-screen flex items-center justify-center ${
-          themeValue ? `${light}` : `${dark}`
-        }`}
-      >
+      <PageFrame className="min-h-0 items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
+          <div className="mb-4 text-2xl font-black text-[var(--ink)]">
             Author not found
           </div>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-[var(--muted)]">
             The author you're looking for doesn't exist
           </p>
         </div>
-      </div>
+      </PageFrame>
     );
 
   return (
-    <div className={`min-h-screen ${themeValue ? `${light}` : `${dark}`} py-8`}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+      <div className="mx-auto w-full max-w-7xl">
         {/* Profile Section */}
         <AuthorsProfileSection
           themeValue={themeValue}
@@ -72,44 +71,20 @@ export default function AuthorsDetail() {
         {/* Blogs Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2
-              className={`text-2xl font-bold  bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent`}
-            >
-              Articles by {user.name}
-            </h2>
+            <SectionHeading eyebrow="Fresh from this writer">Articles by {user.name}</SectionHeading>
             <span
-              className={`text-sm ${
-                themeValue ? "text-gray-600" : "text-gray-400"
-              }`}
+              className="text-sm text-[var(--muted)]"
             >
               {blogs.length} articles published
             </span>
           </div>
 
           {blogs.length === 0 ? (
-            <div
-              className={`text-center py-12 rounded-2xl ${
-                themeValue
-                  ? `${light} shadow-lg`
-                  : `${dark} shadow-xl border border-gray-700`
-              }`}
-            >
+            <EmptyState title="No articles yet" description={`${user.name} hasn't published any articles yet.`}>
               <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3
-                className={`text-lg font-semibold mb-2 ${
-                  themeValue ? "text-gray-800" : "text-white"
-                }`}
-              >
-                No articles yet
-              </h3>
-              <p
-                className={`text-gray-600 lg:max-w-[400px]   max-w-[280px]  text-center mx-auto     `}
-              >
-                {user.name} hasn't published any articles yet.
-              </p>
-            </div>
+            </EmptyState>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
               {blogs?.map((blog: any, index: number) => {
                 return (
                   <Link key={blog._id} href={`/Blogs/${blog._id}`}>
@@ -126,6 +101,6 @@ export default function AuthorsDetail() {
           )}
         </div>
       </div>
-    </div>
+    </PageFrame>
   );
 }

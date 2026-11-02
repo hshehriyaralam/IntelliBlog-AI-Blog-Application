@@ -1,6 +1,5 @@
 'use client'
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react";
-import { motion } from "framer-motion";
 import React, { JSX } from "react";
 
 type AlertType = "success" | "error" | "info";
@@ -68,7 +67,7 @@ const Alert = ({ type, message, progress, onClose }: AlertProps) => {
   const config = getAlertConfig();
 
   return (
-    <div className={`relative w-96 max-w-sm rounded-xl border shadow-lg backdrop-blur-sm ${config.bg}`}>
+    <div className={`relative w-96 max-w-sm rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] shadow-[var(--sh-card)] ${config.bg}`}>
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gray-200 rounded-t-xl">
         <div

@@ -16,13 +16,11 @@ export default function CollectionsBlogCard({
   return (
     <Link href={`/Blogs/${blog._id}`}>
       <div
-        className={`rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer
-          ${themeValue ? `${light} border border-gray-200` : `${dark} border border-gray-700`}
-        `}
+        className="overflow-hidden rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] shadow-[var(--sh-card)] transition-transform hover:-translate-y-1"
         key={bookmark._id}
       >
         {/* Image with Gradient */}
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-48 overflow-hidden border-b-[3px] border-[var(--ink)] bg-[var(--blue)]">
           <Image
           width={400}
           height={300}
@@ -31,7 +29,6 @@ export default function CollectionsBlogCard({
             alt={blog.blogTitle}
             className="w-full h-auto object-cover transition-transform duration-500 hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
           {/* Tags */}
           {blog.blogTags.length > 0 && (
@@ -39,7 +36,7 @@ export default function CollectionsBlogCard({
               {blog.blogTags.slice(0, 2).map((tag: string, idx: number) => (
                 <span
                   key={idx}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                  className="inline-flex rounded-full border-2 border-[var(--ink)] bg-[var(--mint)] px-3 py-1 text-xs font-extrabold text-[var(--ink)] shadow-[var(--sh-chip)]"
                 >
                   #{tag}
                 </span>
@@ -51,17 +48,13 @@ export default function CollectionsBlogCard({
         {/* Content */}
         <div className="p-5">
           <h3
-            className={`font-semibold mb-2 text-lg ${
-              themeValue ? "text-gray-800" : "text-white"
-            }`}
+            className="mb-2 text-lg font-black text-[var(--ink)]"
           >
             {blog.blogTitle}
           </h3>
 
           <p
-            className={`text-sm mb-3 line-clamp-2 ${
-              themeValue ? "text-gray-600" : "text-gray-300"
-            }`}
+            className="mb-3 line-clamp-2 text-sm leading-6 text-[var(--muted)]"
           >
             {blog.blogSummary}
           </p>
@@ -69,15 +62,11 @@ export default function CollectionsBlogCard({
           {/* Author + Date */}
           <div
             className={`flex items-center justify-between pt-3 
-              ${
-                themeValue
-                  ? "border-t border-gray-200"
-                  : "border-t border-gray-700"
-              }
+              border-t-2 border-dashed border-[var(--ink)]
             `}
           >
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-400 to-purple-400 p-0.5">
+              <div className="w-10 h-10 rounded-full border-[3px] border-[var(--ink)] bg-[var(--blue)] p-0.5">
                 <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center overflow-hidden">
                   {hasImage ? (
                     <Image
@@ -90,7 +79,7 @@ export default function CollectionsBlogCard({
                       onError={() => setImgError(true)}
                     />
                   ) : (
-                     <User className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                     <User className="w-5 h-5 text-[var(--purple)]" />
                   )}
                 </div>
               </div>

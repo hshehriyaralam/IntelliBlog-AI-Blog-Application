@@ -64,17 +64,15 @@ const handleLike = async () => {
     <div className="flex items-center gap-3">
       <button
         onClick={handleLike}
-        className={`flex items-center cursor-pointer gap-1.5 px-3 py-2 rounded-full shadow-md transition-all hover:scale-105
-        ${liked ? "bg-pink-700" : "bg-pink-200"}`}
+        aria-label={liked ? "Unlike blog" : "Like blog"}
+        className={`flex min-h-11 items-center gap-1.5 rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] px-3 py-2 shadow-[3px_3px_0_var(--ink)] transition-transform hover:-translate-y-0.5 active:translate-y-1 active:shadow-none
+        ${liked ? "bg-[var(--pink)]" : "bg-[var(--rose)]"}`}
       >
         <Heart
-          className={`w-5 h-5 transition-colors 
-          ${liked ? "text-pink-200 fill-pink-700" : "text-pink-700"}`}
+          className="size-5 text-[var(--ink)]"
         />
         <span
-          className={`text-sm font-medium ${
-            liked ? "text-pink-100" : "text-pink-700"
-          }`}
+          className="text-sm font-extrabold text-[var(--ink)]"
         >
           {count}
         </span>
