@@ -89,18 +89,10 @@ const  AllUserAdminPage = React.memo(({ filteredUsers, setShowDeleteModal, setSe
   };
 
   return (
-    <div
-      className={`rounded-xl shadow-lg border-b overflow-hidden ${
-        themeValue ? `${light} border-gray-200` : `${dark} border-gray-700`
-      }`}
-    >
+    <div className="overflow-x-auto rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] shadow-[var(--sh-card)]">
       {/* Table Header */}
       <div
-        className={`hidden md:grid grid-cols-12 gap-4 p-6     font-semibold text-sm border-b ${
-          themeValue
-            ? `border-gray-200 ${light} text-gray-900`
-            : `border-gray-700 ${dark} text-white`
-        }`}
+        className="hidden min-w-[980px] md:grid grid-cols-12 gap-4 border-b-[3px] border-[var(--ink)] bg-[var(--yellow)] p-4 text-sm font-extrabold text-[var(--ink)]"
       >
         <div className="col-span-3">User</div>
         <div className="col-span-2">Role</div>
@@ -127,9 +119,7 @@ const  AllUserAdminPage = React.memo(({ filteredUsers, setShowDeleteModal, setSe
           filteredUsers.map((user: any) => (
             <div
               key={user.id}
-              className={`grid grid-cols-12 gap-4 rounded-xl  p-6 transition-colors duration-200 items-center group ${
-                themeValue ? "hover:bg-gray-50" : "hover:bg-gray-700/50"
-              }`}
+              className="grid min-w-[980px] grid-cols-12 items-center gap-4 border-b-2 border-dashed border-[var(--ink)] p-4 transition-colors hover:bg-[var(--white)]"
             >
               {/* User Info */}
               <div className="col-span-12 md:col-span-3 flex items-center space-x-3">
@@ -165,7 +155,7 @@ const  AllUserAdminPage = React.memo(({ filteredUsers, setShowDeleteModal, setSe
                     {user.name}
                   </h3>
                   <p
-                    className={`text-xs truncate flex items-center ${
+                    className={`flex min-w-0 items-center break-all text-xs ${
                       themeValue ? "text-gray-600" : "text-gray-300"
                     }`}
                   >

@@ -19,7 +19,7 @@ const AuthorsCard = React.memo(
       <div>
         <Link href={`/Authors/${user.id}`}>
           <div
-            className={`group rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] p-6 flex flex-col items-center text-center shadow-[var(--sh-card)] transition-transform hover:-translate-y-1 ${["bg-[var(--yellow)]","bg-[var(--mint)]","bg-[var(--rose)]","bg-[var(--blue)]"][user?.id ? String(user.id).length % 4 : 0]}`}
+            className="group flex flex-col items-center rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--mint)] p-6 text-center shadow-[var(--sh-card)] transition-transform hover:-translate-y-1"
           >
             {/* Profile Image */}
             <div className="relative mb-4">

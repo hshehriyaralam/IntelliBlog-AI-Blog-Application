@@ -12,83 +12,48 @@ interface AlertProps {
 }
 
 const iconMap: Record<AlertType, JSX.Element> = {
-  success: <CheckCircle className="text-green-600 w-6 h-6" />,
-  error: <AlertCircle className="text-red-600 w-6 h-6" />,
-  info: <Info className="text-blue-600 w-6 h-6" />,
+  success: <CheckCircle className="h-6 w-6 text-[var(--ink)]" />,
+  error: <AlertCircle className="h-6 w-6 text-[var(--ink)]" />,
+  info: <Info className="h-6 w-6 text-[var(--ink)]" />,
 };
 
 const styleMap: Record<AlertType, string> = {
-  success: "bg-green-100 text-green-900 border border-green-300",
-  error: "bg-red-100 text-red-900 border border-red-300",
-  info: "bg-blue-100 text-blue-900 border border-blue-300",
+  success: "alert-toast--success",
+  error: "alert-toast--error",
+  info: "alert-toast--info",
 };
 
 const barColorMap: Record<AlertType, string> = {
-  success: "bg-green-600",
-  error: "bg-red-600",
-  info: "bg-blue-600",
+  success: "alert-toast__progress--success",
+  error: "alert-toast__progress--error",
+  info: "alert-toast__progress--info",
 };
 
 const Alert = ({ type, message, progress, onClose }: AlertProps) => {
-  const getAlertConfig = () => {
-    switch (type) {
-      case "success":
-        return {
-          bg: "bg-green-50 border-green-200",
-          text: "text-green-800",
-          icon: <CheckCircle className="w-5 h-5 text-green-600" />,
-          progress: "bg-green-500",
-        };
-      case "error":
-        return {
-          bg: "bg-red-50 border-red-200",
-          text: "text-red-800",
-          icon: <AlertCircle className="w-5 h-5 text-red-600" />,
-          progress: "bg-red-500",
-        };
-      case "error":
-        return {
-          bg: "bg-amber-50 border-amber-200",
-          text: "text-amber-800",
-          icon: <AlertTriangle className="w-5 h-5 text-amber-600" />,
-          progress: "bg-amber-500",
-        };
-      case "info":
-      default:
-        return {
-          bg: "bg-blue-50 border-blue-200",
-          text: "text-blue-800",
-          icon: <Info className="w-5 h-5 text-blue-600" />,
-          progress: "bg-blue-500",
-        };
-    }
-  };
-
-  const config = getAlertConfig();
+  const alertType = type || "info";
 
   return (
-    <div className={`relative w-96 max-w-sm rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] shadow-[var(--sh-card)] ${config.bg}`}>
-      {/* Progress Bar */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gray-200 rounded-t-xl">
+    <div className={`alert-toast ${styleMap[alertType]}`}>
+      <div className="alert-toast__progress-track">
         <div
-          className={`h-full rounded-t-xl transition-all duration-300 ${config.progress}`}
+          className={`alert-toast__progress ${barColorMap[alertType]}`}
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      {/* Alert Content */}
-      <div className="p-4 flex items-start gap-3">
-        <div className="flex-shrink-0 mt-0.5">{config.icon}</div>
+      <div className="alert-toast__content">
+        <div className="alert-toast__icon">{iconMap[alertType]}</div>
         
-        <div className="flex-1 min-w-0">
-          <p className={`text-sm font-medium ${config.text}`}>{message}</p>
+        <div className="alert-toast__body">
+          <p className="alert-toast__message">{message}</p>
         </div>
 
         <button
           onClick={onClose}
-          className="flex-shrink-0 p-1 hover:bg-black/5 rounded-md transition-colors"
+          aria-label="Close alert"
+          className="alert-toast__close"
         >
-          <X className="w-4 h-4 text-gray-500" />
+          <X className="h-5 w-5" />
         </button>
       </div>
     </div>

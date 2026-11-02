@@ -25,47 +25,27 @@ const TopAuthors = dynamic(() => import("@/components/common/Authors"), {
 });
 
 
-const QuickActions = dynamic(() => import("../../components/DashboardComponent/QuickActions"), {
-  ssr: false,
-  loading : () => <LoadingPage />
-});
-
-
-
-
-
-
-
-
 export default function AdminDashboard() {
-    const { themeValue, light, dark } = useContext(ContextTheme);
   return (
-    <PageFrame className="min-h-0 gap-8 p-4 md:p-8 lg:p-10">
-      <div className="mx-auto w-full max-w-7xl">
+    <PageFrame className="min-h-0 gap-6 p-2 md:p-3 lg:p-4">
+      <div className="mx-auto w-full max-w-[1480px]">
         {/* Header with Stats */}
-        <div className="mb-8">
+        <div className="mb-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <SectionHeading eyebrow="Admin Control">Manage your platform</SectionHeading>
-              <p className="mt-3 max-w-xl text-[var(--muted)]">Welcome back! Here's your blog performance summary.</p>
+              <p className="mt-2 max-w-xl text-sm text-[var(--muted)]">Welcome back! Here&apos;s your blog performance summary.</p>
             </div>
             </div>
         </div>
 
-        <Stats   themeValue={themeValue} light={light} dark={dark}  />
+        <Stats />
         {/* Content Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-5">
           {/* Recent Blogs */}
-        <RecenetBlog    themeValue={themeValue} light={light} dark={dark}/>
+        <RecenetBlog />
 
-          {/* Top Authors & Quick Actions */}
-          <div className="space-y-6">
-            {/* Top Authors */}
-            <TopAuthors   navigate={"/Admin/allUsers"}  themeValue={themeValue} />
-
-            {/* Quick Actions */}
-            <QuickActions    themeValue={themeValue} light={light} dark={dark}/>
-          </div>
+          <TopAuthors navigate={"/Admin/allUsers"} />
         </div>
       </div>
     </PageFrame>

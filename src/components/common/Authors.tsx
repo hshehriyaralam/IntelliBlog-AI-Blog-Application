@@ -30,7 +30,7 @@ export default function TopAuthors({ navigate, themeValue }: any) {
   const topAuthors = useMemo(() => (authors ? [...authors].sort((a, b) => b.blogCount - a.blogCount).slice(0, 5) : []), [authors]);
 
   return (
-    <section className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--blue)] p-6 shadow-[var(--sh-card)]">
+    <section className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--mint)] p-6 shadow-[var(--sh-card)]">
       <div className="mb-3 flex items-center gap-3">
         <span className="flex size-9 items-center justify-center rounded-lg border-[3px] border-[var(--ink)] bg-[var(--pink)]"><TrendingUp className="size-5" /></span>
         <h3 className="text-xl font-black tracking-[-0.04em]">Top Authors</h3>

@@ -22,7 +22,7 @@ const  DeleteBlogButton = React.memo(({themeValue,blog}:any) => {
       <>
     <Button
     onClick={handleDelete}
-      className={`px-2 py-1 flex items-center gap-x-1 text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer 
+      className={`min-h-8 px-2 py-0.5 flex items-center gap-x-1 text-[11px] font-extrabold rounded-[var(--r-btn)] border-2 transition-all duration-200 cursor-pointer
     ${
       themeValue
         ? 'border-[3px] border-[var(--ink)] bg-[var(--pink)] text-white shadow-[var(--sh-btn)]'

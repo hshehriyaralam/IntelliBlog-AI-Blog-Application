@@ -33,7 +33,7 @@ export default function Authors() {
 
 
   return (
-    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+    <PageFrame className="min-h-0 gap-8 py-6 md:py-8">
       {/* Header Section */}
       <div className="mx-auto max-w-3xl text-center">
         <SectionHeading eyebrow="People behind the posts">Meet Our Creative Authors</SectionHeading>

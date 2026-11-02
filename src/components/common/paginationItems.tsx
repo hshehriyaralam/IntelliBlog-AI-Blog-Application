@@ -28,17 +28,24 @@ const PaginationItems = React.memo(({
     return filteredItems.slice(indexOfFirst, indexOfLast);
   }, [currentPage, ItemsPerPage, filteredItems]);
 
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const goToPage = useCallback((page: number) => {
     setCurrentPage(page);
-  }, []);
+    scrollToTop();
+  }, [scrollToTop]);
 
   const nextPage = useCallback(() => {
     setCurrentPage(p => Math.min(p + 1, totalPages));
-  }, [totalPages]);
+    scrollToTop();
+  }, [scrollToTop, totalPages]);
 
   const prevPage = useCallback(() => {
     setCurrentPage(p => Math.max(p - 1, 1));
-  }, []);
+    scrollToTop();
+  }, [scrollToTop]);
 
   useEffect(() => {
     onPageChange(currentItems);

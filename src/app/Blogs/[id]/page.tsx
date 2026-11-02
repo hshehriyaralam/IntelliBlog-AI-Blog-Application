@@ -18,7 +18,7 @@ export default function BlogDetail() {
   const params = useParams();
   const id = params?.id as string;
 
-  const { data, isLoading, error } = useSingleBlogQuery(id);
+  const { data, isLoading, error } = useSingleBlogQuery(id, { skip: !id });
   const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -38,12 +38,11 @@ export default function BlogDetail() {
   }, []);
 
   
-  if (isLoading) return <LoadingPage  />
-  if (error) return <ErrorPage  className={`${themeValue ? light : dark}`} />
+  if (!id || isLoading) return <LoadingPage  />
+  if (!isLoading && error) return <ErrorPage  className={`${themeValue ? light : dark}`} />
   if (!blog) return <BlogNotFound className={`${themeValue ? light : `text-gray-300 ${dark}`}`} />;
 
 
-  const shortId = blog.userId?._id ? blog.userId._id.slice(-4) : null;
   const words = blog.blogTitle?.split(" ") || [];
   const shortTitle = words.slice(0, 4).join(" ");
   const contentWords = blog.blogContent?.split(" ") || [];
@@ -79,7 +78,7 @@ export default function BlogDetail() {
         {/* Author Line */}
         <p className="mb-8 border-b-[3px] border-[var(--ink)] pb-6 text-sm font-medium text-[var(--muted)] sm:text-base">
           By <span className="font-extrabold text-[var(--ink)]">{blog.userId?.name || "Unknown Author"}</span>
-          {" "} · {formattedDate} · <span className="font-extrabold text-[var(--ink)]">{shortTitle}{shortId}</span>
+          {" "} · {formattedDate} · <span className="font-extrabold text-[var(--ink)]">{shortTitle}</span>
         </p>
 
         {/* Blog Content */}

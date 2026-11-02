@@ -60,17 +60,11 @@ const  BookmarkList = React.memo(({
   
   return (
     <div
-      className={`rounded-xl shadow-lg overflow-hidden ${
-        themeValue ? `${light} border-gray-200` : `${dark} border-gray-700`
-      }`}
+      className="overflow-x-auto rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] shadow-[var(--sh-card)]"
     >
       {/* Table Header */}
       <div
-        className={`hidden md:grid grid-cols-12 gap-4 p-6 py-8 font-semibold text-sm border-b ${
-          themeValue
-            ? `border-gray-200 ${light} text-gray-700`
-            : `border-gray-700 ${dark} text-gray-300`
-        }`}
+        className="hidden min-w-[980px] md:grid grid-cols-12 gap-4 border-b-[3px] border-[var(--ink)] bg-[var(--yellow)] p-4 text-sm font-extrabold text-[var(--ink)]"
       >
         <div className="col-span-5 flex items-center space-x-2">
           <span>Blog Details</span>
@@ -280,12 +274,7 @@ const  BookmarkList = React.memo(({
                       <div className="flex justify-center space-x-3 pt-2">
                          <Button
                         onClick={(e) => handleBlogClick(bookmark.blogId, e)}
-                        className={`flex items-center justify-center cursor-pointer space-x-1 px-6
-                           py-1.5 rounded-lg text-sm font-medium transition-all duration-200  ${
-                themeValue 
-                  ? 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
-                  : 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
-              }`}
+                        className="flex min-h-8 items-center justify-center space-x-1 rounded-[var(--r-btn)] border-2 border-[var(--ink)] bg-[var(--purple)] px-2 py-0.5 text-[11px] font-extrabold text-white shadow-[var(--sh-btn)] transition-all duration-200"
                       >
                         <Eye size={12} />
                         <span>View Blog</span>
@@ -293,11 +282,7 @@ const  BookmarkList = React.memo(({
 
                         <Button
                           onClick={(e) => handleUserClick(bookmark.userId, e)}
-                          className={`flex items-center justify-center space-x-1 cursor-pointer px-6 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
-                            themeValue
-                              ? "bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-300"
-                              : "bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600"
-                          }`}
+                          className="flex min-h-8 items-center justify-center space-x-1 rounded-[var(--r-btn)] border-2 border-[var(--ink)] bg-[var(--yellow)] px-2 py-0.5 text-[11px] font-extrabold text-[var(--ink)] shadow-[var(--sh-btn)] transition-all duration-200"
                         >
                           <Users size={12} />
                           <span> View User</span>
@@ -308,7 +293,7 @@ const  BookmarkList = React.memo(({
                 </div>
 
                 {/* Desktop Layout */}
-                <div className="hidden md:grid md:grid-cols-12 gap-4 items-center">
+                <div className="hidden min-w-[980px] md:grid md:grid-cols-12 gap-4 items-center">
                   {/* Blog Content Column */}
                   <div className="col-span-5">
                     <div className="flex items-start space-x-3">
@@ -458,11 +443,7 @@ const  BookmarkList = React.memo(({
                     <div className="flex flex-row space-x-2 w-full max-w-[140px] mx-auto">
                       <button
                         onClick={(e) => handleBlogClick(bookmark.blogId, e)}
-                        className={`flex items-center justify-center cursor-pointer space-x-1 px-2.5 py-1 rounded-lg text-sm font-medium transition-all duration-200 w-full ${
-                themeValue 
-                  ? 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
-                  : 'border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]'
-              }`}
+                        className="flex min-h-8 w-full items-center justify-center space-x-1 rounded-[var(--r-btn)] border-2 border-[var(--ink)] bg-[var(--purple)] px-2 py-0.5 text-[11px] font-extrabold text-white shadow-[var(--sh-btn)] transition-all duration-200"
                       >
                         <Eye size={14} />
                         <span>Blog</span>
@@ -470,11 +451,7 @@ const  BookmarkList = React.memo(({
                       
                       <button
                         onClick={(e) => handleUserClick(bookmark.userId, e)}
-                        className={`flex items-center justify-center space-x-1 cursor-pointer px-2.5 py-1 rounded-lg text-sm font-medium transition-all duration-200 w-full ${
-                          themeValue 
-                            ? "bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-300" 
-                            : "bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600"
-                        }`}
+                        className="flex items-center justify-center space-x-1 cursor-pointer min-h-8 px-2 py-0.5 rounded-[var(--r-btn)] border-2 border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)] shadow-[var(--sh-btn)] text-[11px] font-extrabold transition-all duration-200 w-full"
                       >
                         <Users size={14} />
                         <span>User</span>

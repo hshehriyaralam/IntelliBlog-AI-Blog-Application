@@ -61,17 +61,11 @@ const  LikedLists  = React.memo(({
 
   return (
     <div
-      className={`rounded-2xl shadow-lg border-b overflow-hidden ${
-        themeValue ? `${light} border-gray-200` : `${dark} border-gray-700`
-      }`}
+      className="overflow-x-auto rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] shadow-[var(--sh-card)]"
     >
       {/* Table Header (Desktop Only) */}
       <div
-        className={`hidden md:grid grid-cols-12 gap-4 p-6 font-semibold text-sm border-b ${
-          themeValue
-            ? `border-gray-200 ${light} text-gray-900`
-            : `border-gray-700 ${dark} text-white`
-        }`}
+        className="hidden min-w-[980px] md:grid grid-cols-12 gap-4 border-b-[3px] border-[var(--ink)] bg-[var(--yellow)] p-4 text-sm font-extrabold text-[var(--ink)]"
       >
         <div className="col-span-4">Liked By</div>
         <div className="col-span-5">Blog Details</div>
@@ -145,7 +139,7 @@ const  LikedLists  = React.memo(({
                         }`}
                       >
                         <Mail size={10} className="mr-1" />
-                        {like.userEmail}
+                        <span className="min-w-0 break-all">{like.userEmail}</span>
                       </p>
                     </div>
                   </div>
@@ -272,7 +266,7 @@ const  LikedLists  = React.memo(({
               </div>
 
               {/* Desktop Layout */}
-              <div className="hidden md:grid md:grid-cols-12 gap-4 items-center">
+              <div className="hidden min-w-[980px] md:grid md:grid-cols-12 gap-4 items-center">
                 {/* User Info */}
                 <div className="col-span-4">
                   <div className="flex items-center space-x-3">
@@ -309,12 +303,12 @@ const  LikedLists  = React.memo(({
                         {like.userName}
                       </h3>
                       <p
-                        className={`text-xs flex items-center ${
+                        className={`flex max-w-full items-start break-all text-xs ${
                           themeValue ? "text-gray-500" : "text-gray-400"
                         }`}
                       >
                         <Mail size={10} className="mr-1" />
-                        {like.userEmail}
+                        <span className="min-w-0 break-all">{like.userEmail}</span>
                       </p>
                       <div className="flex items-center space-x-1 mt-1">
                         <Heart size={12} className={themeValue ? "text-rose-500" : "text-rose-400"} />

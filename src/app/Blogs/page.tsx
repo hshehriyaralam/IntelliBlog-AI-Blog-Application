@@ -9,8 +9,8 @@ import FilterToogle from "../../components/common/FilterToggle";
 import { PageFrame } from "@/components/ui/page-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Skeleton } from "@/components/ui/skeleton";
 import { PlusCircle } from "@/components/ui/stickers";
+import LoadingPage from "../../components/layout/LoadingPage";
 
 
 
@@ -27,7 +27,9 @@ const PaginationItems = dynamic(() => import("../../components/common/pagination
 
 
 export default function AllBlogs() {
-  const { data, isLoading } = useFetchBlogQuery(undefined);
+  const { data, isLoading } = useFetchBlogQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme);
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -144,7 +146,7 @@ export default function AllBlogs() {
 
 
   return (
-    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+    <PageFrame className="min-h-0 gap-8 py-6 md:py-8">
       <div className="mx-auto w-full max-w-7xl">
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center">
@@ -178,7 +180,7 @@ export default function AllBlogs() {
 
           {showFilters && (
            <div className="mt-5 border-t-2 border-dashed border-[var(--ink)] pt-5">
-  <div className="flex flex-wrap gap-5">
+  <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
     <AuthorsFilter
       themeValue={themeValue}
       light={light}
@@ -218,12 +220,9 @@ export default function AllBlogs() {
         {/* Blog Grid */}
         <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[390px] rounded-[var(--r-card)]"
-              ><Skeleton className="h-full w-full" /></div>
-            ))
+            <div className="col-span-full">
+              <LoadingPage />
+            </div>
           ) : currentItems.length === 0 ? (
             <div className="col-span-full py-10">
               <EmptyState title="No blogs found" description="Try a different search or clear your filters.">

@@ -53,7 +53,7 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
           filteredBlogs.map((blog: Blog) => (
             <div  key={blog._id}>
           <div
-        className={`grid grid-cols-12 gap-4 p-4  rounded-xl transition-colors duration-200 items-center group ${
+        className={`grid min-w-[980px] grid-cols-12 gap-4 p-4 rounded-none transition-colors duration-150 items-center group ${
           themeValue
             ? "hover:bg-gray-50 border-b border-gray-300"
             : "hover:bg-gray-700/50 border-b border-gray-700"
@@ -116,7 +116,7 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
   </div>
 
   {/* Author */}
-<div className="col-span-6 md:col-span-2 flex items-center space-x-2">
+<div className="col-span-6 md:col-span-2 flex min-w-0 items-center gap-2">
   {blog.userId?.profilePic ? (
     <div className="relative w-8 h-8">
       <Image
@@ -153,7 +153,7 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
     </div>
   )}
   <span
-    className={`text-sm font-medium truncate max-w-[100px] ${
+    className={`min-w-0 max-w-[140px] truncate text-sm font-extrabold ${
       themeValue ? "text-gray-700" : "text-gray-200"
     }`}
   >
@@ -163,12 +163,12 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
 
 
   {/* Actions */}
-  <div className="col-span-6 md:col-span-2 flex items-center space-x-2 justify-end md:justify-start">
+  <div className="col-span-6 md:col-span-2 flex flex-wrap items-center gap-2 justify-end md:justify-start">
     <ActionsAdmin themeValue={themeValue} blog={blog} />
   </div>
 
   {/* Status */}
-  <div className="hidden md:block  col-span-12 md:col-span-2 flex items-center mt-2 md:mt-0">
+  <div className="hidden md:flex col-span-12 md:col-span-2 items-center mt-2 md:mt-0">
     <span
       className={`px-3 py-1.5 rounded-full text-xs font-medium border ${getStatusStyles(
         blog.status

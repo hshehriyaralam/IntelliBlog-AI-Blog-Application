@@ -29,7 +29,8 @@ const LikeButton = React.memo(({
 
   // ✅ initialize like state
  useEffect(() => {
-  if (
+ setCount(likesCount);
+ if (
     loggedInUserId &&
     likes.some((like:any) => (like?.userId?._id)?.toString() === loggedInUserId.toString())
   ) {

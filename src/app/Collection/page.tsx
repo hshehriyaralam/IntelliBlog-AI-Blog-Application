@@ -26,7 +26,9 @@ const PaginationItems  = dynamic(() => import('@/components/common/paginationIte
 
 
 export default function Collection() {
-  const { data, isLoading, isError } = useGetBookmarksQuery(undefined);
+  const { data, isLoading, isError } = useGetBookmarksQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const { themeValue, light, dark, } = useContext(ContextTheme);
   const bookmarks =  useMemo(() => data?.bookmarks || [], [data]);
   const [currentItems, setCurrentItems] = useState<any[]>([]);
@@ -43,7 +45,7 @@ export default function Collection() {
 
   
   return (
-    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+    <PageFrame className="min-h-0 gap-8 py-6 md:py-8">
       <div className="mx-auto w-full max-w-7xl">
         {/* Header */}
         <div className="mx-auto mb-8 max-w-3xl text-center">

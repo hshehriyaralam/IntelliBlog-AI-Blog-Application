@@ -2,7 +2,7 @@ import React from "react";
 import HeroTopButtons from "./heroTopButtons";
 import { AIBubble, HeartCircle } from "../ui/stickers";
 
-function ArticleIllustration() {
+function ArticleIllustration({ articleCount }: { articleCount: number }) {
   return (
     <div className="relative mx-auto h-[310px] w-full max-w-[390px] sm:h-[360px]">
       <div className="absolute bottom-3 left-[16%] h-56 w-[66%] rotate-[-5deg] rounded-[26px] border-[5px] border-[var(--ink)] bg-[var(--rose)] shadow-[7px_7px_0_var(--ink)] sm:h-64">
@@ -29,13 +29,13 @@ function ArticleIllustration() {
       <AIBubble className="absolute left-0 top-12 w-24 sm:left-2 sm:w-28" />
       <HeartCircle className="absolute bottom-7 right-[4%] w-20 sm:right-0 sm:w-24" />
       <span className="absolute bottom-0 right-[14%] rounded-full border-[3px] border-[var(--ink)] bg-[var(--mint)] px-3 py-1 text-xs font-extrabold shadow-[3px_3px_0_var(--ink)]">
-        ✓ 28 articles live
+        ✓ {articleCount} articles live
       </span>
     </div>
   );
 }
 
-function HeroTopCard() {
+function HeroTopCard({ articleCount }: { articleCount: number }) {
   return (
     <section className="relative grid min-h-[610px] w-full grid-cols-1 items-center gap-8 overflow-hidden rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] px-6 py-10 shadow-[var(--sh-card)] md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-16">
       <div className="relative z-10 max-w-2xl">
@@ -51,7 +51,7 @@ function HeroTopCard() {
         </p>
         <HeroTopButtons />
       </div>
-      <ArticleIllustration />
+      <ArticleIllustration articleCount={articleCount} />
     </section>
   );
 }

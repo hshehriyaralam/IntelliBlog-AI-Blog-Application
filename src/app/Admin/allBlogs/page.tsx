@@ -95,14 +95,14 @@ export default function UserAllBlogs() {
   if (isLoading) return <LoadingPage />;
 
   return (
-    <PageFrame className="min-h-0 p-4 md:p-8 lg:p-10">
-      <div className="mx-auto w-full max-w-7xl">
+    <PageFrame className="min-h-0 gap-5 p-3 md:p-5 lg:p-6">
+      <div className="mx-auto w-full max-w-[1480px]">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <SectionHeading eyebrow="Admin Control">All Blogs</SectionHeading>
-              <p className="mt-3 max-w-xl text-[var(--muted)]">
+              <p className="mt-2 max-w-xl text-sm text-[var(--muted)]">
                 Monitor, filter and manage all blogs from a single dashboard
               </p>
             </div>
@@ -141,10 +141,10 @@ export default function UserAllBlogs() {
         </div>
 
         {/* Blogs Table */}
-        <div className="overflow-hidden rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] shadow-[var(--sh-card)]">
+        <div className="overflow-x-auto rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--white)] shadow-[var(--sh-card)]">
           {/* Table Header */}
           <div
-                className={`hidden md:grid grid-cols-12 gap-4 p-6 border-b ${
+                className={`hidden min-w-[980px] md:grid grid-cols-12 gap-4 p-4 border-b ${
                   themeValue
                     ? `border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)]`
                     : `border-[var(--ink)] bg-[var(--yellow)] text-[var(--ink)]`

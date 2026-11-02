@@ -49,39 +49,33 @@ export default function WriteBlogForm() {
     setTags,
   });
 
-
-
-
-
-
-
-
-
   return (
-    <div className="w-full px-4 py-10 md:py-16">
+    <div className="w-full px-4 py-2 md:py-4">
       <form onSubmit={addBlogs} className="mx-auto max-w-7xl">
-        <h1 className="mb-10 text-center text-5xl font-black uppercase leading-none tracking-[-0.045em] text-[var(--ink)] md:text-7xl">
+        <h1 className="mb-6 text-center text-5xl font-black uppercase leading-none tracking-[-0.045em] text-[var(--ink)] md:text-7xl">
           Add Article
         </h1>
 
         {/* Main Editor Grid */}
-        <div className="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
           {/* Left Column - Title and Content */}
-          <div className="order-1 space-y-7">
-            {/* Blog Titlle  */}
+          <div className="order-1 space-y-5">
+            {/* Blog Title */}
             <InputTitle 
-            onChange={handleTitleChange} 
-            value={title}
-            themeValue={themeValue} />
-            {/* Blog Content  */}
+              onChange={handleTitleChange} 
+              value={title}
+              themeValue={themeValue} 
+            />
+            {/* Blog Content */}
             <InputContent 
-            onChange={handleContentChange} 
-            value={content} 
-            themeValue={themeValue} />
+              onChange={handleContentChange} 
+              value={content} 
+              themeValue={themeValue} 
+            />
           </div>
 
-          {/* Middle Column - Summary and Tags */}
-          <div className="order-2 space-y-7">
+          {/* Right Column - AI Assistance, Summary, Tags */}
+          <div className="order-2 space-y-5">
             <div
               className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--mint)] p-5 shadow-[var(--sh-card)]"
             >
@@ -100,7 +94,7 @@ export default function WriteBlogForm() {
                 >
                   {aiLoading ? (
                     <div className="flex items-center gap-2 w-full justify-center">
-                      <AILoader /> {/* Loader from earlier */}
+                      <AILoader />
                     </div>
                   ) : (
                     <>
@@ -113,40 +107,53 @@ export default function WriteBlogForm() {
             </div>
             {/* Input Summary */}
             <InputSummary 
-            value={summary}
-             onChange={handleSummaryChange}
-             themeValue={themeValue}
-             />
-            {/* InputTags */}
-            <InputTags
-              value={tagInput}
-              onChange={handleTagInput}
-              onKeyDown={handleTagKeyDown}
-              addTag={addTag}
-              removeTag={removeTag}
-              tags={tags}
-              themeValue={themeValue}
-            />
-            <FeatureImage
-              onChange={handleImageChange}
-              imagePreview={imagePreview}
+              value={summary}
+              onChange={handleSummaryChange}
               themeValue={themeValue}
             />
           </div>
-          <div className="order-3 lg:row-span-2">
-          <PreviewBlog
-          themeValue={themeValue}
-          title={title} 
-           summary={summary} 
-           tags={tags} 
-          imagePreview={imagePreview} 
-          />
+
+          {/* Full Width Row - Feature Image (Left) & Tags (Right) */}
+          <div className="order-3 md:col-span-2 lg:col-span-2">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
+              {/* Feature Image - Left side */}
+              <div className="w-full">
+                <FeatureImage
+                  onChange={handleImageChange}
+                  imagePreview={imagePreview}
+                  themeValue={themeValue}
+                />
+              </div>
+              {/* Tags - Right side */}
+              <div className="w-full">
+                <InputTags
+                  value={tagInput}
+                  onChange={handleTagInput}
+                  onKeyDown={handleTagKeyDown}
+                  addTag={addTag}
+                  removeTag={removeTag}
+                  tags={tags}
+                  themeValue={themeValue}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Preview Blog - Full Width */}
+          <div className="order-4 lg:col-span-2">
+            <PreviewBlog
+              themeValue={themeValue}
+              title={title} 
+              summary={summary} 
+              tags={tags} 
+              imagePreview={imagePreview} 
+            />
           </div>
         </div>
 
         {/* Action Buttons - Centered */}
         <CenteredButtons
-        themeValue={themeValue}
+          themeValue={themeValue}
           CancellBlog={CancellBlog}
           text={loading ? <ButtonLoader /> : "Publish"}
         />

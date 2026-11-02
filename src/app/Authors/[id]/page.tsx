@@ -57,7 +57,7 @@ export default function AuthorsDetail() {
     );
 
   return (
-    <PageFrame className="min-h-0 gap-10 py-10 md:py-16">
+    <PageFrame className="min-h-0 gap-8 py-6 md:py-8">
       <div className="mx-auto w-full max-w-7xl">
         {/* Profile Section */}
         <AuthorsProfileSection

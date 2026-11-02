@@ -87,32 +87,32 @@ const Alert = ({ type, message, progress, onClose }: AlertProps) => {
     switch (type) {
       case "success":
         return {
-          bg: "bg-green-50 border-green-200",
-          text: "text-green-800",
-          icon: <CheckCircle className="w-5 h-5 text-green-600" />,
-          progress: "bg-green-500",
+          bg: "alert-toast--success",
+          text: "alert-toast__message",
+          icon: <CheckCircle className="h-6 w-6 text-[var(--ink)]" />,
+          progress: "alert-toast__progress--success",
         };
       case "error":
         return {
-          bg: "bg-red-50 border-red-200",
-          text: "text-red-800",
-          icon: <AlertCircle className="w-5 h-5 text-red-600" />,
-          progress: "bg-red-500",
+          bg: "alert-toast--error",
+          text: "alert-toast__message",
+          icon: <AlertCircle className="h-6 w-6 text-[var(--ink)]" />,
+          progress: "alert-toast__progress--error",
         };
       case "warning":
         return {
-          bg: "bg-amber-50 border-amber-200",
-          text: "text-amber-800",
-          icon: <AlertTriangle className="w-5 h-5 text-amber-600" />,
-          progress: "bg-amber-500",
+          bg: "alert-toast--warning",
+          text: "alert-toast__message",
+          icon: <AlertTriangle className="h-6 w-6 text-[var(--ink)]" />,
+          progress: "alert-toast__progress--warning",
         };
       case "info":
       default:
         return {
-          bg: "bg-blue-50 border-blue-200",
-          text: "text-blue-800",
-          icon: <Info className="w-5 h-5 text-blue-600" />,
-          progress: "bg-blue-500",
+          bg: "alert-toast--info",
+          text: "alert-toast__message",
+          icon: <Info className="h-6 w-6 text-[var(--ink)]" />,
+          progress: "alert-toast__progress--info",
         };
     }
   };
@@ -120,28 +120,29 @@ const Alert = ({ type, message, progress, onClose }: AlertProps) => {
   const config = getAlertConfig();
 
   return (
-    <div className={`relative w-96 max-w-sm rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] shadow-[var(--sh-card)] ${config.bg}`}>
+    <div className={`alert-toast ${config.bg}`}>
       {/* Progress Bar */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gray-200 rounded-t-xl">
+      <div className="alert-toast__progress-track">
         <div
-          className={`h-full rounded-t-xl transition-all duration-300 ${config.progress}`}
+          className={`alert-toast__progress ${config.progress}`}
           style={{ width: `${progress}%` }}
         />
       </div>
 
       {/* Alert Content */}
-      <div className="p-4 flex items-start gap-3">
-        <div className="flex-shrink-0 mt-0.5">{config.icon}</div>
+      <div className="alert-toast__content">
+        <div className="alert-toast__icon">{config.icon}</div>
         
-        <div className="flex-1 min-w-0">
-          <p className={`text-sm font-medium ${config.text}`}>{message}</p>
+        <div className="alert-toast__body">
+          <p className={config.text}>{message}</p>
         </div>
 
         <button
           onClick={onClose}
-          className="flex-shrink-0 p-1 hover:bg-black/5 rounded-md transition-colors"
+          aria-label="Close alert"
+          className="alert-toast__close"
         >
-          <X className="w-4 h-4 text-gray-500" />
+          <X className="h-5 w-5" />
         </button>
       </div>
     </div>

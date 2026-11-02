@@ -54,14 +54,14 @@ export default function AllUsers() {
   
 
   return (
-    <PageFrame className="min-h-0 p-4 md:p-8 lg:p-10">
-      <div className="mx-auto w-full max-w-7xl">
+    <PageFrame className="min-h-0 gap-5 p-3 md:p-5 lg:p-6">
+      <div className="mx-auto w-full max-w-[1480px]">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <SectionHeading eyebrow="Admin Control">User Management</SectionHeading>
-              <p className="mt-3 max-w-xl text-[var(--muted)]">
+              <p className="mt-2 max-w-xl text-sm text-[var(--muted)]">
                 Manage all user accounts and permissions
               </p>
             </div>

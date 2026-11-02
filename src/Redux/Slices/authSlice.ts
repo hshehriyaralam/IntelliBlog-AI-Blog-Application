@@ -26,6 +26,11 @@ export const googleLoginThunk = createAsyncThunk(
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
           scope: "openid email profile",
           callback: async (tokenResponse: any) => {
+            if (tokenResponse?.error) {
+              reject(new Error(tokenResponse.error));
+              return;
+            }
+
             const accessToken = tokenResponse.access_token;
             try {
               const backendRes = await axios.post("/api/auth", { accessToken });
@@ -33,6 +38,9 @@ export const googleLoginThunk = createAsyncThunk(
             } catch (err: any) {
               reject(err.response?.data || err.message);
             }
+          },
+          error_callback: (error: any) => {
+            reject(new Error(error?.type || "Google sign-in was cancelled"));
           },
         });
 

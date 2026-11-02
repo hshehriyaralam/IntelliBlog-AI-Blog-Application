@@ -19,7 +19,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "IntelliBlog",
   description: "AI Blog Application",
-  icons: { icon: "/book-open.svg" },
+  icons: { icon: "/intelli-blog-logo.svg" },
 };
 
 export default function RootLayout({

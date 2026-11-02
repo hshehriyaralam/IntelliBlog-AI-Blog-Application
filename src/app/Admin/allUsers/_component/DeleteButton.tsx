@@ -12,10 +12,10 @@ const  DeleteButton = React.memo(({
   user,
 }: any) => {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center space-x-1">
       <Link href={`/Authors/${user.id}`}>
         <Button
-          className={`rounded-lg  flex items-center gap-x-1  text-sm transition-all duration-200  px-2  py-1   cursor-pointer  ${
+          className={`min-h-8 rounded-[var(--r-btn)] flex items-center gap-x-1 text-[11px] font-extrabold transition-all duration-200 px-2 py-0.5 cursor-pointer ${
             themeValue
               ? "border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]"
               : "border-[3px] border-[var(--ink)] bg-[var(--purple)] text-white shadow-[var(--sh-btn)]"
@@ -31,7 +31,7 @@ const  DeleteButton = React.memo(({
           setSelectedUser(user);
           setShowDeleteModal(true);
         }}
-          className={`px-2 py-1 flex items-center gap-x-1 text-sm font-medium rounded-lg transition-all duration-200 cursor-pointer 
+          className={`min-h-8 px-2 py-0.5 flex items-center gap-x-1 text-[11px] font-extrabold rounded-[var(--r-btn)] transition-all duration-200 cursor-pointer
     ${
       themeValue
         ? 'border-[3px] border-[var(--ink)] bg-[var(--pink)] text-white shadow-[var(--sh-btn)]'
