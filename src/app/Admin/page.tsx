@@ -27,7 +27,7 @@ const TopAuthors = dynamic(() => import("@/components/common/Authors"), {
 
 export default function AdminDashboard() {
   return (
-    <PageFrame className="min-h-0 gap-6 p-2 md:p-3 lg:p-4">
+    <PageFrame className="min-h-0 gap-5 !p-2 md:!p-3 lg:!p-4">
       <div className="mx-auto w-full max-w-[1480px]">
         {/* Header with Stats */}
         <div className="mb-5">

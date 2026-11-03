@@ -81,7 +81,7 @@ export default function UserBookmarks() {
 
 
   return (
-    <PageFrame className="min-h-0 gap-5 p-3 md:p-5 lg:p-6">
+    <PageFrame className="min-h-0 gap-5 !p-2 md:!p-4 lg:!p-5">
       <div className="mx-auto w-full max-w-[1480px]">
         {/* Header */}
         <div className="mb-5">

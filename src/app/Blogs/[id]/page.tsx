@@ -16,9 +16,10 @@ const AuthorInfo = dynamic(() => import("../_component/AuthorInfo"), { ssr: fals
 
 export default function BlogDetail() {
   const params = useParams();
-  const id = params?.id as string;
+  const rawId = params?.id;
+  const id = Array.isArray(rawId) ? rawId[0] : rawId;
 
-  const { data, isLoading, error } = useSingleBlogQuery(id, { skip: !id });
+  const { data, isLoading, isFetching, error } = useSingleBlogQuery(id ?? "", { skip: !id });
   const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -38,8 +39,8 @@ export default function BlogDetail() {
   }, []);
 
   
-  if (!id || isLoading) return <LoadingPage  />
-  if (!isLoading && error) return <ErrorPage  className={`${themeValue ? light : dark}`} />
+  if (!id || (isLoading && !blog) || (isFetching && !blog)) return <LoadingPage />;
+  if (!blog && error) return <ErrorPage className={`${themeValue ? light : dark}`} />;
   if (!blog) return <BlogNotFound className={`${themeValue ? light : `text-gray-300 ${dark}`}`} />;
 
 

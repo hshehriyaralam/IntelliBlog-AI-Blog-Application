@@ -53,7 +53,7 @@ const AllBlogList = React.memo(({ filteredBlogs, themeValue,light,dark }: any) =
           filteredBlogs.map((blog: Blog) => (
             <div  key={blog._id}>
           <div
-        className={`grid min-w-[980px] grid-cols-12 gap-4 p-4 rounded-none transition-colors duration-150 items-center group ${
+        className={`grid min-w-0 grid-cols-12 gap-3 p-3 rounded-none transition-colors duration-150 items-center group md:min-w-[980px] md:gap-4 md:p-4 ${
           themeValue
             ? "hover:bg-gray-50 border-b border-gray-300"
             : "hover:bg-gray-700/50 border-b border-gray-700"

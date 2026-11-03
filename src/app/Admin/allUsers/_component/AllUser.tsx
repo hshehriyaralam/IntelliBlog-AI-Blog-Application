@@ -119,7 +119,7 @@ const  AllUserAdminPage = React.memo(({ filteredUsers, setShowDeleteModal, setSe
           filteredUsers.map((user: any) => (
             <div
               key={user.id}
-              className="grid min-w-[980px] grid-cols-12 items-center gap-4 border-b-2 border-dashed border-[var(--ink)] p-4 transition-colors hover:bg-[var(--white)]"
+              className="grid min-w-0 grid-cols-12 items-center gap-3 border-b-2 border-dashed border-[var(--ink)] p-3 transition-colors hover:bg-[var(--white)] md:min-w-[980px] md:gap-4 md:p-4"
             >
               {/* User Info */}
               <div className="col-span-12 md:col-span-3 flex items-center space-x-3">
