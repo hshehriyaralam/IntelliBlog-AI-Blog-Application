@@ -4,7 +4,15 @@ import { Plus, X } from 'lucide-react';
 import React from 'react';
 
 const InputTags = React.memo(function InputTags(
-  {value, onChange, onKeyDown, addTag, removeTag, tags, themeValue}: any){
+  {
+    value,
+    onChange,
+    onKeyDown,
+    addTag,
+    removeTag,
+    tags,
+    themeValue,
+  }: any){
 
   return(
     <div className="space-y-2">
@@ -13,7 +21,7 @@ const InputTags = React.memo(function InputTags(
         <span className="ml-1 text-xs font-medium text-[var(--muted)]">(Press Enter to add)</span>
       </label>
       
-      <div className="flex gap-2 mb-2 items-center">
+      <div className="mb-2 flex items-center gap-2">
         <input
           type="text"
           value={value}
@@ -31,7 +39,6 @@ const InputTags = React.memo(function InputTags(
           <Plus size={16} />
         </Button>
       </div>
-
       <div className="flex flex-wrap gap-2">
         {tags?.map((tag: string, i: number) => (
           <span 
