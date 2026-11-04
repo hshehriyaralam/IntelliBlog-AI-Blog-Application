@@ -27,6 +27,7 @@ const InputTags = React.memo(function InputTags(
           value={value}
           onChange={onChange}
           onKeyDown={onKeyDown}
+          enterKeyHint="enter"
           placeholder="Add relevant tags..."
           className="min-h-12 min-w-0 flex-1 rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--white)] px-4 py-2 text-base text-[var(--ink)] outline-none placeholder:text-[var(--muted)] focus:shadow-[4px_4px_0_var(--purple)]"
         />

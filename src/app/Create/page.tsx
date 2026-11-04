@@ -1,6 +1,5 @@
 "use client";
-import { useContext, SetStateAction, useEffect, useState } from "react";
-import { useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { ContextTheme } from "../../Context/DarkTheme";
 import { Button } from "../../components/ui/button";
@@ -30,9 +29,12 @@ export default function WriteBlogForm() {
   const { showAlert } = useAlert();
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const summaryRef = useRef<HTMLTextAreaElement>(null);
+  const imageRequestRef = useRef<AbortController | null>(null);
   const [aiAssistEnabled, setAiAssistEnabled] = useState(true);
   const [showIntro, setShowIntro] = useState(false);
   const [introKey, setIntroKey] = useState("");
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [aiGenerated, setAiGenerated] = useState(false);
   const {
     // values
     title,
@@ -98,7 +100,7 @@ export default function WriteBlogForm() {
 
   useEffect(() => {
     if (!loggedInUserId) return;
-    const key = `intelliblog.aiIntro.v1.${loggedInUserId}`;
+    const key = `intelliblog.aiIntro.v2.${loggedInUserId}`;
     setIntroKey(key);
     let seen = false;
     try {
@@ -144,6 +146,80 @@ export default function WriteBlogForm() {
     });
   };
 
+  useEffect(() => {
+    return () => imageRequestRef.current?.abort();
+  }, []);
+
+  const handleUserImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAiGenerated(false);
+    handleImageChange(event);
+  };
+
+  const handleGenerateImage = async () => {
+    const trimmedTitle = title.trim();
+    const trimmedContent = content.trim();
+    if (!trimmedTitle && !trimmedContent) {
+      showAlert("error", "Please add the blog title and content first.");
+      return;
+    }
+    if (!trimmedTitle) {
+      showAlert("error", "Please add a blog title to generate an image.");
+      return;
+    }
+    if (!trimmedContent) {
+      showAlert("error", "Please write some blog content to generate an image.");
+      return;
+    }
+    if (imagePreview && !aiGenerated && !window.confirm("Replace your current image with an AI image?")) {
+      return;
+    }
+
+    imageRequestRef.current?.abort();
+    const controller = new AbortController();
+    imageRequestRef.current = controller;
+    setIsGeneratingImage(true);
+    try {
+      const response = await fetch("/api/ai-image/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: trimmedTitle, content: trimmedContent }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        let code = "";
+        try {
+          code = ((await response.json()) as { code?: string }).code || "";
+        } catch {
+          code = "";
+        }
+        if (response.status === 429 || code === "RATE_LIMITED") {
+          showAlert("error", "Too many image requests. Please wait a minute and try again.");
+        } else if (response.status === 422 || code === "IMAGE_REJECTED") {
+          showAlert("error", "This topic can't be turned into an image. Try changing the title or content.");
+        } else {
+          showAlert("error", "Image generation failed. Please try again.");
+        }
+        return;
+      }
+
+      const blob = await response.blob();
+      const file = new File([blob], `ai-generated-${Date.now()}.jpg`, {
+        type: blob.type || "image/jpeg",
+      });
+      handleImageChange({
+        target: { files: [file] },
+      } as unknown as React.ChangeEvent<HTMLInputElement>);
+      setAiGenerated(true);
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        showAlert("error", "Image generation failed. Please try again.");
+      }
+    } finally {
+      if (imageRequestRef.current === controller) imageRequestRef.current = null;
+      setIsGeneratingImage(false);
+    }
+  };
+
   return (
     <div className="w-full px-4 py-2 md:py-4">
       <form onSubmit={addBlogs} className="mx-auto max-w-7xl">
@@ -152,9 +228,9 @@ export default function WriteBlogForm() {
         </h1>
 
         {/* Main Editor Grid */}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
+        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
           {/* Left Column - Title and Content */}
-          <div className="order-1 space-y-5">
+          <div className="order-1 min-w-0 space-y-5">
             {/* Blog Title */}
             <InputTitle 
               onChange={handleTitleChange} 
@@ -186,38 +262,55 @@ export default function WriteBlogForm() {
           </div>
 
           {/* Right Column - AI Assistance, Summary, Tags */}
-          <div className="order-2 space-y-5">
-            <div
-              className="relative rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--mint)] p-5 shadow-[var(--sh-card)]"
-            >
-              <h2 className="mb-3 text-lg font-black tracking-[-0.03em] text-[var(--ink)]">
-                🤖 AI Assistance
-              </h2>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={aiAssistEnabled}
-                onClick={toggleAssistant}
-                className="absolute right-5 top-4 min-h-8 rounded-[var(--r-chip)] border-2 border-[var(--ink)] bg-[var(--paper)] px-2 text-xs font-extrabold"
-              >
-                AI-Assistant: {aiAssistEnabled ? "On" : "Off"}
-              </button>
-              <div className="space-y-2">
+          <div className="order-2 min-w-0 space-y-5">
+            <div className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--mint)] p-4 shadow-[var(--sh-card)] sm:p-5">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-black tracking-[-0.03em] text-[var(--ink)]">
+                  🤖 AI Assistance
+                </h2>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={aiAssistEnabled}
+                  onClick={toggleAssistant}
+                  className="min-h-8 rounded-[var(--r-chip)] border-2 border-[var(--ink)] bg-[var(--paper)] px-2 text-xs font-extrabold"
+                >
+                  AI-Assistant: {aiAssistEnabled ? "On" : "Off"}
+                </button>
+              </div>
+              <div className="grid gap-3">
                 <Button
                   type="button"
                   onClick={handleSuggest}
                   variant="outline"
                   disabled={aiLoading}
-                  className="w-full cursor-pointer justify-between disabled:cursor-not-allowed"
+                  className="w-full min-w-0 cursor-pointer justify-center px-3 text-center disabled:cursor-not-allowed sm:justify-between sm:px-6"
                 >
                   {aiLoading ? (
-                    <div className="flex items-center gap-2 w-full justify-center">
-                      <AILoader />
+                    <div className="flex w-full items-center justify-center gap-2">
+                      <AILoader text="Generating..." compact />
                     </div>
                   ) : (
                     <>
                       <span>Generate Summary & Tags</span>
                       <span className="text-[11px] opacity-70">⌘S</span>
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleGenerateImage}
+                  disabled={isGeneratingImage}
+                  variant="outline"
+                  className="w-full min-w-0 cursor-pointer justify-center bg-[var(--rose)] px-3 text-center disabled:cursor-not-allowed sm:justify-between sm:px-6"
+                >
+                  {isGeneratingImage ? (
+                    <span className="flex w-full items-center justify-center gap-2">
+                      <AILoader text="Generating..." compact />
+                    </span>
+                  ) : (
+                    <>
+                      <span>🖼️ Generate Image</span>
                     </>
                   )}
                 </Button>
@@ -243,13 +336,15 @@ export default function WriteBlogForm() {
 
           {/* Full Width Row - Feature Image (Left) & Tags (Right) */}
           <div className="order-3 md:col-span-2 lg:col-span-2">
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-2">
               {/* Feature Image - Left side */}
               <div className="w-full">
                 <FeatureImage
-                  onChange={handleImageChange}
+                  onChange={handleUserImageChange}
                   imagePreview={imagePreview}
                   themeValue={themeValue}
+                  isGenerating={isGeneratingImage}
+                  aiGenerated={aiGenerated}
                 />
               </div>
               {/* Tags - Right side */}

@@ -55,15 +55,18 @@ export default function  BlogFormFunctions(){
   ========================= */
 
   const addTag = useCallback(() => {
-    if (!tagInput.trim()) return
+    const normalizedTag = tagInput.trim()
+    if (!normalizedTag) return
+    if (tags.length >= 4) return
+    if (tags.some((tag) => tag.toLowerCase() === normalizedTag.toLowerCase())) return
 
     setTags(prev =>
-      prev.includes(tagInput.trim())
+      prev.length >= 4
         ? prev
-        : [...prev, tagInput.trim()]
+        : [...prev, normalizedTag]
     )
     setTagInput('')
-  }, [tagInput])
+  }, [tagInput, tags])
 
    const removeTag = useCallback((index: number) => {
     setTags(prev => prev.filter((_, i) => i !== index))
@@ -78,7 +81,11 @@ export default function  BlogFormFunctions(){
 
 const handleTagKeyDown = useCallback(
   (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') addTag()
+    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+      e.preventDefault()
+      e.stopPropagation()
+      addTag()
+    }
   },
   [addTag]
 )

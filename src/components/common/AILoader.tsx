@@ -5,6 +5,7 @@ import LoadingIndicator from "./LoadingIndicator";
 const AILoader: React.FC<LoaderProps> = ({
   text = "Generating...",
   color = "var(--blue)",
-}) => <LoadingIndicator text={text} color={color} />;
+  compact = false,
+}) => <LoadingIndicator text={text} color={color} compact={compact} />;
 
 export default AILoader;

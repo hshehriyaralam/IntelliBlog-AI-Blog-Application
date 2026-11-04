@@ -12,6 +12,7 @@ export interface BlogFormDataTypes {
 export  interface LoaderProps {
   text?: string;
   color?: string;
+  compact?: boolean;
 }
 
 export type DraftFilters = {

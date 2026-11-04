@@ -12,6 +12,8 @@ import dynamic from "next/dynamic";
 const BlogTags = dynamic(() => import("../_component/blogTags"), { ssr: false });
 const ActionRow = dynamic(() => import("../_component/ActionRow"), { ssr: false });
 const AuthorInfo = dynamic(() => import("../_component/AuthorInfo"), { ssr: false });
+const RelatedBlogs = dynamic(() => import("./_component/RelatedBlogs"), { ssr: false });
+const BlogChat = dynamic(() => import("./_component/BlogChat"), { ssr: false });
 
 
 export default function BlogDetail() {
@@ -143,7 +145,9 @@ export default function BlogDetail() {
           lightText={lightText}
           DarkText={DarkText}
         />
+        <RelatedBlogs blogId={blog._id} />
       </article>
+      <BlogChat blogId={blog._id} />
     </div>
   );
 }

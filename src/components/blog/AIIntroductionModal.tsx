@@ -39,16 +39,28 @@ export default function AIIntroductionModal({ onSeen, onLater }: Props) {
         <h2 id="ai-intro-title" className="pr-10 text-3xl font-black tracking-[-0.04em] md:text-5xl">
           Meet your AI helpers
         </h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-[var(--muted)]">
+          Three smart tools to help you write and publish faster.
+        </p>
+        <div className="mt-6 grid max-h-[50vh] gap-4 overflow-y-auto md:grid-cols-3">
           <div className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--mint)] p-4">
             <h3 className="text-xl font-black">AI-Summary</h3>
             <p className="mt-2 text-sm font-medium leading-6">Generate a polished summary and useful tags from your article.</p>
           </div>
           <div className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--rose)] p-4">
+            <span className="mb-2 inline-block rotate-[-3deg] rounded-[var(--r-btn)] border-2 border-[var(--ink)] bg-[var(--yellow)] px-2 py-1 text-[10px] font-black">NEW</span>
             <h3 className="text-xl font-black">AI-Assistant</h3>
-            <p className="mt-2 text-sm font-medium leading-6">Get short writing suggestions while you draft. Press Tab to accept.</p>
+            <p className="mt-2 text-sm font-medium leading-6">Get short writing suggestions while you draft. Press Tab to accept, or tap Accept on your phone.</p>
+          </div>
+          <div className="rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--yellow)] p-4">
+            <span className="mb-2 inline-block rotate-[-3deg] rounded-[var(--r-btn)] border-2 border-[var(--ink)] bg-[var(--paper)] px-2 py-1 text-[10px] font-black">NEW</span>
+            <h3 className="text-xl font-black">AI-Image</h3>
+            <p className="mt-2 text-sm font-medium leading-6">Create a featured image from your title and content. Generate again or upload your own image anytime.</p>
           </div>
         </div>
+        <p className="mt-4 text-xs font-medium leading-5 text-[var(--muted)]">
+          AI reads your title and draft only to help you. Please check everything before you publish.
+        </p>
         <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
           <button type="button" onClick={onLater} className="min-h-11 rounded-[var(--r-btn)] border-[3px] border-[var(--ink)] bg-[var(--paper)] px-4 font-extrabold">
             Remind me later
