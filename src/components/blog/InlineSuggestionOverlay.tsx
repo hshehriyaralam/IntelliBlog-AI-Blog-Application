@@ -24,6 +24,9 @@ export default function InlineSuggestionOverlay({
     const overlay = overlayRef.current;
     if (!textarea || !overlay) return;
     const sync = () => {
+      if (suggestion && overlay.scrollHeight > textarea.clientHeight) {
+        textarea.scrollTop = Math.max(0, overlay.scrollHeight - textarea.clientHeight);
+      }
       overlay.scrollTop = textarea.scrollTop;
       overlay.scrollLeft = textarea.scrollLeft;
     };
@@ -42,14 +45,14 @@ export default function InlineSuggestionOverlay({
   return (
     <>
       {isLoading && (
-        <span className="absolute bottom-2 right-2 z-20 rounded-[var(--r-chip)] border-2 border-[var(--ink)] bg-[var(--yellow)] px-2 py-1 text-xs font-extrabold text-[var(--ink)] shadow-[var(--sh-chip)]">
+        <span className="absolute right-2 top-2 z-20 rounded-[var(--r-chip)] border-2 border-[var(--ink)] bg-[var(--yellow)] px-2 py-1 text-xs font-extrabold text-[var(--ink)] shadow-[var(--sh-chip)]">
           AI thinking...
         </span>
       )}
       <div
         ref={overlayRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-10 overflow-hidden whitespace-pre-wrap break-words rounded-[var(--r-btn)] border-[3px] border-transparent px-4 py-3 text-base leading-7 text-[var(--ink)]"
+        className="pointer-events-none absolute inset-0 z-10 overflow-y-auto whitespace-pre-wrap break-words rounded-[var(--r-btn)] border-[3px] border-transparent px-4 py-3 text-base leading-7 text-[var(--ink)]"
       >
         <span className="text-transparent">{text}</span>
         <span className="text-[#8a8a8a]">{suggestion}</span>
@@ -67,7 +70,7 @@ export default function InlineSuggestionOverlay({
         type="button"
         onMouseDown={(event) => event.preventDefault()}
         onClick={onAccept}
-        className="absolute bottom-2 right-2 z-20 min-h-11 min-w-11 rounded-[var(--r-chip)] border-2 border-[var(--ink)] bg-[var(--yellow)] px-2 text-xs font-extrabold text-[var(--ink)] shadow-[var(--sh-chip)] md:hidden"
+        className="absolute right-2 top-2 z-20 min-h-11 min-w-11 rounded-[var(--r-chip)] border-2 border-[var(--ink)] bg-[var(--yellow)] px-2 text-xs font-extrabold text-[var(--ink)] shadow-[var(--sh-chip)] md:hidden"
         aria-label="Accept AI suggestion"
       >
         Accept

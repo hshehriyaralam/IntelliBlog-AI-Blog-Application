@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/layout/Navbar";
 import ClientProviders from "./ClientProviders";
@@ -16,6 +16,14 @@ const inter = Inter({
   axes: ["opsz"],
 });
 
+const notoArabic = Noto_Naskh_Arabic({
+  variable: "--font-noto-arabic",
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  display: "swap",
+  preload: false,
+});
+
 export const metadata: Metadata = {
   title: "IntelliBlog",
   description: "AI Blog Application",
@@ -29,7 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} ${notoArabic.variable} antialiased`}>
         <ClientProviders>
           <ProtectedRoute>
           <Navbar />

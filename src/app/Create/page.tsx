@@ -111,11 +111,20 @@ export default function WriteBlogForm() {
     if (seen) return;
     let idleId: number | undefined;
     let timeoutId: number | undefined;
+    const showIntroOnce = () => {
+      try {
+        if (window.sessionStorage.getItem("intelliblog.aiPopupShownThisSession") === "true") return;
+        window.sessionStorage.setItem("intelliblog.aiPopupShownThisSession", "true");
+      } catch {
+        // The popup remains available when session storage is unavailable.
+      }
+      setShowIntro(true);
+    };
     const requestIdle = window.requestIdleCallback;
     if (typeof requestIdle === "function") {
-      idleId = requestIdle(() => setShowIntro(true), { timeout: 600 });
+      idleId = requestIdle(showIntroOnce, { timeout: 600 });
     } else {
-      timeoutId = window.setTimeout(() => setShowIntro(true), 600);
+      timeoutId = window.setTimeout(showIntroOnce, 600);
     }
     return () => {
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);

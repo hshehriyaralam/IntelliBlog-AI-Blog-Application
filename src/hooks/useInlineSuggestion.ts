@@ -6,6 +6,9 @@ import type { ChangeEvent, KeyboardEvent, RefObject } from "react";
 const DEBOUNCE_MS = 400;
 const ACCEPT_RETRY_MS = 250;
 const CACHE_LIMIT = 30;
+const SUGGESTION_LIMITS_VERSION = "v2";
+const DEFAULT_SUGGESTION_MAX_LENGTH = 320;
+const DEFAULT_SUGGESTION_MAX_WORDS = 45;
 const cache = new Map<string, string>();
 
 type Options = {
@@ -38,8 +41,8 @@ export function useInlineSuggestion({
   minimumLength = 20,
   hintId = "content-ai-assist-hint",
   maxLength,
-  suggestionMaxLength = 140,
-  suggestionMaxWords = 20,
+  suggestionMaxLength = DEFAULT_SUGGESTION_MAX_LENGTH,
+  suggestionMaxWords = DEFAULT_SUGGESTION_MAX_WORDS,
 }: Options) {
   const [suggestion, setSuggestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -93,7 +96,7 @@ export function useInlineSuggestion({
     if (Date.now() < cooldownRef.current) return;
 
     const before = textarea.value;
-    const key = `${title}|${before.slice(-300)}`;
+    const key = `${SUGGESTION_LIMITS_VERSION}|${title}|${before.slice(-300)}`;
     const cached = cache.get(key);
     if (cached !== undefined) {
       beforeRef.current = before;
@@ -138,8 +141,14 @@ export function useInlineSuggestion({
       const data = (await response.json()) as { suggestion?: unknown };
       if (requestId !== requestIdRef.current || textarea.value !== before) return;
       let next = typeof data.suggestion === "string" ? data.suggestion : "";
-      next = next.replace(/\s+/g, " ").trim().slice(0, suggestionMaxLength);
-      next = next.split(" ").slice(0, suggestionMaxWords).join(" ");
+      next = next.replace(/\s+/g, " ").trim();
+      if (next.length > suggestionMaxLength || next.split(/\s+/).length > suggestionMaxWords) {
+        const candidate = next.split(/\s+/).slice(0, suggestionMaxWords).join(" ").slice(0, suggestionMaxLength).trim();
+        const sentenceEnd = [...candidate].reduce((last, character, index) => (
+          /[.!?۔]/.test(character) ? index + 1 : last
+        ), -1);
+        next = sentenceEnd > 0 ? candidate.slice(0, sentenceEnd).trim() : candidate.replace(/\s+\S*$/, "").trim();
+      }
       if (next) {
         cache.set(key, next);
         if (cache.size > CACHE_LIMIT) cache.delete(cache.keys().next().value as string);

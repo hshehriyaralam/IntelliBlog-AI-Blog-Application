@@ -6,7 +6,10 @@ export const runtime = "nodejs";
 
 const MAX_BODY_BYTES = 4096;
 const MAX_BEFORE_CHARS = 800;
-const REQUEST_TIMEOUT_MS = 5000;
+const REQUEST_TIMEOUT_MS = 7000;
+const SUGGESTION_MAX_CHARS = 320;
+const SUGGESTION_MAX_WORDS = 45;
+const LIMITS_VERSION = "v2";
 const WINDOW_MS = 60_000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MINUTE_LIMIT = 40;
@@ -20,7 +23,7 @@ const SYSTEM_PROMPT = `You are an inline writing autocomplete for a blog editor,
 Continue the user's text from exactly where it stops.
 Rules:
 - Output ONLY the continuation text. No quotes, no labels, no explanations, no markdown unless the text already uses it.
-- Keep it SHORT: finish the current sentence or add at most one short sentence (max 20 words).
+- Finish the current sentence. If it already ended, you may continue with one more short sentence. At most 45 words in total.
 - Do NOT repeat any text that is already written.
 - Match the user's language (English, Roman Urdu, Urdu, etc.), tone, and writing style.
 - If the text ends mid-word, complete that word first.
@@ -47,11 +50,20 @@ function cleanSuggestion(value: string, before: string) {
     .replace(/```$/i, "")
     .replace(/^["']|["']$/g, "")
     .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 140);
+    .trim();
 
-  const words = result.split(" ");
-  if (words.length > 20) result = words.slice(0, 20).join(" ");
+  if (result.length > SUGGESTION_MAX_CHARS || result.split(/\s+/).length > SUGGESTION_MAX_WORDS) {
+    const candidate = result
+      .split(/\s+/)
+      .slice(0, SUGGESTION_MAX_WORDS)
+      .join(" ")
+      .slice(0, SUGGESTION_MAX_CHARS)
+      .trim();
+    const sentenceEnd = [...candidate].reduce((last, character, index) => (
+      /[.!?۔]/.test(character) ? index + 1 : last
+    ), -1);
+    result = sentenceEnd > 0 ? candidate.slice(0, sentenceEnd).trim() : candidate.replace(/\s+\S*$/, "").trim();
+  }
 
   const beforeWords = before.trim().split(/\s+/).slice(-3).join(" ").toLowerCase();
   const suggestionWords = result.split(/\s+/).slice(0, 3).join(" ").toLowerCase();
@@ -148,7 +160,7 @@ export async function POST(request: Request) {
           temperature: 0.3,
           top_p: 0.9,
           reasoning_effort: "low",
-          max_completion_tokens: 200,
+          max_completion_tokens: 600,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: `<title>${input.title}</title>\n<draft>${before}</draft>` },
@@ -171,11 +183,19 @@ export async function POST(request: Request) {
     }
 
     const data = (await response.json()) as {
-      choices?: Array<{ message?: { content?: unknown } }>;
+      choices?: Array<{
+        finish_reason?: unknown;
+        message?: { content?: unknown };
+      }>;
     };
-    const content = data.choices?.[0]?.message?.content;
+    const choice = data.choices?.[0];
+    const content = choice?.message?.content;
+    const finishReason = typeof choice?.finish_reason === "string" ? choice.finish_reason : "unknown";
+    if (finishReason === "length" && typeof content !== "string") {
+      console.warn(`AI assistant empty length finish user=${userId} latency=${Date.now() - startedAt}ms`);
+    }
     const suggestion = typeof content === "string" ? cleanSuggestion(content, input.before) : "";
-    console.info(`AI assistant status=200 user=${userId} latency=${Date.now() - startedAt}ms`);
+    console.info(`AI assistant status=200 user=${userId} finish=${finishReason} empty=${!suggestion} latency=${Date.now() - startedAt}ms`);
     return json({ suggestion });
   } catch {
     console.warn(`AI assistant status=500 user=${userId} latency=${Date.now() - startedAt}ms`);
