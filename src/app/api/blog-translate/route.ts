@@ -14,8 +14,8 @@ export const maxDuration = 30;
 const REQUIRE_LOGIN_FOR_TRANSLATION = false;
 const MAX_TRANSLATE_CHARS = 12_000;
 const CHUNK_CHARS = 2_500;
-const PROVIDER_TIMEOUT_MS = 6_000;
-const JOB_DEADLINE_MS = 13_000;
+const PROVIDER_TIMEOUT_MS = 8_000;
+const JOB_DEADLINE_MS = 22_000;
 const MINUTE_LIMIT = 6;
 const DAY_LIMIT = 40;
 const WINDOW_MS = 60_000;
@@ -171,33 +171,90 @@ ${rules}`;
 async function callProvider(provider: AIProvider, system: string, text: string, deadline: number): Promise<string> {
   const remaining = Math.min(PROVIDER_TIMEOUT_MS, deadline - Date.now());
   if (remaining <= 0) throw new Error("TRANSLATE_TIMEOUT");
+
+  if (provider.name === "gemini") {
+    // Gemini ke liye ek retry
+    let lastError: unknown;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const attemptRemaining = Math.min(PROVIDER_TIMEOUT_MS, deadline - Date.now());
+      if (attemptRemaining <= 0) throw new Error("TRANSLATE_TIMEOUT");
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), attemptRemaining);
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${provider.model}:generateContent`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-goog-api-key": provider.key },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: system }] },
+              contents: [{ role: "user", parts: [{ text }] }],
+              generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
+            }),
+            signal: controller.signal,
+          }
+        );
+
+        if (!response.ok) {
+          const isRetryable = [502, 503, 429].includes(response.status);
+          if (isRetryable && attempt === 0) {
+            await new Promise((r) => setTimeout(r, 1000)); // 1s wait, phir dobara
+            lastError = new Error(`HTTP_${response.status}`);
+            continue;
+          }
+          throw new Error(`HTTP_${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data?.candidates?.[0]?.finishReason !== "STOP") throw new Error("TRUNCATED");
+        const output = (data?.candidates?.[0]?.content?.parts || [])
+          .map((part: { text?: string }) => part.text || "")
+          .join("")
+          .trim();
+        if (!output) throw new Error("EMPTY");
+        return output;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          // Timeout par retry nahi, seedha fallback
+          throw new Error(Date.now() >= deadline ? "TRANSLATE_TIMEOUT" : "PROVIDER_TIMEOUT");
+        }
+        lastError = error;
+        // Sirf network/5xx/429 par retry, baaki par fallback
+        const msg = error instanceof Error ? error.message : "";
+        const retryable = msg.includes("HTTP_5") || msg.includes("HTTP_429") || msg === "EMPTY";
+        if (!retryable || attempt === 1) throw error;
+        await new Promise((r) => setTimeout(r, 1000));
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+    throw lastError instanceof Error ? lastError : new Error("GEMINI_FAILED");
+  }
+
+  // Groq / OpenRouter (existing logic, no retry)
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), remaining);
   try {
-    if (provider.name === "gemini") {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${provider.model}:generateContent`, {
+    const response = await fetch(
+      provider.name === "groq"
+        ? "https://api.groq.com/openai/v1/chat/completions"
+        : "https://openrouter.ai/api/v1/chat/completions",
+      {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": provider.key },
+        headers: { Authorization: `Bearer ${provider.key}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] },
-          contents: [{ role: "user", parts: [{ text }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 4096 },
+          model: provider.model,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: text },
+          ],
+          temperature: 0.2,
+          max_tokens: 4096,
         }),
         signal: controller.signal,
-      });
-      if (!response.ok) throw new Error(`HTTP_${response.status}`);
-      const data = await response.json();
-      if (data?.candidates?.[0]?.finishReason !== "STOP") throw new Error("TRUNCATED");
-      const output = (data?.candidates?.[0]?.content?.parts || []).map((part: { text?: string }) => part.text || "").join("").trim();
-      if (!output) throw new Error("EMPTY");
-      return output;
-    }
-    const response = await fetch(provider.name === "groq" ? "https://api.groq.com/openai/v1/chat/completions" : "https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${provider.key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: provider.model, messages: [{ role: "system", content: system }, { role: "user", content: text }], temperature: 0.2, max_tokens: 4096 }),
-      signal: controller.signal,
-    });
+      }
+    );
     if (!response.ok) throw new Error(`HTTP_${response.status}`);
     const data = await response.json();
     if (data?.choices?.[0]?.finish_reason !== "stop") throw new Error("TRUNCATED");
@@ -206,13 +263,14 @@ async function callProvider(provider: AIProvider, system: string, text: string, 
     return output;
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
-      throw new Error("TRANSLATE_TIMEOUT");
+      throw new Error(Date.now() >= deadline ? "TRANSLATE_TIMEOUT" : "PROVIDER_TIMEOUT");
     }
     throw error;
   } finally {
     clearTimeout(timeout);
   }
 }
+
 
 async function translateUnit(
   input: string,
@@ -230,15 +288,18 @@ async function translateUnit(
       return !breaker.has(key) || (breaker.get(key) || 0) < Date.now();
     }),
     async (provider) => {
+      const providerStartedAt = Date.now();
       try {
         const translated = await callProvider(provider, system, protectedText, deadline);
         if (!validateTranslation(protectedText, translated, target, placeholders)) throw new Error("VALIDATION_FAILED");
         usedProviders.add(provider.name);
         return { text: restore(translated, placeholders), provider: provider.name };
       } catch (error) {
-        if (String(error).includes("HTTP_429") || String(error).includes("HTTP_5")) {
+        const code = error instanceof Error ? error.message : "UNKNOWN";
+        if (code === "PROVIDER_TIMEOUT" || code.includes("HTTP_429") || code.includes("HTTP_5")) {
           breaker.set(`${provider.name}:${provider.model}`, Date.now() + 60_000);
         }
+        console.warn(`Blog translation provider failed provider=${provider.name} error=${code} latency=${Date.now() - providerStartedAt}ms`);
         throw error;
       }
     }
@@ -254,9 +315,9 @@ async function executeTranslation(
   summary: string,
   content: string,
   hash: string,
-  providers: AIProvider[]
+  providers: AIProvider[],
+  deadline: number
 ): Promise<TranslationPayload> {
-  const deadline = Date.now() + JOB_DEADLINE_MS;
   const usedProviders = new Set<string>();
   const titleSummaryInput = summary ? `${title}\n\n${summary}` : title;
   const units = [titleSummaryInput, ...splitContent(content)];
@@ -345,7 +406,17 @@ export async function POST(request: Request) {
     ].filter((provider) => provider.model && provider.key);
     if (!providers.length) return json({ code: "TRANSLATE_NOT_CONFIGURED" }, 503);
     activeJobs += 1;
-    const job = executeTranslation(String(body.blogId), lang, sourceLang, title, summary, content, hash, providers)
+    const job = executeTranslation(
+      String(body.blogId),
+      lang,
+      sourceLang,
+      title,
+      summary,
+      content,
+      hash,
+      providers,
+      startedAt + JOB_DEADLINE_MS
+    )
       .then((result) => {
         console.info(`Blog translation success blog=${body.blogId} lang=${lang} provider=${result.provider} latency=${Date.now() - startedAt}ms`);
         return result;
@@ -358,8 +429,8 @@ export async function POST(request: Request) {
     return json(await job);
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
-    if (code === "TRANSLATE_TIMEOUT") return json({ code }, 504);
-    console.warn(`Blog translation failed latency=${Date.now() - startedAt}ms`);
+    if (code === "TRANSLATE_TIMEOUT" || code === "PROVIDER_TIMEOUT") return json({ code: "TRANSLATE_TIMEOUT" }, 504);
+    console.warn(`Blog translation failed error=${code || "UNKNOWN"} latency=${Date.now() - startedAt}ms`);
     return json({ code: "TRANSLATE_FAILED" }, 502);
   }
 }

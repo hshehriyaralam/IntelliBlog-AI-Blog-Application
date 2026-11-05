@@ -61,6 +61,7 @@ export function useBlogTranslation(blogId: string, enabled: boolean) {
       if (!response.ok || !data.title || requestId !== requestIdRef.current) {
         if (response.status === 413 || data.code === "TOO_LONG") throw new Error("TOO_LONG");
         if (response.status === 429 || data.code === "RATE_LIMITED" || data.code === "BUSY") throw new Error("RATE_LIMITED");
+        if (response.status === 504 || data.code === "TRANSLATE_TIMEOUT") throw new Error("TRANSLATE_TIMEOUT");
         throw new Error("TRANSLATE_FAILED");
       }
       cache.set(`${blogId}:${lang}`, data);
@@ -73,6 +74,8 @@ export function useBlogTranslation(blogId: string, enabled: boolean) {
         ? "This blog is too long to translate right now."
         : reason instanceof Error && reason.message === "RATE_LIMITED"
           ? "Too many requests. Please wait a minute."
+          : reason instanceof Error && reason.message === "TRANSLATE_TIMEOUT"
+            ? "Translation took too long. Please try again."
           : "Sorry, translation isn't available right now. Please try again.");
     } finally {
       window.clearTimeout(timeout);
