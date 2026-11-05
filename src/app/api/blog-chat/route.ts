@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { connectDB } from "../../lib/dbConnect";
 import { Blogs } from "../../lib/Models/Blog";
+import { User } from "../../lib/Models/user";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -143,7 +144,7 @@ export async function POST(request: Request) {
     await connectDB();
     const blog: any = await Blogs.findById(body.blogId)
       .select("blogTitle blogSummary blogTags blogContent userId createdAt updatedAt")
-      .populate("userId", "name")
+      .populate({ path: "userId", model: User, select: "name" })
       .lean();
     if (!blog) return json({ code: "BLOG_NOT_FOUND" }, 404);
 
