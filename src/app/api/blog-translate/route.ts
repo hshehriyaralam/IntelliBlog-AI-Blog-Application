@@ -9,13 +9,20 @@ import { runWithProviderFallback, type AIProvider } from "../../lib/ai/providers
 import { detectLang, languageNames, type BlogLanguage } from "../../../lib/blogLanguage";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const REQUIRE_LOGIN_FOR_TRANSLATION = false;
 const MAX_TRANSLATE_CHARS = 12_000;
 const CHUNK_CHARS = 2_500;
-const PROVIDER_TIMEOUT_MS = 8_000;
-const JOB_DEADLINE_MS = 22_000;
+
+// Provider-specific timeouts
+const GROQ_TIMEOUT_MS = 8_000;
+const GEMINI_TIMEOUT_MS = 15_000;
+const OPENROUTER_TIMEOUT_MS = 20_000;
+const DEFAULT_PROVIDER_TIMEOUT_MS = 15_000;
+
+const JOB_DEADLINE_MS = 45_000;
+
 const MINUTE_LIMIT = 6;
 const DAY_LIMIT = 40;
 const WINDOW_MS = 60_000;
@@ -168,25 +175,43 @@ Rules:
 ${rules}`;
 }
 
-async function callProvider(provider: AIProvider, system: string, text: string, deadline: number): Promise<string> {
-  const remaining = Math.min(PROVIDER_TIMEOUT_MS, deadline - Date.now());
+function providerTimeout(provider: AIProvider): number {
+  if (provider.name === "groq") return GROQ_TIMEOUT_MS;
+  if (provider.name === "gemini") return GEMINI_TIMEOUT_MS;
+  if (provider.name === "openrouter") return OPENROUTER_TIMEOUT_MS;
+  return DEFAULT_PROVIDER_TIMEOUT_MS;
+}
+
+async function callProvider(
+  provider: AIProvider,
+  system: string,
+  text: string,
+  deadline: number
+): Promise<string> {
+  const providerLimit = providerTimeout(provider);
+  const remaining = Math.min(providerLimit, deadline - Date.now());
   if (remaining <= 0) throw new Error("TRANSLATE_TIMEOUT");
 
   if (provider.name === "gemini") {
-    // Gemini ke liye ek retry
     let lastError: unknown;
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const attemptRemaining = Math.min(PROVIDER_TIMEOUT_MS, deadline - Date.now());
+    const maxAttempts = 2;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const attemptRemaining = Math.min(providerLimit, deadline - Date.now());
       if (attemptRemaining <= 0) throw new Error("TRANSLATE_TIMEOUT");
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), attemptRemaining);
+
       try {
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${provider.model}:generateContent`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json", "x-goog-api-key": provider.key },
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": provider.key,
+            },
             body: JSON.stringify({
               systemInstruction: { parts: [{ text: system }] },
               contents: [{ role: "user", parts: [{ text }] }],
@@ -197,9 +222,10 @@ async function callProvider(provider: AIProvider, system: string, text: string, 
         );
 
         if (!response.ok) {
-          const isRetryable = [502, 503, 429].includes(response.status);
-          if (isRetryable && attempt === 0) {
-            await new Promise((r) => setTimeout(r, 1000)); // 1s wait, phir dobara
+          const isRetryable = [429, 500, 502, 503, 504].includes(response.status);
+          if (isRetryable && attempt < maxAttempts - 1) {
+            const delay = 1000 * Math.pow(2, attempt); // 1s, 2s
+            await new Promise((r) => setTimeout(r, delay));
             lastError = new Error(`HTTP_${response.status}`);
             continue;
           }
@@ -216,15 +242,15 @@ async function callProvider(provider: AIProvider, system: string, text: string, 
         return output;
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") {
-          // Timeout par retry nahi, seedha fallback
+          // Timeout — retry nahi, seedha fallback
           throw new Error(Date.now() >= deadline ? "TRANSLATE_TIMEOUT" : "PROVIDER_TIMEOUT");
         }
         lastError = error;
-        // Sirf network/5xx/429 par retry, baaki par fallback
         const msg = error instanceof Error ? error.message : "";
         const retryable = msg.includes("HTTP_5") || msg.includes("HTTP_429") || msg === "EMPTY";
-        if (!retryable || attempt === 1) throw error;
-        await new Promise((r) => setTimeout(r, 1000));
+        if (!retryable || attempt >= maxAttempts - 1) throw error;
+        const delay = 1000 * Math.pow(2, attempt);
+        await new Promise((r) => setTimeout(r, delay));
       } finally {
         clearTimeout(timeout);
       }
@@ -232,7 +258,7 @@ async function callProvider(provider: AIProvider, system: string, text: string, 
     throw lastError instanceof Error ? lastError : new Error("GEMINI_FAILED");
   }
 
-  // Groq / OpenRouter (existing logic, no retry)
+  // Groq / OpenRouter — single attempt, provider-specific timeout
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), remaining);
   try {
@@ -242,7 +268,10 @@ async function callProvider(provider: AIProvider, system: string, text: string, 
         : "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${provider.key}`, "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${provider.key}`,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           model: provider.model,
           messages: [
@@ -271,7 +300,6 @@ async function callProvider(provider: AIProvider, system: string, text: string, 
   }
 }
 
-
 async function translateUnit(
   input: string,
   source: BlogLanguage,
@@ -291,15 +319,23 @@ async function translateUnit(
       const providerStartedAt = Date.now();
       try {
         const translated = await callProvider(provider, system, protectedText, deadline);
-        if (!validateTranslation(protectedText, translated, target, placeholders)) throw new Error("VALIDATION_FAILED");
+        if (!validateTranslation(protectedText, translated, target, placeholders)) {
+          throw new Error("VALIDATION_FAILED");
+        }
         usedProviders.add(provider.name);
         return { text: restore(translated, placeholders), provider: provider.name };
       } catch (error) {
         const code = error instanceof Error ? error.message : "UNKNOWN";
-        if (code === "PROVIDER_TIMEOUT" || code.includes("HTTP_429") || code.includes("HTTP_5")) {
+        if (
+          code === "PROVIDER_TIMEOUT" ||
+          code.includes("HTTP_429") ||
+          code.includes("HTTP_5")
+        ) {
           breaker.set(`${provider.name}:${provider.model}`, Date.now() + 60_000);
         }
-        console.warn(`Blog translation provider failed provider=${provider.name} error=${code} latency=${Date.now() - providerStartedAt}ms`);
+        console.warn(
+          `Blog translation provider failed provider=${provider.name} error=${code} latency=${Date.now() - providerStartedAt}ms`
+        );
         throw error;
       }
     }
@@ -323,14 +359,25 @@ async function executeTranslation(
   const units = [titleSummaryInput, ...splitContent(content)];
   const results: TranslationResult[] = new Array(units.length);
   let next = 0;
+
   async function worker() {
     while (next < units.length) {
       const index = next++;
-      results[index] = await translateUnit(units[index], sourceLang, lang, providers, usedProviders, deadline);
+      results[index] = await translateUnit(
+        units[index],
+        sourceLang,
+        lang,
+        providers,
+        usedProviders,
+        deadline
+      );
     }
   }
+
   await Promise.all(Array.from({ length: Math.min(3, units.length) }, worker));
+
   if (Date.now() >= deadline) throw new Error("TRANSLATE_TIMEOUT");
+
   const translatedTitleSummary = results[0].text.split(/\n\s*\n/);
   const payload = {
     lang,
@@ -341,6 +388,7 @@ async function executeTranslation(
     cached: false,
     provider: [...usedProviders].join(",") || "unknown",
   } satisfies TranslationPayload;
+
   try {
     await BlogTranslations.findOneAndUpdate(
       { blogId, lang },
@@ -348,8 +396,11 @@ async function executeTranslation(
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
   } catch (error) {
-    console.warn(`Blog translation cache write failed blog=${blogId} lang=${lang} error=${error instanceof Error ? error.name : "unknown"}`);
+    console.warn(
+      `Blog translation cache write failed blog=${blogId} lang=${lang} error=${error instanceof Error ? error.name : "unknown"}`
+    );
   }
+
   return payload;
 }
 
@@ -357,54 +408,96 @@ export async function POST(request: Request) {
   const startedAt = Date.now();
   try {
     const body = (await request.json()) as { blogId?: unknown; lang?: unknown };
-    if (typeof body.blogId !== "string" || !["en", "ur", "ro"].includes(String(body.lang))) return json({ code: "INVALID_REQUEST" }, 400);
+    if (typeof body.blogId !== "string" || !["en", "ur", "ro"].includes(String(body.lang))) {
+      return json({ code: "INVALID_REQUEST" }, 400);
+    }
     const lang = body.lang as BlogLanguage;
+
     const cookieToken = (await cookies()).get("token")?.value;
     let userId = "";
     if (cookieToken) {
       try {
-        userId = (jwt.verify(cookieToken, process.env.JWT_SECRET as string) as { id?: string }).id || "";
+        userId =
+          (jwt.verify(cookieToken, process.env.JWT_SECRET as string) as { id?: string }).id || "";
       } catch {
         userId = "";
       }
     }
     if (REQUIRE_LOGIN_FOR_TRANSLATION && !userId) return json({ code: "UNAUTHORIZED" }, 401);
+
     await connectDB();
-    const blog = await Blogs.findById(body.blogId).select("blogTitle blogSummary blogContent").lean() as {
+    const blog = (await Blogs.findById(body.blogId)
+      .select("blogTitle blogSummary blogContent")
+      .lean()) as {
       blogTitle?: string;
       blogSummary?: string;
       blogContent?: string;
     } | null;
+
     if (!blog) return json({ code: "BLOG_NOT_FOUND" }, 404);
+
     const title = String(blog.blogTitle || "");
     const summary = String(blog.blogSummary || "");
     const content = String(blog.blogContent || "");
-    if (title.length + summary.length + content.length > MAX_TRANSLATE_CHARS) return json({ code: "TOO_LONG" }, 413);
+    if (title.length + summary.length + content.length > MAX_TRANSLATE_CHARS) {
+      return json({ code: "TOO_LONG" }, 413);
+    }
+
     const sourceLang = detectLang(`${title}\n${summary}\n${content}`);
     if (lang === sourceLang) return json({ code: "SAME_LANGUAGE" }, 400);
+
     const hash = sourceHash(title, summary, content);
-    const cached = await BlogTranslations.findOne({ blogId: body.blogId, lang }).lean() as {
+
+    const cached = (await BlogTranslations.findOne({ blogId: body.blogId, lang }).lean()) as {
       sourceHash?: string;
       title?: string;
       summary?: string;
       content?: string;
       provider?: string;
     } | null;
+
     if (cached?.sourceHash === hash) {
-      return json({ lang, sourceLang, title: cached.title, summary: cached.summary, content: cached.content, cached: true, provider: cached.provider });
+      return json({
+        lang,
+        sourceLang,
+        title: cached.title,
+        summary: cached.summary,
+        content: cached.content,
+        cached: true,
+        provider: cached.provider,
+      });
     }
+
     const key = `${body.blogId}:${lang}:${hash}`;
     const existing = inFlight.get(key);
     if (existing) return json(await existing);
-    const identity = userId || (request.headers.get("x-forwarded-for") || "unknown").split(",")[0].trim();
+
+    const identity =
+      userId ||
+      (request.headers.get("x-forwarded-for") || "unknown").split(",")[0].trim();
     if (!allowed(identity)) return json({ code: "RATE_LIMITED" }, 429);
     if (activeJobs >= MAX_IN_FLIGHT) return json({ code: "BUSY" }, 429);
+
     const providers: AIProvider[] = [
-      { name: "groq", model: process.env.GROQ_MODEL_TRANSLATE || "", key: process.env.GROQ_API_KEY || "" },
-      { name: "gemini", model: process.env.GEMINI_MODEL || "", key: process.env.GEMINI_API_KEY || "" },
-      { name: "openrouter", model: process.env.OPENROUTER_MODEL_1 || "", key: process.env.OPENROUTER_API_KEY || "" },
+      {
+        name: "groq",
+        model: process.env.GROQ_MODEL_AI_ASSIST || process.env.GROQ_MODEL_TRANSLATE || "",
+        key: process.env.GROQ_API_KEY || "",
+      },
+      {
+        name: "gemini",
+        model: process.env.GEMINI_MODEL || "",
+        key: process.env.GEMINI_API_KEY || "",
+      },
+      {
+        name: "openrouter",
+        model: process.env.OPENROUTER_MODEL_1 || "",
+        key: process.env.OPENROUTER_API_KEY || "",
+      },
     ].filter((provider) => provider.model && provider.key);
+
     if (!providers.length) return json({ code: "TRANSLATE_NOT_CONFIGURED" }, 503);
+
     activeJobs += 1;
     const job = executeTranslation(
       String(body.blogId),
@@ -418,19 +511,26 @@ export async function POST(request: Request) {
       startedAt + JOB_DEADLINE_MS
     )
       .then((result) => {
-        console.info(`Blog translation success blog=${body.blogId} lang=${lang} provider=${result.provider} latency=${Date.now() - startedAt}ms`);
+        console.info(
+          `Blog translation success blog=${body.blogId} lang=${lang} provider=${result.provider} latency=${Date.now() - startedAt}ms`
+        );
         return result;
       })
       .finally(() => {
         activeJobs -= 1;
         inFlight.delete(key);
       });
+
     inFlight.set(key, job);
     return json(await job);
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
-    if (code === "TRANSLATE_TIMEOUT" || code === "PROVIDER_TIMEOUT") return json({ code: "TRANSLATE_TIMEOUT" }, 504);
-    console.warn(`Blog translation failed error=${code || "UNKNOWN"} latency=${Date.now() - startedAt}ms`);
+    if (code === "TRANSLATE_TIMEOUT" || code === "PROVIDER_TIMEOUT") {
+      return json({ code: "TRANSLATE_TIMEOUT" }, 504);
+    }
+    console.warn(
+      `Blog translation failed error=${code || "UNKNOWN"} latency=${Date.now() - startedAt}ms`
+    );
     return json({ code: "TRANSLATE_FAILED" }, 502);
   }
 }

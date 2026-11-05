@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useSingleBlogQuery } from "../../../Redux/Services/blogApi";
 import { ContextTheme } from "../../../Context/DarkTheme";
-import { useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import LoadingPage from "../../../components/layout/LoadingPage";
@@ -20,14 +20,66 @@ const RelatedBlogs = dynamic(() => import("./_component/RelatedBlogs"), { ssr: f
 const BlogChat = dynamic(() => import("./_component/BlogChat"), { ssr: false });
 const AIFeaturePopup = dynamic(() => import("../../../components/blog/AIFeaturePopup"), { ssr: false });
 
+type CurrentIndex = { section: string; index: number | null };
+
+const HighlightedWord = memo(function HighlightedWord({
+  word,
+  active,
+  highlightClassName,
+}: {
+  word: string;
+  active: boolean;
+  highlightClassName: string;
+}) {
+  return <span className={active ? highlightClassName : ""}>{word}</span>;
+});
+
+function BlogReadingSection({
+  content,
+  summary,
+  isUrdu,
+  blogId,
+  themeValue,
+}: {
+  content: string;
+  summary: string;
+  isUrdu: boolean;
+  blogId: string;
+  themeValue: boolean;
+}) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState<CurrentIndex>({ section: "", index: null });
+  const contentWords = useMemo(() => content.split(" "), [content]);
+  const summaryWords = useMemo(() => summary.split(" "), [summary]);
+  const updateCurrentIndex = useCallback((next: CurrentIndex) => {
+    setCurrentIndex((current) => (
+      current.section === next.section && current.index === next.index ? current : next
+    ));
+  }, []);
+
+  return (
+    <>
+      <div className="mb-12">
+        <h2 className={`mb-4 text-3xl font-black tracking-[-0.04em] text-[var(--ink)] ${currentIndex.section === "content-heading" ? "rounded bg-[var(--yellow)] px-2" : ""}`}>Content</h2>
+        <p lang={isUrdu ? "ur" : "en"} dir={isUrdu ? "rtl" : "ltr"} className={`flex flex-wrap gap-1 text-justify text-lg leading-[1.7] text-[var(--muted)] ${isUrdu ? "font-[var(--font-noto-arabic)] text-right text-xl leading-[2]" : ""}`}>{contentWords.map((word, index) => <HighlightedWord key={index} word={word} active={currentIndex.section === "content" && index === currentIndex.index} highlightClassName="rounded bg-[var(--yellow)] px-1 text-[var(--ink)]" />)}</p>
+      </div>
+      {summary && (
+        <div className="mb-12 rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--yellow)] p-5 shadow-[var(--sh-card)]">
+          <h2 className={`mb-4 text-3xl font-black tracking-[-0.04em] text-[var(--ink)] ${currentIndex.section === "summary-heading" ? "rounded bg-[var(--paper)] px-2" : ""}`}>AI Summary</h2>
+          <p lang={isUrdu ? "ur" : "en"} dir={isUrdu ? "rtl" : "ltr"} className={`flex flex-wrap gap-1 text-justify text-lg leading-[1.7] text-[var(--muted)] ${isUrdu ? "font-[var(--font-noto-arabic)] text-right text-xl leading-[2]" : ""}`}>{summaryWords.map((word, index) => <HighlightedWord key={index} word={word} active={currentIndex.section === "summary" && index === currentIndex.index} highlightClassName="rounded bg-[var(--paper)] px-1 text-[var(--ink)]" />)}</p>
+        </div>
+      )}
+      <ActionRow blogId={blogId} isPlaying={isPlaying} setIsPlaying={setIsPlaying} setCurrentIndex={updateCurrentIndex} themeValue={themeValue} />
+    </>
+  );
+}
+
 export default function BlogDetailClient({ translateEnabled }: { translateEnabled: boolean }) {
   const params = useParams();
   const rawId = params?.id;
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const { data, isLoading, isFetching, error } = useSingleBlogQuery(id ?? "", { skip: !id });
   const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState<{ section: string; index: number | null }>({ section: "", index: null });
   const blog = data?.blog;
   const translation = useBlogTranslation(id || "", translateEnabled);
 
@@ -44,11 +96,8 @@ export default function BlogDetailClient({ translateEnabled }: { translateEnable
   const title = translation.translation?.title || originalTitle;
   const summary = translation.translation?.summary || originalSummary;
   const content = translation.translation?.content || originalContent;
-  const translated = Boolean(translation.translation && translation.activeLang);
   const textLang = translation.activeLang || "en";
   const isUrdu = textLang === "ur";
-  const contentWords = content.split(" ");
-  const summaryWords = summary.split(" ");
   const shortTitle = originalTitle.split(" ").slice(0, 4).join(" ");
   const formattedDate = new Date(blog.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
@@ -60,14 +109,9 @@ export default function BlogDetailClient({ translateEnabled }: { translateEnable
           <h1 lang={isUrdu ? "ur" : "en"} dir={isUrdu ? "rtl" : "ltr"} className={`mb-5 text-4xl font-black uppercase leading-[0.95] tracking-[-0.045em] text-[var(--ink)] sm:text-6xl ${isUrdu ? "font-[var(--font-noto-arabic)] text-right leading-[1.2]" : ""}`}>{title}</h1>
           <p className="mb-8 border-b-[3px] border-[var(--ink)] pb-6 text-sm font-medium text-[var(--muted)] sm:text-base">By <span className="font-extrabold text-[var(--ink)]">{blog.userId?.name || "Unknown Author"}</span>{" "} · {formattedDate} · <span className="font-extrabold text-[var(--ink)]">{shortTitle}</span></p>
           <BlogTranslateBar sourceLang={sourceLang} activeLang={translation.activeLang} loading={translation.loading} error={translation.error} enabled={translateEnabled} onSelect={translation.selectLanguage} onOriginal={translation.showOriginal} />
-          <div className="mb-12">
-            <h2 className={`mb-4 text-3xl font-black tracking-[-0.04em] text-[var(--ink)] ${currentIndex.section === "content-heading" ? "rounded bg-[var(--yellow)] px-2" : ""}`}>Content</h2>
-            <p lang={isUrdu ? "ur" : "en"} dir={isUrdu ? "rtl" : "ltr"} className={`flex flex-wrap gap-1 text-justify text-lg leading-[1.7] text-[var(--muted)] ${isUrdu ? "font-[var(--font-noto-arabic)] text-right text-xl leading-[2]" : ""}`}>{contentWords.map((word: string, index: number) => <span key={index} className={currentIndex.section === "content" && index === currentIndex.index ? "rounded bg-[var(--yellow)] px-1 text-[var(--ink)]" : ""}>{word}</span>)}</p>
-          </div>
-          {summary && <div className="mb-12 rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--yellow)] p-5 shadow-[var(--sh-card)]"><h2 className={`mb-4 text-3xl font-black tracking-[-0.04em] text-[var(--ink)] ${currentIndex.section === "summary-heading" ? "rounded bg-[var(--paper)] px-2" : ""}`}>AI Summary</h2><p lang={isUrdu ? "ur" : "en"} dir={isUrdu ? "rtl" : "ltr"} className={`flex flex-wrap gap-1 text-justify text-lg leading-[1.7] text-[var(--muted)] ${isUrdu ? "font-[var(--font-noto-arabic)] text-right text-xl leading-[2]" : ""}`}>{summaryWords.map((word: string, index: number) => <span key={index} className={currentIndex.section === "summary" && index === currentIndex.index ? "rounded bg-[var(--paper)] px-1 text-[var(--ink)]" : ""}>{word}</span>)}</p></div>}
         </div>
         <BlogTags blog={blog} />
-        <ActionRow blogId={blog._id} isPlaying={isPlaying} setIsPlaying={setIsPlaying} setCurrentIndex={setCurrentIndex} themeValue={themeValue} />
+        <BlogReadingSection content={content} summary={summary} isUrdu={isUrdu} blogId={blog._id} themeValue={themeValue} />
         <AuthorInfo blog={blog} themeValue={themeValue} lightText={lightText} DarkText={DarkText} />
         <RelatedBlogs blogId={blog._id} />
       </article>

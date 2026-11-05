@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, ReactNode } from "react";
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react";
 import { AlertState } from "../../types/global";
 
@@ -24,26 +24,40 @@ export const AlertProvider = ({ children }: AlertProviderProps) => {
     type: "info",
     progress: 100,
   });
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const showAlert = (type: AlertType, message: string, duration = 4000) => {
+  const showAlert = useCallback((type: AlertType, message: string, duration = 4000) => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setAlert({ visible: true, type, message, progress: 100 });
 
-    let interval: NodeJS.Timeout;
     const step = 100 / (duration / 50);
 
-    interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setAlert((prev) => {
         if (prev.progress <= 0) {
-          clearInterval(interval);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          intervalRef.current = null;
           return { ...prev, visible: false };
         }
         return { ...prev, progress: prev.progress - step };
       });
     }, 50);
-  };
+  }, []);
+
+  const closeAlert = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = null;
+    setAlert({ visible: false, message: "", type: "info", progress: 0 });
+  }, []);
+
+  const contextValue = useMemo(() => ({ showAlert }), [showAlert]);
+
+  useEffect(() => () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
 
   return (
-    <AlertContext.Provider value={{ showAlert }}>
+    <AlertContext.Provider value={contextValue}>
       {children}
       {alert.visible && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] animate-in slide-in-from-top-8 duration-500">
@@ -51,14 +65,7 @@ export const AlertProvider = ({ children }: AlertProviderProps) => {
             type={alert.type}
             message={alert.message}
             progress={alert.progress}
-            onClose={() =>
-              setAlert({
-                visible: false,
-                message: "",
-                type: "info",
-                progress: 0,
-              })
-            }
+            onClose={closeAlert}
           />
         </div>
       )}

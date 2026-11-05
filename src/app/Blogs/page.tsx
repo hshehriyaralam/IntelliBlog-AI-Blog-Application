@@ -135,7 +135,7 @@ export default function AllBlogs() {
 
       return ok;
     });
-  }, [data, searchQuery, appliedFilters]);
+  }, [data, deferredQuery, appliedFilters]);
 
 
 
