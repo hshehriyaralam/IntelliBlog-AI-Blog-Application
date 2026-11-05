@@ -14,8 +14,8 @@ export const maxDuration = 30;
 const REQUIRE_LOGIN_FOR_TRANSLATION = false;
 const MAX_TRANSLATE_CHARS = 12_000;
 const CHUNK_CHARS = 2_500;
-const PROVIDER_TIMEOUT_MS = 15_000;
-const JOB_DEADLINE_MS = 26_000;
+const PROVIDER_TIMEOUT_MS = 6_000;
+const JOB_DEADLINE_MS = 13_000;
 const MINUTE_LIMIT = 6;
 const DAY_LIMIT = 40;
 const WINDOW_MS = 60_000;
@@ -339,8 +339,8 @@ export async function POST(request: Request) {
     if (!allowed(identity)) return json({ code: "RATE_LIMITED" }, 429);
     if (activeJobs >= MAX_IN_FLIGHT) return json({ code: "BUSY" }, 429);
     const providers: AIProvider[] = [
-      { name: "gemini", model: process.env.GEMINI_MODEL || "", key: process.env.GEMINI_API_KEY || "" },
       { name: "groq", model: process.env.GROQ_MODEL_TRANSLATE || "", key: process.env.GROQ_API_KEY || "" },
+      { name: "gemini", model: process.env.GEMINI_MODEL || "", key: process.env.GEMINI_API_KEY || "" },
       { name: "openrouter", model: process.env.OPENROUTER_MODEL_1 || "", key: process.env.OPENROUTER_API_KEY || "" },
     ].filter((provider) => provider.model && provider.key);
     if (!providers.length) return json({ code: "TRANSLATE_NOT_CONFIGURED" }, 503);

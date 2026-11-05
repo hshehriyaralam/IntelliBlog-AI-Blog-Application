@@ -99,13 +99,14 @@ const ListeBlogEng = React.memo(  ({
         setIsPlaying(false);
       };
 
-      /** ------------------------------
-       *   MOBILE INSTANT START FIX 🚀
-       * ------------------------------ */
-      setTimeout(() => {
-        window.speechSynthesis.speak(utter);
-      }, isMobile ? 20 : 0); // mobile me lag prevent
+      utter.onerror = () => {
+        if (fallbackInterval.current) clearInterval(fallbackInterval.current);
+        setCurrentIndex({ section: "", index: null });
+        setIsPlaying(false);
+      };
 
+      // Start inside the click handler so mobile browsers keep the user gesture.
+      window.speechSynthesis.speak(utter);
       setIsPlaying(true);
     } else {
       // STOP

@@ -19,22 +19,26 @@ const Tags = dynamic(() => import("../components/HomeComponets/Tags"), {
   loading: () => <LoadingPage />,
 });
 
+const AIFeaturePopup = dynamic(() => import("../components/blog/AIFeaturePopup"), {
+  ssr: false,
+});
+
 const features = [
   {
     title: "Create with AI",
-    description: "Write your post, hit Generate Summary & Tags and let AI handle the boring bits.",
+    description: "Write your draft, get AI-powered title and summary suggestions, generate blog images, and use inline writing help to polish every paragraph.",
     icon: <PlusCircle className="w-14" />,
     href: "/Create",
   },
   {
-    title: "Discover Blogs",
-    description: "Search by title, content or author, then filter down by the tags that matter to you.",
+    title: "Read with AI",
+    description: "Ask questions about any blog, chat with the article context, and translate content into Urdu or Roman Urdu for easier reading.",
     icon: <Target className="w-14" />,
     href: "/Blogs",
   },
   {
-    title: "Build a Collection",
-    description: "Bookmark what you love and keep it all in one place to come back to anytime.",
+    title: "Save smarter",
+    description: "Bookmark the posts you love, revisit them later, and build a personal collection of ideas, inspiration, and stories.",
     icon: <BookmarkCircle className="w-14" />,
     href: "/Collection",
   },
@@ -45,6 +49,7 @@ export default function Home() {
 
   return (
     <div className="w-full space-y-20 pb-8">
+      <AIFeaturePopup page="home" />
       <HeroTopCard articleCount={data?.blogs?.length ?? 0} />
 
       <div className="-mx-4 overflow-hidden rotate-[-1.4deg] border-y-[4px] border-[var(--ink)] bg-[var(--yellow)] px-4 py-4 shadow-[0_5px_0_var(--ink)] md:-mx-12 lg:-mx-24">

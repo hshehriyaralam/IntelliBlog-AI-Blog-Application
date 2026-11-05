@@ -30,6 +30,33 @@ function hasRtl(value: string) {
   return /[\u0590-\u08ff]/.test(value.slice(-800));
 }
 
+function removeOverlappingWords(typedText: string, suggestion: string) {
+  const typedWords = Array.from(typedText.matchAll(/[\p{L}\p{N}]+/gu));
+  const suggestedWords = Array.from(suggestion.matchAll(/[\p{L}\p{N}]+/gu));
+  const maxOverlap = Math.min(typedWords.length, suggestedWords.length);
+
+  for (let overlap = maxOverlap; overlap > 0; overlap -= 1) {
+    let matches = true;
+    for (let index = 0; index < overlap; index += 1) {
+      const typedWord = typedWords[typedWords.length - overlap + index][0];
+      const suggestedWord = suggestedWords[index][0];
+      if (typedWord.toLocaleLowerCase() !== suggestedWord.toLocaleLowerCase()) {
+        matches = false;
+        break;
+      }
+    }
+
+    if (matches) {
+      const lastOverlappingWord = suggestedWords[overlap - 1];
+      const remainder = suggestion.slice(lastOverlappingWord.index! + lastOverlappingWord[0].length);
+      const punctuation = remainder.match(/^[,;:!?…。]+/)?.[0] ?? "";
+      return `${punctuation}${remainder.slice(punctuation.length).replace(/^\s+/, " ")}`;
+    }
+  }
+
+  return suggestion;
+}
+
 export function useInlineSuggestion({
   title,
   content,
@@ -211,8 +238,13 @@ export function useInlineSuggestion({
       const textarea = fieldRef.current;
       const current = suggestionRef.current;
       if (!textarea || !current || textarea.selectionStart !== textarea.selectionEnd) return;
-      const text = wordOnly ? current.match(/^\s*\S+\s*/)?.[0] || current : current;
       const start = textarea.selectionStart ?? 0;
+      const completion = removeOverlappingWords(textarea.value.slice(0, start), current);
+      const text = wordOnly ? completion.match(/^\s*\S+\s*/)?.[0] || completion : completion;
+      if (!text) {
+        clear();
+        return;
+      }
       textarea.setRangeText(text, start, start, "end");
       onChange({
         target: textarea,

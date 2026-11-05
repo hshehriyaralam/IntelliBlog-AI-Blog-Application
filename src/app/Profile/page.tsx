@@ -11,10 +11,12 @@ import { ContextTheme } from "../../Context/DarkTheme";
 import { useAlert } from '../../Context/AlertContext';
 import { useSelector } from "react-redux";
 import type { RootState } from "../../Redux/store";
+import { userApi } from "../../Redux/Services/userApi";
 import Link from "next/link";
 import LoadingPage from "../../components/layout/LoadingPage";
 import ProfileSection from './_component/ProfilSection'
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { PageFrame } from "@/components/ui/page-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -37,6 +39,7 @@ const ProfileBlogsSections = dynamic(() => import('./_component/BlogsSection'), 
 
 export default function Profile() {
   const { showAlert } = useAlert();
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const Googleloading = useSelector((state: RootState) => state.auth.loading);
   const { themeValue, light, dark } = useContext(ContextTheme);
@@ -81,10 +84,26 @@ export default function Profile() {
     }
   }, [])
 
-const handleGoogleLogin =  useCallback(() => {
-  dispatch(googleLoginThunk())
-  
-}, []);
+const handleGoogleLogin = useCallback(async () => {
+  try {
+    await dispatch(googleLoginThunk()).unwrap();
+    dispatch(userApi.util.invalidateTags(["User"]));
+    router.replace("/");
+  } catch (error) {
+    const message = typeof error === "string" ? error.toLowerCase() : "";
+    if (
+      message.includes("popup_closed") ||
+      message.includes("cancelled") ||
+      message.includes("canceled") ||
+      message.includes("access_denied")
+    ) {
+      return;
+    }
+
+    console.error("Google account switch failed:", error);
+    showAlert("error", "Could not switch accounts. Please try again.");
+  }
+}, [dispatch, router, showAlert]);
 
   if (isLoading) return <LoadingPage />;
   if (!user) return (

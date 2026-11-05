@@ -31,11 +31,22 @@ export default function BlogChat({ blogId }: { blogId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ blogId, messages: nextMessages.slice(-8) }),
       });
-      const data = (await response.json()) as { answer?: string; code?: string };
-      if (!response.ok || !data.answer) throw new Error(data.code || "AI_CHAT_FAILED");
+      const data = (await response.json().catch(() => ({}))) as { answer?: string; code?: string };
+      if (!response.ok || !data.answer) {
+        const message = response.status === 401 || data.code === "UNAUTHORIZED"
+          ? "Please sign in to use AI chat."
+          : response.status === 429
+            ? "AI chat is busy right now. Please try again in a minute."
+            : data.code === "AI_CHAT_NOT_CONFIGURED"
+              ? "AI chat is not configured right now."
+              : response.status === 504
+                ? "AI chat took too long to respond. Please try again."
+                : "AI chat is temporarily unavailable. Please try again.";
+        throw new Error(message);
+      }
       setMessages((current) => [...current, { role: "assistant", content: data.answer! }]);
-    } catch {
-      setError("Chat is unavailable right now. Please try again.");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "AI chat is temporarily unavailable. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -28,10 +28,10 @@ const  ActionRow = React.memo(({
   return (
     <div className="sticky bottom-3 z-20 mt-8 rounded-[var(--r-card)] border-[3px] border-[var(--ink)] bg-[var(--paper)] p-3 shadow-[var(--sh-card)] md:static md:border-0 md:bg-transparent md:p-0 md:shadow-none">
       {/* Main Row - Listen Button + Action Buttons */}
-      <div className="flex w-full flex-row items-center justify-between gap-4">
+      <div className="flex w-full flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         
         {/* 🎧 Listen Button */}
-        <div className="flex-1 min-w-0">
+        <div className="w-full min-w-0 md:flex-1">
           <ListeBlogEng
             isPlaying={isPlaying}
             blogId={blogId}
@@ -41,7 +41,7 @@ const  ActionRow = React.memo(({
         </div>
 
         {/* ❤️ Action Buttons */}
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="flex w-full shrink-0 items-center justify-end gap-2 sm:gap-3 md:w-auto">
           <LikeButton blogId={blogId}/>
           <ShareButton   blogId={blogId}  />
           <BookmarkButton blogId={blogId}  />

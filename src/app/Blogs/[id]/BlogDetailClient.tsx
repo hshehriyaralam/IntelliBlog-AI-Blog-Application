@@ -9,7 +9,6 @@ import Image from "next/image";
 import LoadingPage from "../../../components/layout/LoadingPage";
 import ErrorPage from "../_component/error";
 import BlogNotFound from "../_component/notFound";
-import { useLoggedInUser } from "../../../hooks/LoggedInUser";
 import { detectLang, type BlogLanguage } from "../../../lib/blogLanguage";
 import { useBlogTranslation } from "../../../hooks/useBlogTranslation";
 import BlogTranslateBar from "../../../components/blog/BlogTranslateBar";
@@ -19,7 +18,7 @@ const ActionRow = dynamic(() => import("../_component/ActionRow"), { ssr: false 
 const AuthorInfo = dynamic(() => import("../_component/AuthorInfo"), { ssr: false });
 const RelatedBlogs = dynamic(() => import("./_component/RelatedBlogs"), { ssr: false });
 const BlogChat = dynamic(() => import("./_component/BlogChat"), { ssr: false });
-const BlogReaderIntroModal = dynamic(() => import("../../../components/blog/BlogReaderIntroModal"), { ssr: false });
+const AIFeaturePopup = dynamic(() => import("../../../components/blog/AIFeaturePopup"), { ssr: false });
 
 export default function BlogDetailClient({ translateEnabled }: { translateEnabled: boolean }) {
   const params = useParams();
@@ -27,70 +26,12 @@ export default function BlogDetailClient({ translateEnabled }: { translateEnable
   const id = Array.isArray(rawId) ? rawId[0] : rawId;
   const { data, isLoading, isFetching, error } = useSingleBlogQuery(id ?? "", { skip: !id });
   const { themeValue, light, dark, lightText, DarkText } = useContext(ContextTheme);
-  const { loggedInUserId } = useLoggedInUser();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<{ section: string; index: number | null }>({ section: "", index: null });
-  const [showIntro, setShowIntro] = useState(false);
-  const [introKey, setIntroKey] = useState("");
   const blog = data?.blog;
   const translation = useBlogTranslation(id || "", translateEnabled);
 
   useEffect(() => () => { window.speechSynthesis.cancel(); }, []);
-
-  useEffect(() => {
-    if (!loggedInUserId || !blog) return;
-    const key = `intelliblog.aiReaderIntro.v1.${loggedInUserId}`;
-    setIntroKey(key);
-    let seen = false;
-    let sessionShown = false;
-    try {
-      seen = localStorage.getItem(key) === "seen";
-      sessionShown = sessionStorage.getItem("intelliblog.aiPopupShownThisSession") === "true";
-    } catch {
-      seen = false;
-      sessionShown = false;
-    }
-    if (seen || sessionShown) return;
-    let idleId: number | undefined;
-    const showReaderIntro = () => {
-      try {
-        if (sessionStorage.getItem("intelliblog.aiPopupShownThisSession") === "true") return;
-        sessionStorage.setItem("intelliblog.aiPopupShownThisSession", "true");
-        localStorage.setItem("intelliblog.aiTranslateHint.v1", "seen");
-      } catch {
-        // The session state is best effort when storage is unavailable.
-      }
-      setShowIntro(true);
-    };
-    const timer = window.setTimeout(showReaderIntro, 800);
-    if (typeof window.requestIdleCallback === "function") {
-      window.clearTimeout(timer);
-      idleId = window.requestIdleCallback(showReaderIntro, { timeout: 800 });
-    }
-    return () => {
-      window.clearTimeout(timer);
-      if (idleId !== undefined) window.cancelIdleCallback(idleId);
-    };
-  }, [blog, loggedInUserId]);
-
-  const markIntroSeen = () => {
-    if (introKey) {
-      try { localStorage.setItem(introKey, "seen"); } catch { /* dismiss remains available */ }
-    }
-    setShowIntro(false);
-  };
-
-  const remindLater = () => {
-    if (introKey) {
-      try {
-        const key = `${introKey}.reminders`;
-        const count = Number(localStorage.getItem(key) || "0") + 1;
-        if (count >= 2) localStorage.setItem(introKey, "seen");
-        localStorage.setItem(key, String(count));
-      } catch { /* dismiss remains available */ }
-    }
-    setShowIntro(false);
-  };
 
   if (!id || (isLoading && !blog) || (isFetching && !blog)) return <LoadingPage />;
   if (!blog && error) return <ErrorPage className={`${themeValue ? light : dark}`} />;
@@ -131,7 +72,7 @@ export default function BlogDetailClient({ translateEnabled }: { translateEnable
         <RelatedBlogs blogId={blog._id} />
       </article>
       <BlogChat blogId={blog._id} />
-      {showIntro && <BlogReaderIntroModal onSeen={markIntroSeen} onLater={remindLater} />}
+      <AIFeaturePopup key={blog._id} page="blog" />
     </div>
   );
 }

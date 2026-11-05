@@ -1,5 +1,5 @@
 "use client";
-import { useState,useMemo } from "react";
+import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import Link from "next/link";
 import { User, X, Heart } from "lucide-react";
@@ -33,13 +33,11 @@ const LikedByUser = React.memo(({ blogId,themeValue }: { blogId: string, themeVa
 const isYou = likedByUser.some((u:any) => u._id === loggedInUserId);
 
 // First user (excluding you if needed)
-const firstUser = useMemo(() => isYou
+const firstUser = isYou
   ? likedByUser.find((u:any) => u._id !== loggedInUserId)
-  : likedByUser[0], [isYou, likedByUser, loggedInUserId]);
-
-// Calculate other users count
-const totalCount = useMemo(() => likedByUser.length, [likedByUser]);
-const otherCount = useMemo(() => isYou ? totalCount - 1  : totalCount - (firstUser ? 1 : 0), [isYou, totalCount, firstUser]);
+  : likedByUser[0];
+const totalCount = likedByUser.length;
+const otherCount = isYou ? totalCount - 1 : totalCount - (firstUser ? 1 : 0);
   
   return (
     <div

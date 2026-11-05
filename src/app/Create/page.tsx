@@ -18,8 +18,8 @@ import { useInlineSuggestion } from "../../hooks/useInlineSuggestion";
 import { useLoggedInUser } from "../../hooks/LoggedInUser";
 import { useAlert } from "../../Context/AlertContext";
 
-const AIIntroductionModal = dynamic(
-  () => import("../../components/blog/AIIntroductionModal"),
+const AIFeaturePopup = dynamic(
+  () => import("../../components/blog/AIFeaturePopup"),
   { ssr: false }
 );
 
@@ -31,8 +31,6 @@ export default function WriteBlogForm() {
   const summaryRef = useRef<HTMLTextAreaElement>(null);
   const imageRequestRef = useRef<AbortController | null>(null);
   const [aiAssistEnabled, setAiAssistEnabled] = useState(true);
-  const [showIntro, setShowIntro] = useState(false);
-  const [introKey, setIntroKey] = useState("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [aiGenerated, setAiGenerated] = useState(false);
   const {
@@ -97,51 +95,6 @@ export default function WriteBlogForm() {
       // Keep the default enabled when storage is unavailable.
     }
   }, []);
-
-  useEffect(() => {
-    if (!loggedInUserId) return;
-    const key = `intelliblog.aiIntro.v2.${loggedInUserId}`;
-    setIntroKey(key);
-    let seen = false;
-    try {
-      seen = window.localStorage.getItem(key) === "seen";
-    } catch {
-      seen = false;
-    }
-    if (seen) return;
-    let idleId: number | undefined;
-    let timeoutId: number | undefined;
-    const showIntroOnce = () => {
-      try {
-        if (window.sessionStorage.getItem("intelliblog.aiPopupShownThisSession") === "true") return;
-        window.sessionStorage.setItem("intelliblog.aiPopupShownThisSession", "true");
-      } catch {
-        // The popup remains available when session storage is unavailable.
-      }
-      setShowIntro(true);
-    };
-    const requestIdle = window.requestIdleCallback;
-    if (typeof requestIdle === "function") {
-      idleId = requestIdle(showIntroOnce, { timeout: 600 });
-    } else {
-      timeoutId = window.setTimeout(showIntroOnce, 600);
-    }
-    return () => {
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
-      if (idleId !== undefined) window.cancelIdleCallback(idleId);
-    };
-  }, [loggedInUserId]);
-
-  const markIntroSeen = () => {
-    if (introKey) {
-      try {
-        window.localStorage.setItem(introKey, "seen");
-      } catch {
-        // The modal remains dismissible when storage is unavailable.
-      }
-    }
-    setShowIntro(false);
-  };
 
   const toggleAssistant = () => {
     setAiAssistEnabled((current) => {
@@ -390,9 +343,7 @@ export default function WriteBlogForm() {
           text={loading ? <ButtonLoader /> : "Publish"}
         />
       </form>
-      {showIntro && (
-        <AIIntroductionModal onSeen={markIntroSeen} onLater={markIntroSeen} />
-      )}
+      <AIFeaturePopup page="create" />
     </div>
   );
 }
